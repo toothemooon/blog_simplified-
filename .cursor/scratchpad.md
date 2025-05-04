@@ -85,6 +85,83 @@ Previously, we made the mistake of mixing concepts from the homepage and blog pa
 3. Implement BlogPage with the two-column layout (tag sidebar + post list)
 4. Use the same BlogCard component in both places for consistency
 
+## Current Codebase Review (as of latest update)
+
+### Directory Structure
+The current directory structure has been simplified:
+```
+frontend/
+├── public/
+├── src/
+│   ├── components/
+│   │   └── Header.svelte
+│   ├── App.svelte
+│   ├── main.js
+│   └── global.css
+├── package.json
+├── rollup.config.js
+└── README.md
+```
+
+### Component Status
+1. **Header.svelte**: Fully implemented with:
+   - Site logo and navigation
+   - Theme switching functionality (light/dark/system)
+   - Search button placeholder
+
+2. **App.svelte**: Currently contains:
+   - A reference to Header component (needs to be updated as the path has changed)
+   - Placeholder content for the main area
+   - Basic styling for the app container
+
+### Issues Identified
+1. **Import Path**: App.svelte is still importing Header from the old path (`./lib/components/Header.svelte`)
+2. **Missing Components**: The blog-specific components have been discarded
+3. **Folder Structure**: The `lib` and `routes` folders have been removed, requiring restructuring of imports
+
+## Folder Restructuring Plan
+
+### New Structure
+We will maintain the simplified structure:
+```
+frontend/
+├── public/
+├── src/
+│   ├── components/        # All components live here
+│   │   ├── Header.svelte
+│   │   ├── Footer.svelte  # To be added later (not a current priority)
+│   │   ├── blog/          # Blog-specific components
+│   │   │   ├── HomePage.svelte
+│   │   │   ├── BlogPage.svelte
+│   │   │   ├── BlogCard.svelte
+│   │   │   ├── BlogList.svelte
+│   │   │   ├── TagList.svelte
+│   │   │   └── BlogPost.svelte
+│   ├── App.svelte
+│   ├── main.js
+│   └── global.css
+```
+
+### Component Implementation Strategy
+1. **Fix App.svelte**: Update the import path for Header
+2. **Blog Components**: Implement in this order:
+   - BlogCard (most basic component)
+   - BlogList (uses BlogCard)
+   - TagList (for sidebar)
+   - HomePage (uses BlogList)
+   - BlogPage (uses BlogList and TagList)
+   - BlogPost (for individual posts)
+
+### Footer Implementation Note
+As instructed, we will not be implementing the Footer component at this time. This will be addressed in a future phase of the project.
+
+## Next Steps
+1. Fix the import path in App.svelte
+2. Create the blog components directory
+3. Implement the BlogCard component
+4. Add sample blog post data to App.svelte
+5. Test the BlogCard rendering
+
 ## Codebase Review
 
 ### Current Structure
