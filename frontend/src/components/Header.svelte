@@ -1,13 +1,33 @@
 <script>
   import { onMount } from 'svelte';
+  
+  // Props: accept currentRoute from App.svelte
+  export let currentRoute = '/';
 
   // Navigation links
   const navLinks = [
-    { text: 'Blog', href: '/blog' },
-    { text: 'Tags', href: '/tags' },
-    { text: 'Projects', href: '/projects' },
-    { text: 'About', href: '/about' }
+    { text: 'Blog', href: '/blog', route: '/blog-list' },
+    { text: 'Tags', href: '/tags', route: '/tags-list' },
+    { text: 'Projects', href: '/projects', route: '/projects' },
+    { text: 'About', href: '/about', route: '/about' }
   ];
+  
+  // Check if a navigation link is active
+  function isActive(link) {
+    if (currentRoute === '/') {
+      return link.href === '/';
+    }
+    
+    if (currentRoute === '/blog-post') {
+      return link.route === '/blog-list';
+    }
+    
+    if (currentRoute === '/tag') {
+      return link.route === '/tags-list';
+    }
+    
+    return currentRoute === link.route;
+  }
   
   // Theme state
   let theme = 'light';
@@ -79,7 +99,14 @@
       <ul class="nav-list">
         {#each navLinks as link}
           <li class="nav-item">
-            <a href={link.href} class="nav-link">{link.text}</a>
+            <a 
+              href={link.href} 
+              class="nav-link" 
+              class:active={isActive(link)}
+              aria-current={isActive(link) ? 'page' : undefined}
+            >
+              {link.text}
+            </a>
           </li>
         {/each}
       </ul>
@@ -204,11 +231,29 @@
     font-weight: 500;
     text-decoration: none;
     transition: color 0.2s ease;
+    padding-bottom: 0.25rem;
+    position: relative;
   }
   
   .nav-link:hover {
     color: var(--color-primary);
     text-decoration: none;
+  }
+  
+  .nav-link.active {
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+  
+  .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -0.25rem;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--color-primary);
+    border-radius: 1px;
   }
   
   .search-button, .theme-button {

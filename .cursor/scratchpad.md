@@ -378,6 +378,7 @@ The implemented CSS architecture uses:
   - [ ] Task 1.4: Set up Markdown processing
 - [ ] Phase 2: Page Structure Implementation
   - [x] Task 2.1: Create header component
+    - [x] Subtask 2.1.1: Add active state indicators for navigation
   - [x] Task 2.2: Create HomePage component
     - [x] Subtask 2.2.1: Limit homepage to 5 most recent posts
     - [x] Subtask 2.2.2: Enhance "All Posts" link styling
@@ -392,7 +393,8 @@ The implemented CSS architecture uses:
   - [x] Task 4.1: Implement client-side routing
   - [x] Task 4.2: Create route handlers
   - [x] Task 4.3: Set up dynamic routes
-  - [ ] Task 4.4: Create a 404 page component
+  - [x] Task 4.4: Add scroll-to-top on navigation
+  - [ ] Task 4.5: Create a 404 page component
 
 ## Required Dependencies
 - Svelte 4 (not Svelte 5 or SvelteKit) ✅
@@ -628,3 +630,21 @@ These improvements would enhance the already solid foundation and bring the blog
 - Made the "All Posts" link more visually prominent, matching the reference site
 
 The homepage now matches the design pattern of the reference Tailwind Nextjs Starter Blog site where only the latest posts are displayed on the home page, with a clear link to view all posts. 
+
+## Latest Implementation: Navigation Enhancements
+
+### 1. Active State Indicators
+- Added visual indicators for the active navigation item:
+  - Added a blue underline below the active link
+  - Made the active link text blue and slightly bolder
+  - Added proper ARIA attributes for accessibility
+- Created an isActive function that correctly handles nested routes (blog posts under Blog, tag pages under Tags)
+- Updated the Header component to accept currentRoute from App.svelte
+
+### 2. Scroll-to-Top Functionality
+- Implemented automatic scroll-to-top behavior when navigating between pages
+- Created a unified setRoute helper function in main.js
+- Added window.scrollTo(0, 0) to all navigation handlers
+- This ensures users always start at the top of the page when clicking navigation links
+
+These improvements enhance the user experience by providing clear visual feedback about the current page and ensuring consistent scrolling behavior when navigating through the blog. 

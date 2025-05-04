@@ -9,35 +9,35 @@ const app = new App({
 	}
 });
 
+// Helper function to set route and scroll to top
+function setRoute(route, params = {}) {
+	window.scrollTo(0, 0);
+	app.$set({ currentRoute: route, params });
+}
+
 // Set up routing
 page('/', () => {
-	app.$set({ currentRoute: '/', params: {} });
+	setRoute('/');
 });
 
 // Blog listing page
 page('/blog', () => {
-	app.$set({ currentRoute: '/blog-list', params: {} });
+	setRoute('/blog-list');
 });
 
 // Individual blog post page
 page('/blog/:slug', (ctx) => {
-	app.$set({ 
-		currentRoute: '/blog-post',
-		params: { slug: ctx.params.slug }
-	});
+	setRoute('/blog-post', { slug: ctx.params.slug });
 });
 
 // Tags page showing all tags
 page('/tags', () => {
-	app.$set({ currentRoute: '/tags-list', params: {} });
+	setRoute('/tags-list');
 });
 
 // Individual tag page showing posts with a specific tag
 page('/tags/:tag', (ctx) => {
-	app.$set({ 
-		currentRoute: '/tag',
-		params: { tag: ctx.params.tag }
-	});
+	setRoute('/tag', { tag: ctx.params.tag });
 });
 
 // Start the router

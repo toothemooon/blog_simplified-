@@ -13,7 +13,7 @@
 </script>
 
 <div class="app">
-	<Header />
+	<Header {currentRoute} />
 	
 	<main class="container main-content">
 		{#if currentRoute === '/'}
