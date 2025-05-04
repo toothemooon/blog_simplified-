@@ -71,7 +71,7 @@
     <!-- Logo -->
     <a href="/" class="logo">
       <span class="logo-icon"></span>
-      <span class="logo-text">SvelteBlog</span>
+      <span class="logo-text">MyBlog</span>
     </a>
     
     <!-- Navigation -->
