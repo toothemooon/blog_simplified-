@@ -1,5 +1,5 @@
 <script>
-  import { posts } from './sampleData.js';
+  import { posts } from '../../data/blog-data.js';
   
   // Format date to display as Month DD, YYYY
   function formatDate(dateStr) {

@@ -27,9 +27,15 @@ page('/blog/:slug', (ctx) => {
 	});
 });
 
+// Tags page showing all tags
+page('/tags', () => {
+	app.$set({ currentRoute: '/tags-list', params: {} });
+});
+
+// Individual tag page showing posts with a specific tag
 page('/tags/:tag', (ctx) => {
 	app.$set({ 
-		currentRoute: '/tags',
+		currentRoute: '/tag',
 		params: { tag: ctx.params.tag }
 	});
 });

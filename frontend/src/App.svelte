@@ -3,6 +3,8 @@
 	import HomePage from './components/blog/HomePage.svelte';
 	import BlogPostPage from './components/blog/BlogPostPage.svelte';
 	import BlogListPage from './components/blog/BlogListPage.svelte';
+	import TagsPage from './components/blog/TagsPage.svelte';
+	import TagPage from './components/blog/TagPage.svelte';
 	import './global.css';
 	
 	// Props from router
@@ -20,6 +22,10 @@
 			<BlogListPage />
 		{:else if currentRoute === '/blog-post'}
 			<BlogPostPage slug={params.slug} />
+		{:else if currentRoute === '/tags-list'}
+			<TagsPage />
+		{:else if currentRoute === '/tag'}
+			<TagPage tag={params.tag} />
 		{/if}
 	</main>
 

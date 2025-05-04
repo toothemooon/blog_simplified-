@@ -1,5 +1,5 @@
 <script>
-  import { posts } from './sampleData.js';
+  import { posts } from '../../data/blog-data.js';
   
   // Props: slug of the post to display
   export let slug = '';
