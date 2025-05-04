@@ -70,6 +70,7 @@ The built files will be in the `public` directory.
 - Header component with navigation
 - Theme switching (light/dark/system)
 - Global CSS architecture
+- ES modules configuration
 
 ### In Progress
 - Client-side routing implementation
@@ -94,6 +95,60 @@ To add a new route:
 1. Create a new component in `src/routes/`
 2. Update the router configuration in `main.js`
 3. Add a link to the Header component if needed
+
+## Development Guidelines
+
+### Component Development Approach
+
+For best results when creating new components:
+
+1. Start simple - implement basic functionality first without complex features
+2. Test components in isolation before integrating them with other components
+3. Mock data locally in the component before using external data sources
+4. Add routing only after components are working correctly
+5. Avoid circular dependencies between components
+
+### CSS Guidelines
+
+- Use component-scoped CSS with Svelte's `<style>` blocks
+- Leverage CSS custom properties from `global.css` for consistency
+- Follow the existing naming conventions for classes
+- Use responsive design with appropriate media queries
+
+## Common Issues & Troubleshooting
+
+### ES Module Configuration
+
+If you encounter `ReferenceError: require is not defined`, ensure:
+
+1. `package.json` has `"type": "module"` set
+2. Use ES module imports (`import x from 'y'`) instead of CommonJS (`require('y')`)
+3. Update all imports in rollup.config.js to use ES module syntax
+
+### Rollup External Dependencies
+
+For "Unresolved dependencies" warnings:
+
+1. Configure proper `globals` in rollup.config.js output options
+2. Add `preferBuiltins: false` to the resolve plugin options
+
+### Component Integration Issues
+
+If components fail to integrate properly:
+
+1. Check for circular dependencies between components
+2. Verify props are correctly passed and initialized
+3. Test each component in isolation before integration
+4. Implement one feature at a time and test thoroughly
+
+### Page.js Routing Issues
+
+When implementing routing:
+
+1. Ensure page.js is properly imported in both main.js and routes.js
+2. Initialize routing after the DOM is fully loaded
+3. Test routes with simple components before adding complex ones
+4. Use consistent path formats in navigation links and route handlers
 
 ## Contributing
 
