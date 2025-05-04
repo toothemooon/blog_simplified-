@@ -1,30 +1,45 @@
 <script>
-	export let name;
+	import Header from './lib/components/Header.svelte';
+	import './global.css';
 </script>
 
-<main>
-	<h1>Hello {name}!</h1>
-	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
-</main>
+<div class="app">
+	<Header />
+	
+	<main class="container main-content">
+		<h1>Welcome to SvelteBlog</h1>
+		<p>A modern blog built with Svelte 4 and vanilla CSS</p>
+		
+		<!-- This will be replaced with router content when we implement routing -->
+		<div class="placeholder-content">
+			<h2>Coming Soon</h2>
+			<p>Blog posts, tags, projects, and more!</p>
+		</div>
+	</main>
+</div>
 
 <style>
-	main {
+	.app {
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
+	}
+	
+	.main-content {
+		flex: 1;
+		padding: 2rem 0;
 		text-align: center;
-		padding: 1em;
-		max-width: 240px;
-		margin: 0 auto;
 	}
-
+	
 	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
+		font-size: 2.5rem;
+		margin-bottom: 1rem;
 	}
-
-	@media (min-width: 640px) {
-		main {
-			max-width: none;
-		}
+	
+	.placeholder-content {
+		margin-top: 4rem;
+		padding: 2rem;
+		background-color: var(--color-border);
+		border-radius: 0.5rem;
 	}
 </style>
