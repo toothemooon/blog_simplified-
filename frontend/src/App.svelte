@@ -1,14 +1,23 @@
 <script>
 	import Header from './components/Header.svelte';
 	import HomePage from './components/blog/HomePage.svelte';
+	import BlogPostPage from './components/blog/BlogPostPage.svelte';
 	import './global.css';
+	
+	// Props from router
+	export let currentRoute = '/';
+	export let params = {};
 </script>
 
 <div class="app">
 	<Header />
 	
 	<main class="container main-content">
-		<HomePage />
+		{#if currentRoute === '/'}
+			<HomePage />
+		{:else if currentRoute === '/blog'}
+			<BlogPostPage slug={params.slug} />
+		{/if}
 	</main>
 
 	<!-- Simple footer - will be implemented properly later -->
