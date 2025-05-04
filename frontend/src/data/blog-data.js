@@ -181,5 +181,124 @@ Svelte's lightweight nature and intuitive syntax make it perfect for building pe
         twitter: '@mariagarcia_dev'
       }
     ]
+  },
+  {
+    title: 'Building a Blog with Svelte',
+    date: '2023-06-05',
+    summary: 'A step-by-step guide to creating your own blog using Svelte and vanilla CSS',
+    content: `
+    `,
+  },
+  {
+    title: 'The Power of Progressive Enhancement',
+    date: '2023-07-15',
+    summary: 'Understanding how progressive enhancement can improve your web applications',
+    content: `
+# The Power of Progressive Enhancement
+
+Progressive enhancement is a web design strategy that emphasizes core webpage content first, then progressively adds more nuanced and technically rigorous layers of presentation and features on top of the content.
+
+## Core Principles
+
+1. Basic content should be accessible to all web browsers
+2. Basic functionality should be accessible to all web browsers
+3. Sparse, semantic markup contains all content
+4. Enhanced layout is provided by externally linked CSS
+5. Enhanced behavior is provided by unobtrusive, externally linked JavaScript
+6. End-user web browser preferences are respected
+
+## Benefits
+
+* Better accessibility
+* Improved performance
+* More resilient applications
+* Better SEO
+* Easier maintenance
+
+## Implementation
+
+Start with semantic HTML, then layer on CSS and JavaScript:
+
+\`\`\`html
+<!-- Basic HTML structure -->
+<article>
+  <h1>Article Title</h1>
+  <p>Article content...</p>
+</article>
+
+<!-- Enhanced with CSS -->
+<article class="card">
+  <h1 class="title">Article Title</h1>
+  <p class="content">Article content...</p>
+</article>
+
+<!-- Enhanced with JavaScript -->
+<article class="card" data-interactive>
+  <h1 class="title">Article Title</h1>
+  <p class="content">Article content...</p>
+</article>
+\`\`\`
+    `,
+    slug: 'progressive-enhancement',
+    tags: ['web-development', 'accessibility', 'best-practices'],
+    authors: [
+      {
+        name: 'Alex Chen',
+        avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
+        twitter: '@alexchen_dev'
+      }
+    ]
+  },
+  {
+    title: 'Understanding CSS Grid',
+    date: '2023-08-22',
+    summary: 'A comprehensive guide to mastering CSS Grid layout',
+    content: `
+# Understanding CSS Grid
+
+CSS Grid Layout is a two-dimensional layout system for the web. It lets you lay content out in rows and columns, and has many features that make building complex layouts straightforward.
+
+## Basic Concepts
+
+* Grid Container
+* Grid Items
+* Grid Lines
+* Grid Tracks
+* Grid Cells
+* Grid Areas
+
+## Example Layout
+
+\`\`\`css
+.container {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  grid-template-rows: auto 1fr auto;
+  gap: 1rem;
+  min-height: 100vh;
+}
+
+.header { grid-area: 1 / 1 / 2 / 3; }
+.sidebar { grid-area: 2 / 1 / 3 / 2; }
+.main { grid-area: 2 / 2 / 3 / 3; }
+.footer { grid-area: 3 / 1 / 4 / 3; }
+\`\`\`
+
+## Best Practices
+
+* Use named grid areas for better readability
+* Combine with media queries for responsive layouts
+* Use minmax() for flexible sizing
+* Leverage auto-fit and auto-fill for dynamic layouts
+    `,
+    slug: 'understanding-css-grid',
+    tags: ['css', 'layout', 'frontend'],
+    authors: [
+      {
+        name: 'Jamie Wilson',
+        avatar: 'https://randomuser.me/api/portraits/women/65.jpg',
+        twitter: '@jamiewilson_dev'
+      }
+    ]
   }
 ]; 

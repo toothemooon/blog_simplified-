@@ -1,6 +1,11 @@
 <script>
   import { posts } from '../../data/blog-data.js';
   
+  // Sort posts by date (newest first) and limit to 5 most recent
+  const recentPosts = [...posts]
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 5);
+  
   // Format date to display as Month DD, YYYY
   function formatDate(dateStr) {
     if (!dateStr) return '';
@@ -20,7 +25,7 @@
   </div>
   
   <div class="posts-list">
-    {#each posts as post}
+    {#each recentPosts as post}
       <div class="post-item">
         <div class="post-date">
           <span>Published on {formatDate(post.date)}</span>
@@ -57,6 +62,7 @@
     width: 100%;
     max-width: 768px;
     margin: 0 auto;
+    padding: 0 1rem;
   }
   
   .page-header {
@@ -157,13 +163,19 @@
   
   .all-posts-link {
     margin-top: 2rem;
-    font-weight: 500;
+    text-align: center;
+    padding: 1rem 0;
   }
   
   .all-posts-link a {
     color: var(--color-primary);
     text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 600;
     transition: opacity 0.2s ease;
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
   }
   
   .all-posts-link a:hover {

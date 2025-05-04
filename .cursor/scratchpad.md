@@ -378,18 +378,20 @@ The implemented CSS architecture uses:
   - [ ] Task 1.4: Set up Markdown processing
 - [ ] Phase 2: Page Structure Implementation
   - [x] Task 2.1: Create header component
-  - [ ] Task 2.2: Create HomePage component
-  - [ ] Task 2.3: Create BlogPage component
+  - [x] Task 2.2: Create HomePage component
+    - [x] Subtask 2.2.1: Limit homepage to 5 most recent posts
+    - [x] Subtask 2.2.2: Enhance "All Posts" link styling
+  - [x] Task 2.3: Create BlogPage component
   - [ ] Task 2.4: Create footer component
 - [ ] Phase 3: Blog Content Components
-  - [ ] Task 3.1: Create BlogCard component
-  - [ ] Task 3.2: Create BlogList component
-  - [ ] Task 3.3: Create TagList component
-  - [ ] Task 3.4: Create BlogPost component
-- [ ] Phase 4: Routing Implementation
-  - [ ] Task 4.1: Implement client-side routing
-  - [ ] Task 4.2: Create route handlers
-  - [ ] Task 4.3: Set up dynamic routes
+  - [x] Task 3.1: Create BlogCard component
+  - [x] Task 3.2: Create BlogList component
+  - [x] Task 3.3: Create TagList component
+  - [x] Task 3.4: Create BlogPost component
+- [x] Phase 4: Routing Implementation
+  - [x] Task 4.1: Implement client-side routing
+  - [x] Task 4.2: Create route handlers
+  - [x] Task 4.3: Set up dynamic routes
   - [ ] Task 4.4: Create a 404 page component
 
 ## Required Dependencies
@@ -618,3 +620,11 @@ After reviewing the deployed site, I've identified the following observations:
 5. **Print Styles**: Optimize the blog for print viewing
 
 These improvements would enhance the already solid foundation and bring the blog closer to the reference design while maintaining its clean, efficient implementation using Svelte and vanilla CSS. 
+
+## Latest Implementation: Homepage Refinement
+- Limited homepage to display only the 5 most recent posts sorted by date (newest first)
+- Enhanced the "All Posts" link at the bottom with improved styling
+- Added proper padding to the homepage container
+- Made the "All Posts" link more visually prominent, matching the reference site
+
+The homepage now matches the design pattern of the reference Tailwind Nextjs Starter Blog site where only the latest posts are displayed on the home page, with a clear link to view all posts. 
