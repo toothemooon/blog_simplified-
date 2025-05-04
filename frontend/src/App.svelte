@@ -2,6 +2,7 @@
 	import Header from './components/Header.svelte';
 	import HomePage from './components/blog/HomePage.svelte';
 	import BlogPostPage from './components/blog/BlogPostPage.svelte';
+	import BlogListPage from './components/blog/BlogListPage.svelte';
 	import './global.css';
 	
 	// Props from router
@@ -15,7 +16,9 @@
 	<main class="container main-content">
 		{#if currentRoute === '/'}
 			<HomePage />
-		{:else if currentRoute === '/blog'}
+		{:else if currentRoute === '/blog-list'}
+			<BlogListPage />
+		{:else if currentRoute === '/blog-post'}
 			<BlogPostPage slug={params.slug} />
 		{/if}
 	</main>

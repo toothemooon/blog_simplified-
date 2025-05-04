@@ -14,9 +14,15 @@ page('/', () => {
 	app.$set({ currentRoute: '/', params: {} });
 });
 
+// Blog listing page
+page('/blog', () => {
+	app.$set({ currentRoute: '/blog-list', params: {} });
+});
+
+// Individual blog post page
 page('/blog/:slug', (ctx) => {
 	app.$set({ 
-		currentRoute: '/blog',
+		currentRoute: '/blog-post',
 		params: { slug: ctx.params.slug }
 	});
 });
