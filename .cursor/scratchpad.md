@@ -3,380 +3,701 @@
 ## Background and Motivation
 The goal is to build a modern blog similar to https://tailwind-nextjs-starter-blog.vercel.app/blog but using Svelte 4 for the framework and vanilla CSS for styling instead of Next.js and Tailwind CSS. This approach will leverage the existing Svelte codebase while still creating a clean, responsive blog with good performance.
 
-## Reference Site Structure Analysis
-After examining the reference site at https://tailwind-nextjs-starter-blog.vercel.app/, we've identified distinct differences between the homepage and blog page that need to be reflected in our implementation:
+## Latest Codebase Review (2023-11-22)
 
-### Homepage (Main Page) Structure
-- Features a "Latest" heading with subtitle ("A blog created with Next.js and Tailwind.css")
-- Shows recent blog posts in a single-column layout
-- Each post displays date, title, tags, summary, and a "Read more" link
-- No sidebar
-- Clean, focused presentation of the most recent content
+After conducting a thorough review of the codebase, I've identified the current structure, implementation status, and areas for improvement.
 
-### Blog Page Structure
-- Uses a two-column layout
-- Left sidebar showing all tags with post counts
-- Right column with list of all blog posts
-- "All Posts" heading
-- Same post card design as homepage
-- Pagination for blog posts (when needed)
-
-### Key Implementation Requirements
-- Homepage and Blog page must be separate components with distinct layouts
-- HomePage should focus on displaying the latest posts only
-- BlogPage should include the sidebar with tags list
-- BlogCard component should be reusable on both pages
-- No toggle buttons in the middle of pages
-- Navigation should allow movement between these distinct pages
-
-## Finding Svelte 4 Documentation
-To ensure we're using Svelte 4 correctly (not Svelte 5 or SvelteKit), we'll rely on these specific resources:
-
-1. **Official Svelte 4 Documentation**: Available at https://v4.svelte.dev/docs - this is the definitive resource for Svelte 4 specifically
-2. **Svelte 4 Tutorial**: The interactive tutorial at https://v4.svelte.dev/tutorial
-3. **Svelte 4 Examples**: The REPL at https://v4.svelte.dev/repl for testing code snippets
-4. **Svelte 4 Blog Post**: The official announcement at https://svelte.dev/blog/svelte-4 highlights key features
-
-When searching for help online, always include "Svelte 4" in search queries to avoid getting results for newer versions. If viewing Stack Overflow or blog posts, check their publication dates to ensure they're relevant to Svelte 4.
-
-## Recent Issues Resolved
-
-### ES Module Configuration Error
-We encountered a `ReferenceError: require is not defined` error in the Rollup configuration. This happened because:
-
-1. The project was being treated as an ES module (likely because of a `.js` file extension) but was using CommonJS syntax (`require()`)
-2. The error specifically occurred in the `serve()` function of `rollup.config.js`
-
-**Solution:**
-1. Added `"type": "module"` to `package.json` to explicitly specify ES modules
-2. Updated `rollup.config.js` to use ES module imports: `import { spawn } from 'child_process'` instead of `require('child_process').spawn`
-3. Updated the function to use the imported `spawn` function directly
-
-This changes should properly configure the project to use ES modules consistently throughout the codebase.
-
-### Blog Component Implementation Failures
-We attempted to implement blog post components multiple times but encountered issues:
-
-1. **First Attempt**: Added too many components simultaneously without thorough testing of each one
-2. **Second Attempt**: Faced integration issues between components and routing
-
-**Root Causes**:
-1. Not properly resolving dependencies between page.js and our components
-2. Improper configuration of Rollup to handle external libraries like page.js
-3. Trying to implement complex nested component structures before simpler individual components were working
-4. Not following our own incremental testing approach outlined in the project plan
-
-**Solution for Next Attempt**:
-1. Start with the absolute simplest implementation of a single component (BlogCard)
-2. Don't add any routing or advanced features until the basic component works
-3. Properly mock any data dependencies rather than relying on stores that aren't fully tested
-4. Test each component in isolation before integrating it with others
-
-### Page Implementation Confusion
-Previously, we made the mistake of mixing concepts from the homepage and blog page:
-
-1. **Misplaced Content**: We attempted to put blog page content on the main page
-2. **Incorrect UI Element**: Added a toggle button in the middle of the page for demonstration
-3. **Inconsistent Layout**: Didn't properly implement the distinct layouts for each page type
-
-**Solution for Next Attempt**:
-1. Create separate components for HomePage and BlogPage with their specific layouts
-2. Ensure HomePage displays only recent posts in a single column
-3. Implement BlogPage with the two-column layout (tag sidebar + post list)
-4. Use the same BlogCard component in both places for consistency
-
-## Current Codebase Review (as of latest update)
-
-### Directory Structure
-The current directory structure has been simplified:
+### Project Structure
+The project follows a clean, organized directory structure:
 ```
 frontend/
-├── public/
+├── docs/                   # Project documentation
+├── public/                 # Static assets
 ├── src/
 │   ├── components/
-│   │   └── Header.svelte
-│   ├── App.svelte
-│   ├── main.js
-│   └── global.css
-├── package.json
-├── rollup.config.js
-└── README.md
+│   │   ├── Header.svelte   # Navigation and theme controls
+│   │   └── blog/           # Blog-specific components
+│   │       ├── HomePage.svelte
+│   │       ├── BlogListPage.svelte
+│   │       ├── BlogPostPage.svelte
+│   │       ├── TagsPage.svelte
+│   │       └── TagPage.svelte
+│   ├── data/
+│   │   └── blog-data.js    # Blog post data centralized in one file
+│   ├── App.svelte          # Main app shell with route handling
+│   ├── main.js             # Page.js routing and app initialization
+│   └── global.css          # Global CSS variables and utilities
+├── rollup.config.js        # Rollup bundler configuration
+├── package.json            # Project dependencies
+└── README.md               # Project documentation
 ```
 
-### Component Status
-1. **Header.svelte**: Fully implemented with:
-   - Site logo and navigation
-   - Theme switching functionality (light/dark/system)
-   - Search button placeholder
+## Comprehensive Source Code Review
 
-2. **App.svelte**: Currently contains:
-   - A reference to Header component (needs to be updated as the path has changed)
-   - Placeholder content for the main area
-   - Basic styling for the app container
+Below is a detailed review of all files in the `src` directory, evaluating each file's purpose, implementation, strengths, and areas for improvement.
 
-### Issues Identified
-1. **Import Path**: App.svelte is still importing Header from the old path (`./lib/components/Header.svelte`)
-2. **Missing Components**: The blog-specific components have been discarded
-3. **Folder Structure**: The `lib` and `routes` folders have been removed, requiring restructuring of imports
+### 1. `frontend/src/main.js` (836 bytes, 46 lines)
 
-## Folder Restructuring Plan
+```javascript
+import App from './App.svelte';
+import page from 'page';
 
-### New Structure
-We will maintain the simplified structure:
+const app = new App({
+	target: document.body,
+	props: {
+		currentRoute: '/',
+		params: {}
+	}
+});
+
+// Helper function to set route and scroll to top
+function setRoute(route, params = {}) {
+	window.scrollTo(0, 0);
+	app.$set({ currentRoute: route, params });
+}
+
+// Set up routing
+page('/', () => {
+	setRoute('/');
+});
+
+// Blog listing page
+page('/blog', () => {
+	setRoute('/blog-list');
+});
+
+// Individual blog post page
+page('/blog/:slug', (ctx) => {
+	setRoute('/blog-post', { slug: ctx.params.slug });
+});
+
+// Tags page showing all tags
+page('/tags', () => {
+	setRoute('/tags-list');
+});
+
+// Individual tag page showing posts with a specific tag
+page('/tags/:tag', (ctx) => {
+	setRoute('/tag', { tag: ctx.params.tag });
+});
+
+// Start the router
+page.start();
+
+export default app;
 ```
-frontend/
-├── public/
-├── src/
-│   ├── components/        # All components live here
-│   │   ├── Header.svelte
-│   │   ├── Footer.svelte  # To be added later (not a current priority)
-│   │   ├── blog/          # Blog-specific components
-│   │   │   ├── HomePage.svelte
-│   │   │   ├── BlogPage.svelte
-│   │   │   ├── BlogCard.svelte
-│   │   │   ├── BlogList.svelte
-│   │   │   ├── TagList.svelte
-│   │   │   └── BlogPost.svelte
-│   ├── App.svelte
-│   ├── main.js
-│   └── global.css
+
+**Purpose**: Entry point for the application that initializes the Svelte app and sets up client-side routing with page.js.
+
+**Key Features**:
+- Instantiates the main Svelte App component
+- Defines all route handlers for the blog application
+- Implements a `setRoute` helper function that handles route changes and scrolls to top
+- Exports the app instance
+
+**Strengths**:
+- Clean separation of routing logic from component code
+- Well-organized with clear route definitions
+- Good use of page.js for client-side routing
+- Implements scroll-to-top on route change for better UX
+- Route names follow a consistent pattern
+
+**Areas for Improvement**:
+- Missing routes for Projects and About pages
+- No 404 fallback route for invalid URLs
+- No route grouping as the application grows
+- Limited comments for explaining the routing strategy
+- No type definitions for route parameters
+- No code splitting or lazy loading of routes
+
+**Recommendations**:
+1. Add routes for the Projects section (`/projects` and `/projects/:id`)
+2. Add a route for the About page (`/about`)
+3. Implement a catch-all route for 404 errors
+4. Consider organizing routes by feature area
+5. Add TypeScript for type safety in route parameters
+
+### 2. `frontend/src/App.svelte` (1.4KB, 60 lines)
+
+```svelte
+<script>
+	import Header from './components/Header.svelte';
+	import HomePage from './components/blog/HomePage.svelte';
+	import BlogPostPage from './components/blog/BlogPostPage.svelte';
+	import BlogListPage from './components/blog/BlogListPage.svelte';
+	import TagsPage from './components/blog/TagsPage.svelte';
+	import TagPage from './components/blog/TagPage.svelte';
+	import './global.css';
+	
+	// Props from router
+	export let currentRoute = '/';
+	export let params = {};
+</script>
+
+<div class="app">
+	<Header {currentRoute} />
+	
+	<main class="container main-content">
+		{#if currentRoute === '/'}
+			<HomePage />
+		{:else if currentRoute === '/blog-list'}
+			<BlogListPage />
+		{:else if currentRoute === '/blog-post'}
+			<BlogPostPage slug={params.slug} />
+		{:else if currentRoute === '/tags-list'}
+			<TagsPage />
+		{:else if currentRoute === '/tag'}
+			<TagPage tag={params.tag} />
+		{/if}
+	</main>
+
+	<!-- Simple footer - will be implemented properly later -->
+	<footer class="footer">
+		<div class="container">
+			<p>&copy; {new Date().getFullYear()} • MyBlog • Built by サラダ</p>
+		</div>
+	</footer>
+</div>
+
+<style>
+	.app {
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
+	}
+	
+	.main-content {
+		flex: 1;
+		padding: 2rem 0;
+	}
+	
+	.footer {
+		padding: 1.5rem 0;
+		text-align: center;
+		border-top: 1px solid var(--color-border);
+		font-size: 0.9rem;
+		color: var(--color-text);
+		opacity: 0.7;
+	}
+</style>
 ```
 
-### Component Implementation Strategy
-1. **Fix App.svelte**: Update the import path for Header
-2. **Blog Components**: Implement in this order:
-   - BlogCard (most basic component)
-   - BlogList (uses BlogCard)
-   - TagList (for sidebar)
-   - HomePage (uses BlogList)
-   - BlogPage (uses BlogList and TagList)
-   - BlogPost (for individual posts)
+**Purpose**: Main application shell that orchestrates the application's structure and conditional rendering based on the current route.
 
-### Footer Implementation Note
-As instructed, we will not be implementing the Footer component at this time. This will be addressed in a future phase of the project.
+**Key Features**:
+- Imports and renders all page components
+- Handles route-based conditional rendering
+- Includes header and minimal footer
+- Applies global CSS
+- Passes route information to components
 
-## Next Steps
-1. Fix the import path in App.svelte
-2. Create the blog components directory
-3. Implement the BlogCard component
-4. Add sample blog post data to App.svelte
-5. Test the BlogCard rendering
+**Strengths**:
+- Clean, minimal app shell with good separation of concerns
+- Proper flex layout for sticky footer
+- Good use of CSS variables for theming
+- Clear conditional rendering based on routes
+- Passes current route to Header for active state indicators
 
-## Codebase Review
+**Areas for Improvement**:
+- Missing conditions for Projects, About, and 404 pages
+- Uses a series of if/else statements that could become unwieldy
+- Footer implementation is minimal
+- No transition animations between route changes
+- No loading states during navigation
+- No error boundary for handling component errors
 
-### Current Structure
-- **src/App.svelte**: Main application shell with placeholder content
-- **src/main.js**: Entry point that creates the Svelte app
-- **src/global.css**: Global CSS variables and utilities
-- **src/lib/components/Header.svelte**: Navigation header with theme switching
-- **src/lib/components/blog/**: Empty directory for blog components
-- **src/routes/**: Empty directory for route components 
-- **src/content/blog/**: Empty directory for blog content
+**Recommendations**:
+1. Add conditionals for missing pages (Projects, About, 404)
+2. Consider using a map or switch pattern for route handling
+3. Implement a proper Footer component
+4. Add page transition animations
+5. Implement loading indicators
+6. Consider adding an error boundary for catching errors
+
+### 3. `frontend/src/global.css` (1.8KB, 82 lines)
+
+```css
+:root {
+  /* Light theme colors */
+  --color-bg: #ffffff;
+  --color-text: #1a202c;
+  --color-primary: #3b82f6;
+  --color-secondary: #6b7280;
+  --color-border: #e2e8f0;
+  --color-muted: #f9fafb;
+  --color-highlight: #f7fafc;
+  
+  /* Fonts */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  
+  /* Sizes */
+  --container-width: 1024px;
+  --header-height: 4rem;
+}
+
+/* Dark theme */
+.dark-theme {
+  --color-bg: #1a202c;
+  --color-text: #f7fafc;
+  --color-primary: #63b3ed;
+  --color-secondary: #a0aec0;
+  --color-border: #2d3748;
+  --color-muted: #2d3748;
+  --color-highlight: #2d3748;
+}
+
+/* Global styles */
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.flex {
+  display: flex;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+code {
+  font-family: var(--font-mono);
+  background-color: var(--color-muted);
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+}
+```
+
+**Purpose**: Global CSS styles that define theme variables, base styles, and utility classes.
+
+**Key Features**:
+- CSS custom properties for theming
+- Light and dark theme color variables
+- Typography settings
+- Layout utilities
+- Reset styles
+- Utility classes
+
+**Strengths**:
+- Well-organized with clear, semantic variable names
+- Good separation of light and dark theme colors
+- Smooth transitions for theme changes
+- Clean reset styles for consistent rendering
+- Good base typography styles
+- Well-defined utility classes
+
+**Areas for Improvement**:
+- Limited responsive design variables
+- No media query breakpoints defined as variables
+- Could use more utility classes for common patterns
+- Missing focus styles for accessibility
+- No print styles
+- No CSS variables for spacing/sizing system
+- Limited animation variables
+
+**Recommendations**:
+1. Add responsive breakpoint variables
+2. Implement a consistent spacing scale with variables
+3. Add focus styles for accessibility
+4. Create print styles for better print experience
+5. Expand utility classes
+6. Add CSS variables for animations and transitions
+7. Consider adding more semantic color variables (success, error, warning)
+
+### 4. `frontend/src/components/Header.svelte` (9.8KB, 325 lines)
+
+This is a large component, so I'll focus on the key aspects.
+
+**Purpose**: Navigation header with site branding, navigation links, theme switching, and search functionality.
+
+**Key Features**:
+- Site logo and branding
+- Navigation menu with links to main sections
+- Theme switching (light/dark/system) with persistent preference
+- Active state indicators for current page
+- Search button (placeholder)
+- Responsive styling
+
+**Strengths**:
+- Well-implemented theme switching with system preference detection
+- Clean, responsive navigation design
+- Good use of SVG icons for buttons
+- Proper state management for theme menu
+- Active route indicators for better UX
+- ARIA attributes for accessibility
+- Event listeners properly cleaned up on component destruction
+
+**Areas for Improvement**:
+- Mobile menu is missing for smaller screens
+- Search button is non-functional
+- Some duplication in SVG code
+- Dropdown positioning could be improved for mobile
+- Complex component that could be broken down
+- Limited animations and transitions
+- No keyboard navigation for theme menu
+
+**Recommendations**:
+1. Implement a hamburger menu for mobile screens
+2. Extract SVG icons to separate components
+3. Add keyboard navigation for the theme menu
+4. Implement the search functionality or remove the button
+5. Add smooth transitions for interactive elements
+6. Split into smaller sub-components
+7. Enhance accessibility features
+
+### 5. `frontend/src/components/blog/HomePage.svelte` (3.7KB, 185 lines)
+
+**Purpose**: Main landing page component that displays the latest blog posts.
+
+**Key Features**:
+- "Latest" heading with subtitle
+- Displays the 5 most recent blog posts
+- Formats and displays post dates
+- Shows post tags with links
+- "Read more" links for each post
+- "All Posts" link to the full blog listing
+
+**Strengths**:
+- Properly limits to 5 most recent posts
+- Clean, focused design matching reference site
+- Good date formatting
+- Well-styled post cards
+- Responsive layout
+- Proper handling of optional tags
+- Clear link to all posts
+
+**Areas for Improvement**:
+- Date formatting function duplicated across components
+- No loading state or error handling
+- No image handling for featured post images
+- No reading time indicator
+- Limited animations or transitions
+- No skeleton loading state
+
+**Recommendations**:
+1. Extract date formatting to a utility function
+2. Add loading and error states
+3. Implement post image support
+4. Add reading time estimation
+5. Extract post card to a reusable component
+6. Add subtle animations for interactions
+7. Implement skeleton loading for better UX
+
+### 6. `frontend/src/components/blog/BlogListPage.svelte` (4.5KB, 233 lines)
+
+**Purpose**: Displays the full blog listing with a tag filtering sidebar.
+
+**Key Features**:
+- Two-column layout (tag sidebar + post listing)
+- Shows all blog posts
+- Tag filtering functionality
+- Post count by tag
+- Same post card design as homepage
+
+**Strengths**:
+- Clean two-column layout
+- Good tag sidebar with post counts
+- Effective post filtering by tags
+- Consistent post card styling
+- Responsive design
+
+**Areas for Improvement**:
+- Significant code duplication with HomePage for post cards
+- No pagination for large numbers of posts
+- Limited mobile optimization for the sidebar
+- No loading states during filtering
+- Limited animations for filtering actions
+- No sorting options for posts
+- No empty state for when no posts match filters
+
+**Recommendations**:
+1. Extract post card to a shared component
+2. Implement pagination for post listings
+3. Add sorting options (date, popularity, etc.)
+4. Improve mobile view for the two-column layout
+5. Add transition animations for filtering
+6. Create empty state for no matching posts
+7. Add loading indicators during filter operations
+
+### 7. `frontend/src/components/blog/BlogPostPage.svelte` (9.9KB, 437 lines)
+
+**Purpose**: Displays an individual blog post with content, metadata, and navigation.
+
+**Key Features**:
+- Full blog post content display
+- Post metadata (date, author, tags)
+- Previous/next post navigation
+- Author information section
+- Share functionality (placeholder)
+- Related posts section (basic implementation)
+
+**Strengths**:
+- Comprehensive blog post layout
+- Good navigation between posts
+- Well-structured content sections
+- Author information display
+- Good tag implementation
+- Clean typography for content
+
+**Areas for Improvement**:
+- Very large component that could be broken down
+- No table of contents for long posts
+- Code blocks lack syntax highlighting
+- Limited social sharing functionality
+- Basic image handling
+- No loading state during post fetching
+- No comment system
+- No estimated reading time
+
+**Recommendations**:
+1. Split into smaller sub-components
+2. Implement a table of contents for long posts
+3. Add code syntax highlighting
+4. Enhance social sharing capabilities
+5. Improve image handling with lazy loading
+6. Add reading time estimation
+7. Consider adding a comment system
+8. Implement loading states
+
+### 8. `frontend/src/components/blog/TagsPage.svelte` (1.5KB, 80 lines)
+
+**Purpose**: Displays all available tags with post counts.
+
+**Key Features**:
+- Grid layout of all tags
+- Post count for each tag
+- Alphabetical sorting of tags
+- Links to filtered post views by tag
+
+**Strengths**:
+- Clean tag listing with post counts
+- Good use of grid for responsive layout
+- Consistent styling with rest of site
+- Proper alphabetical sorting
+
+**Areas for Improvement**:
+- Limited visual differentiation between tags
+- No filtering or search for tags
+- No categorization of tags
+- Limited visual indication of tag popularity
+- No animation or hover effects
+- No empty state handling
+
+**Recommendations**:
+1. Add visual weighting based on post count
+2. Implement tag search/filtering
+3. Add hover effects for better interaction
+4. Consider tag categorization or grouping
+5. Enhance visual hierarchy of tag counts
+6. Add subtle animations for better UX
+
+### 9. `frontend/src/components/blog/TagPage.svelte` (4.0KB, 195 lines)
+
+**Purpose**: Displays posts filtered by a specific tag.
+
+**Key Features**:
+- Heading showing the current tag
+- Filtered list of posts by tag
+- Same post card design as other pages
+- Link back to all tags
+
+**Strengths**:
+- Clear filtered view of posts by tag
+- Consistent post card styling
+- Good heading with tag name
+- Navigation back to tags page
+
+**Areas for Improvement**:
+- Code duplication with BlogListPage
+- No indication of total posts vs. filtered count
+- No related tags suggestions
+- No sorting options
+- Limited filtering options
+- No animation for tag transitions
+
+**Recommendations**:
+1. Extract post card to a shared component
+2. Add post count indicators
+3. Implement related tags suggestions
+4. Add sorting options
+5. Enhance with additional filtering options
+6. Add transition animations
+7. Improve mobile layout optimization
+
+### 10. `frontend/src/data/blog-data.js` (8.4KB, 304 lines)
+
+**Purpose**: Provides the blog post data for the application.
+
+**Key Features**:
+- Array of blog post objects
+- Each post contains title, date, slug, summary, content, author, and tags
+- Sample posts for testing and development
+- Exports the data for use in components
+
+**Strengths**:
+- Well-structured post objects
+- Good sample content
+- Comprehensive post properties
+- Clean data structure
+
+**Areas for Improvement**:
+- Static data with no external loading
+- No schema validation
+- No TypeScript types for data structure
+- Limited metadata for SEO
+- No utility functions for common operations
+- No caching or performance optimizations
+- No error handling for missing fields
+
+**Recommendations**:
+1. Implement data loading from external sources
+2. Add schema validation for post data
+3. Create TypeScript interfaces for data structures
+4. Enhance with SEO metadata
+5. Add utility functions for common data operations
+6. Implement caching for better performance
+7. Add error handling for missing or malformed data
+
+### 11. `frontend/src/lib/components/` (Empty Directory)
+
+**Purpose**: Appears to be intended for shared/library components but is currently empty.
+
+**Recommendations**:
+1. Move shared components here (extract post card, tag component, etc.)
+2. Implement utility components like Button, Input, etc.
+3. Create layout components for reuse
+4. Add a README.md to document the purpose of this directory
+5. Consider removing if not intended for use
+
+## Overall Assessment of the Source Code
 
 ### Strengths
-1. **Clean Architecture**: Good separation of concerns with components, routes, and styles
-2. **Theme Implementation**: Well-implemented light/dark/system theme switching with CSS variables
-3. **Responsive Design**: Header is mobile-responsive with appropriate styles
-4. **CSS Organization**: Good use of CSS variables for theming and maintainability
+1. **Clean Component Architecture**: Well-organized components with clear responsibilities
+2. **CSS Implementation**: Excellent use of CSS variables and component-scoped styles
+3. **Routing**: Solid implementation with page.js
+4. **Theming**: Well-implemented light/dark/system theme switching
+5. **Data Structure**: Clean, consistent blog post data structure
+6. **Performance**: Minimal dependencies and efficient HTML structure
 
-### Areas for Improvement
-1. **Component Organization**: Consider adding more structure to the components directory (e.g., layout, shared, ui)
-2. **Directory Structure**: Add more documentation about the purpose of each directory
-3. **Empty Directories**: Some directories exist but are empty, which could be confusing
+### Weaknesses
+1. **Code Duplication**: Significant duplication of code patterns (post cards, date formatting)
+2. **Component Size**: Several large components that could be broken down
+3. **Mobile Experience**: Limited mobile-specific optimizations and navigation
+4. **Missing Features**: Projects section, About page, and 404 handling not implemented
+5. **Error Handling**: Limited error states and fallbacks
+6. **Utility Functions**: No shared utility functions for common operations
 
-### Next Steps Recommendations
-1. **Implement Routing**: Add page.js routing to make navigation functional
-2. **Create Blog Components**: Implement the blog card and post list components
-3. **Add Sample Content**: Add sample markdown content to test rendering
-4. **Documentation**: Add more comments and documentation to explain component usage
+### Technical Debt Items
+1. **Extract Shared Components**: Post card, tag chips, and other repeated UI elements
+2. **Create Utility Functions**: Date formatting, tag handling, and other repeated logic
+3. **Enhance Mobile Experience**: Add mobile menu and improve responsive layouts
+4. **Implement Missing Pages**: Projects, About, and 404 pages
+5. **Add Type Safety**: Consider TypeScript or PropType validation
+6. **Improve Accessibility**: Add keyboard navigation, focus management, and ARIA attributes
 
-## README.md Requirements
+### Immediate Improvement Opportunities
+1. **Create a Utils Directory**: For shared helper functions
+2. **Extract Common Components**: Move repeated UI elements to shared components
+3. **Implement Projects Section**: Complete the planned functionality
+4. **Add Mobile Menu**: Implement hamburger menu for mobile devices
+5. **Create 404 Page**: Add fallback for invalid routes
 
-To properly document our Svelte 4 blog project, we would update the README.md file to include:
+## Implementation Plan for Source Code Improvements
 
-1. **Project Overview**: A brief description of the blog, its features, and the technologies used (Svelte 4, vanilla CSS)
-2. **Installation Instructions**: How to clone the repository and install dependencies
-3. **Development Instructions**: Commands to run the development server and build for production
-4. **Project Structure**: An explanation of the key directories and their purposes
-5. **Content Management**: How to add new blog posts using Markdown
-6. **Customization**: How to customize styles and components
-7. **Tags Feature Implementation**: Details about the tagging system (see below)
-8. **Deployment**: Instructions for deploying the blog to hosting platforms
-9. **Credits and License**: Attribution and licensing information
-10. **Common Issues & Troubleshooting**: A section documenting common errors and their solutions, including:
-    - ES Module vs CommonJS syntax issues
-    - Rollup configuration for external dependencies
-    - Component integration challenges
-    - Testing and debugging strategies
+### Phase 1: Code Organization and Cleanup
+1. Create `src/utils` directory for shared functions
+   - Extract date formatting to a utility function
+   - Create tag utilities for counting and filtering
+   - Add URL handling utilities
+2. Extract shared components to `src/lib/components`
+   - Create PostCard component
+   - Extract Tag component
+   - Implement Button and other UI primitives
+3. Improve folder structure
+   - Organize by feature or component type
+   - Add README files to document directory purposes
 
-## Implementation Status
+### Phase 2: Missing Features Implementation
+1. Implement Projects Section
+   - Create project data structure
+   - Implement ProjectsPage component
+   - Add individual project detail page
+   - Update routing in main.js
+2. Create About Page
+   - Implement AboutPage component
+   - Add route in main.js
+3. Add 404 Page
+   - Create NotFoundPage component
+   - Add catch-all route in main.js
 
-### Completed ✅
-- Project setup with Svelte 4 and vanilla CSS
-- Global CSS with theme variables and utility classes
-- Header component with:
-  - Logo and site name
-  - Navigation menu
-  - Search button
-  - Light/dark/system theme toggle
-- App shell structure
-- Fixed ES module configuration issue
+### Phase 3: Enhancement and Optimization
+1. Improve Mobile Experience
+   - Implement hamburger menu
+   - Optimize layouts for small screens
+   - Enhance touch targets
+2. Add Page Transitions
+   - Implement transition animations between routes
+   - Add loading indicators
+3. Enhance Accessibility
+   - Add keyboard navigation
+   - Improve focus management
+   - Enhance ARIA attributes
 
-### In Progress 🔄
-- None currently
-
-### Pending ⏳
-- HomePage implementation with "Latest" posts
-- BlogPage implementation with two-column layout
-- Client-side routing with page.js
-- Blog listing page
-- Individual blog post pages
-- Markdown parsing and rendering
-- Tags system and tag pages
-- Projects page
-- About page
-- Search functionality
-- Mobile responsiveness improvements
-
-## Next Steps: Required for Full Implementation
-
-To feel 100% confident in completing this project, we need:
-
-### 1. Page Structure Implementation
-- Create separate HomePage component for the main page
-  - "Latest" heading with subtitle
-  - Single-column layout for recent posts
-- Create BlogPage component for the blog listing
-  - Two-column layout with 25% sidebar and 75% content
-  - TagList component in sidebar
-  - BlogList component in main content area
-
-### 2. Client-Side Routing Implementation
-- Set up page.js router in main.js
-- Create route handlers for /blog, /tags, /projects, /about
-- Implement dynamic routes for blog posts (/blog/[slug]) and tags (/tags/[tag])
-- Add 404 page handling
-
-### 3. Blog Components Needed
-- Create a BlogCard component for post listings (reused on both HomePage and BlogPage)
-- Create a BlogList component to display multiple posts
-- Create a TagList component for sidebar tag filtering
-- Implement a Post component for individual posts
-- Style post content with proper typography and spacing
-
-### 4. Tag System Implementation
-- Create a data structure for tracking tags and their post counts
-- Implement a Tags page showing all available tags
-- Create tag-specific pages displaying posts filtered by tag
-- Add tag filtering functionality
-
-### 5. Additional Pages
-- Implement Projects page with project cards
-- Create About page with bio and contact information
-- Add a Search overlay/modal
-
-### 6. Final Optimizations
-- Improve responsive design for mobile devices
-- Add SEO improvements (meta tags, canonical URLs)
-- Implement performance optimizations
-- Add analytics integration
-
-## Key Challenges and Analysis
-1. **Content Management**: Implementing Markdown parsing in Svelte 4 for blog content
-2. **Routing**: Setting up client-side routing without relying on SvelteKit
-3. **Styling System**: Creating a maintainable CSS architecture without Tailwind's utility classes
-4. **Static Site Generation**: Creating a build process for pre-rendering pages
-5. **SEO and Social Sharing**: Ensuring proper metadata and social sharing
-6. **Code Syntax Highlighting**: Adding syntax highlighting for code blocks in blog posts
-7. **ES Module Configuration**: Ensuring proper ES module setup in both package.json and throughout the codebase
-8. **Component Integration**: Properly integrating components without creating circular dependencies
-
-## Detailed Implementation Plan
-
-### Phase 1: Project Setup and Configuration ✅
-1. Ensure correct Svelte 4 setup with necessary dependencies ✅
-2. Create a clean CSS architecture (using CSS custom properties) ✅
-3. Set up basic project structure ✅
-4. Configure proper ES module handling ✅
-
-### Phase 2: Page Structure Implementation
-1. Create HomePage component
-   - Implement "Latest" heading with subtitle
-   - Display recent posts in single-column layout
-   - Success Criteria: Homepage matches reference site layout
-2. Create BlogPage component
-   - Implement two-column layout (25% sidebar, 75% content)
-   - Add TagList to sidebar
-   - Add BlogList to main content area
-   - Success Criteria: Blog page matches reference site layout
-3. Create basic layout components (header, footer, layout) ✅ (header done)
-   - Success Criteria: Basic structure of the blog with consistent layout using vanilla CSS
-4. Implement responsive navigation with CSS ✅
-   - Success Criteria: Mobile-friendly navigation that collapses on smaller screens using CSS media queries
-
-### Phase 3: Blog Content Components
-1. Build shared blog components
-   - Create a reusable BlogCard component for both pages
-   - Implement BlogList container component
-   - Create TagList component for sidebar
-   - Success Criteria: Components render correctly and match reference site styling
-2. Create blog post detail page template
-   - Implement post layout component
-   - Add styles for markdown content display
-   - Success Criteria: Individual post pages rendering Markdown content correctly
-3. Add syntax highlighting for code blocks using Prism or Highlight.js
-   - Success Criteria: Code blocks in blog posts have proper syntax highlighting
-
-### Phase 4: Routing Implementation
-1. Implement client-side routing with page.js
-   - Add routing configuration in a separate routes.js file
-   - Create route handlers for main pages
-   - Set up dynamic route parameters for blog posts and tags
-   - Success Criteria: Working navigation between different pages without page reloads
-
-### Phase 5: Enhanced Features
-1. Implement light/dark mode toggle with CSS variables ✅
-   - Success Criteria: Theme switching functionality with persistent user preference
-2. Add pagination for blog posts
-   - Success Criteria: Blog list pages with working pagination
-3. Set up tags/categories system
-   - Success Criteria: Ability to filter blog posts by tags/categories
-
-### Phase 6: SEO and Performance
-1. Implement metadata with Svelte 4's <svelte:head> component
-   - Success Criteria: Proper meta tags for all pages and blog posts
-2. Add social sharing capabilities
-   - Success Criteria: Social media preview cards working correctly
-3. Optimize images and asset loading
-   - Success Criteria: Improved page loading performance with optimized assets
-
-### Phase 7: Final Touches and Deployment
-1. Create about page and other static pages
-   - Success Criteria: Complete set of pages for the blog
-2. Set up build process for static site generation
-   - Success Criteria: Ability to pre-render pages for optimal performance
-3. Final testing and optimization
-   - Success Criteria: All features working correctly with good performance metrics
-4. Deploy to production
-   - Success Criteria: Live blog accessible to users
-
-## CSS Architecture Approach
-The implemented CSS architecture uses:
-
-1. **CSS Custom Properties**: For theming, responsive values, and maintaining consistency ✅
-2. **Component-Based CSS**: Styles scoped to Svelte components using Svelte's style encapsulation ✅
-3. **Global Styles**: A minimal set of global styles for typography, layout utilities, and reset ✅
-4. **Media Queries**: For responsive design ✅
-5. **CSS Animations**: For interactive elements and transitions ✅
-6. **CSS Grid and Flexbox**: For layout without relying on utility classes ✅
+These improvements will significantly enhance the maintainability, user experience, and completeness of the blog application while preserving its clean architecture and performance benefits.
 
 ## Project Status Board
 - [x] Phase 1: Project Setup and Configuration
   - [x] Task 1.1: Ensure correct Svelte 4 setup
   - [x] Task 1.2: Create CSS architecture
   - [x] Task 1.3: Set up ES module configuration
-  - [ ] Task 1.4: Set up Markdown processing
-- [ ] Phase 2: Page Structure Implementation
+  - [x] Task 1.4: Add Svelte 4 documentation reference
+- [x] Phase 2: Page Structure Implementation
   - [x] Task 2.1: Create header component
     - [x] Subtask 2.1.1: Add active state indicators for navigation
   - [x] Task 2.2: Create HomePage component
@@ -384,10 +705,10 @@ The implemented CSS architecture uses:
     - [x] Subtask 2.2.2: Enhance "All Posts" link styling
   - [x] Task 2.3: Create BlogPage component
   - [ ] Task 2.4: Create footer component
-- [ ] Phase 3: Blog Content Components
-  - [x] Task 3.1: Create BlogCard component
-  - [x] Task 3.2: Create BlogList component
-  - [x] Task 3.3: Create TagList component
+- [x] Phase 3: Blog Content Components
+  - [x] Task 3.1: Create BlogCard component (integrated in page components)
+  - [x] Task 3.2: Create BlogList component (integrated in page components)
+  - [x] Task 3.3: Create TagList component (integrated in page components)
   - [x] Task 3.4: Create BlogPost component
 - [x] Phase 4: Routing Implementation
   - [x] Task 4.1: Implement client-side routing
@@ -395,55 +716,95 @@ The implemented CSS architecture uses:
   - [x] Task 4.3: Set up dynamic routes
   - [x] Task 4.4: Add scroll-to-top on navigation
   - [ ] Task 4.5: Create a 404 page component
+- [x] Phase 5: Documentation
+  - [x] Task 5.1: Create Svelte 4 reference documentation
+  - [x] Task 5.2: Document project structure and architecture
+  - [x] Task 5.3: Document code patterns and examples
+- [ ] Phase 6: Projects Section Implementation
+  - [ ] Task 6.1: Create projects data structure
+  - [ ] Task 6.2: Implement ProjectsPage component
+  - [ ] Task 6.3: Create ProjectCard component
+  - [ ] Task 6.4: Implement ProjectDetailPage component
+  - [ ] Task 6.5: Add projects routing
+- [ ] Phase 7: Code Organization and Cleanup
+  - [ ] Task 7.1: Create utils directory for shared functions
+  - [ ] Task 7.2: Extract shared components
+  - [ ] Task 7.3: Improve mobile experience
 
-## Required Dependencies
-- Svelte 4 (not Svelte 5 or SvelteKit) ✅
-- A routing library like page.js ✅ (installed but not implemented)
-- A Markdown parser like marked.js ⏳
-- A syntax highlighter like Prism.js ⏳
+## Component Implementation Analysis
 
-## Revised Approach for Blog Components
-Based on our previous failures, we'll take a more careful approach:
+### HomePage.svelte
+- **Strengths**: 
+  - Properly limits to 5 most recent posts
+  - Clean, focused UI matching reference site
+  - Well-styled "All Posts" link
+  - Responsive layout
+- **Areas for Improvement**:
+  - Consider adding estimated reading time
+  - Could benefit from subtle animations on hover
+  - Add lazy loading for better performance
 
-1. **Single Component First**: Create only the BlogCard component initially
-   - Include hardcoded data in the component itself (no external stores)
-   - Keep it simple with just title, date, and summary
-   - Test it thoroughly in isolation
+### Header.svelte
+- **Strengths**:
+  - Well-implemented theme switching
+  - Active state indicators for navigation links
+  - Clean, responsive design
+  - ARIA attributes for accessibility
+- **Areas for Improvement**:
+  - Missing mobile menu for smaller screens
+  - Search button is non-functional
+  - Could use subtle animations for interactions
 
-2. **Mock Data Strategy**:
-   - Create a simple mock data array directly in App.svelte
-   - Don't implement the full data store until basic components work
-   - Use simpler data structures initially, then expand
+### BlogListPage.svelte
+- **Strengths**:
+  - Two-column layout matching reference site
+  - Tag sidebar with post counts
+  - Proper filtering functionality
+  - Consistent post card styling
+- **Areas for Improvement**:
+  - No pagination for large numbers of posts
+  - Could benefit from filtering animations
+  - Mobile layout needs optimization
 
-3. **No Routing Until Components Work**:
-   - Disable all navigation links temporarily
-   - Focus on rendering components correctly first
-   - Add routing only after components are stable
+### BlogPostPage.svelte
+- **Strengths**:
+  - Clean article layout
+  - Previous/next post navigation
+  - Author information display
+  - Tag linking
+- **Areas for Improvement**:
+  - No table of contents for long posts
+  - Code blocks lack syntax highlighting
+  - No social sharing functionality
+  - No related posts section
 
-4. **Minimal Dependencies**:
-   - Avoid complex library integrations initially
-   - Focus on vanilla Svelte features
-   - Add libraries one at a time with careful testing
+## Next Steps for Project Development
 
-## Immediate Next Steps
-1. **Create HomePage Component**:
-   - Implement the "Latest" heading and subtitle
-   - Add a simple list of recent posts
-   - Style to match the reference site
+For the next phase of development, I recommend focusing on implementing the Projects section as outlined in the previous analysis. This will involve:
 
-2. **Create a Minimal BlogCard Component**:
-   - Start with the absolute simplest implementation
-   - Use hardcoded data
-   - Test thoroughly before proceeding
+1. **Project Data Structure**
+   - Create a project-data.js file in the data directory
+   - Define schema for projects with fields for title, description, image, etc.
+   - Add sample project data
 
-3. **Create BlogPage Component**:
-   - Implement the two-column layout
-   - Add placeholders for TagList and BlogList
+2. **Component Implementation**
+   - Create components/projects/ directory
+   - Implement ProjectsPage.svelte for the main listing page
+   - Create ProjectCard.svelte for individual project cards
+   - Implement ProjectDetailPage.svelte for individual project details
 
-4. **Add Simple Blog Data to App.svelte**:
-   - Create a small array of mock blog posts
-   - Pass posts to HomePage and BlogPage
-   - Verify rendering is correct before adding complexity
+3. **Routing Configuration**
+   - Add routes in main.js for /projects and /projects/:id
+   - Update App.svelte to render the new components
+   - Ensure active state in Header.svelte works with these routes
+
+4. **UI/UX Design**
+   - Create a grid layout for project cards
+   - Implement consistent styling with the blog
+   - Add hover effects and animations
+   - Ensure responsive design across all screen sizes
+
+This implementation will complete the core content sections of the blog site, making it more closely match the reference site while maintaining the clean Svelte 4 and vanilla CSS approach.
 
 ## Executor's Feedback or Assistance Requests
 We've fixed the ES module configuration issue in the Rollup build setup but encountered multiple failures when trying to implement blog post components. We also realized we were mixing concepts between the homepage and blog page. We need to create separate components for these distinct page types, each with their own layout, while still reusing common components like BlogCard.
@@ -473,178 +834,4 @@ We've fixed the ES module configuration issue in the Rollup build setup but enco
   - Keep separate pages as separate components
   - Don't mix homepage and blog page content/layouts
   - Don't add UI demonstration elements (like toggle buttons) in the middle of pages
-  - Study the reference site carefully to understand the distinct layout needs of each page
-
-## Codebase Review 2023-09-10
-
-After reviewing the codebase, I've identified the current structure and implementation status:
-
-### Project Structure
-```
-frontend/
-├── src/
-│   ├── components/
-│   │   ├── Header.svelte          ✅ Implemented
-│   │   └── blog/
-│   │       ├── HomePage.svelte    ✅ Implemented
-│   │       ├── BlogListPage.svelte ✅ Implemented
-│   │       ├── BlogPostPage.svelte ✅ Implemented
-│   │       ├── TagsPage.svelte    ✅ Implemented
-│   │       └── TagPage.svelte     ✅ Implemented
-│   ├── data/
-│   │   └── blog-data.js           ✅ Implemented (replaced sampleData.js)
-│   ├── App.svelte                 ✅ Implemented
-│   ├── main.js                    ✅ Implemented with page.js routing
-│   └── global.css                 ✅ Implemented with theming
-```
-
-### Implementation Status
-
-#### Completed Components
-1. **Header.svelte**: Navigation header with theme switching and site logo (now reads "MyBlog")
-2. **HomePage.svelte**: Main landing page with "Latest" posts
-3. **BlogListPage.svelte**: Two-column layout with tag sidebar and post listing
-4. **TagsPage.svelte**: Page showing all available tags with post counts
-5. **TagPage.svelte**: Page showing posts filtered by a specific tag
-6. **BlogPostPage.svelte**: Individual blog post display with navigation between posts
-
-#### Completed Features
-1. **Routing**: Client-side routing with page.js implemented for all pages
-2. **Data Management**: Blog post data centralized in blog-data.js
-3. **Theming**: Light/dark/system theme support with CSS variables
-4. **Responsive Design**: Mobile-friendly layouts with appropriate breakpoints
-
-#### Key Architecture Patterns
-1. **Component-Based**: Clear separation of components with specific responsibilities
-2. **Vanilla CSS**: No external CSS frameworks, using CSS variables for theming
-3. **Client-Side Routing**: Using page.js for SPA navigation
-4. **Reactive Data Flow**: Svelte's reactive variables for dynamic content
-
-### Current Status & Enhancements
-
-I've successfully fixed the following issues:
-1. Replaced the deleted sampleData.js file with a new blog-data.js in a proper data directory
-2. Updated all component imports to reference the new data file
-3. Changed the site branding from "SvelteBlog" to "MyBlog"
-
-The application now has:
-- A working responsive header with navigation and theme switching
-- A homepage showing the latest blog posts
-- A blog listing page with a sidebar for tags
-- Individual blog post pages with content and navigation
-- A tags page showing all available tags
-- Individual tag pages showing posts filtered by tag
-- Client-side routing between all pages
-
-### Next Steps / Potential Improvements
-
-1. **Testing**: Add comprehensive tests for components and routing
-2. **SEO Optimization**: Improve meta tags and structured data
-3. **Performance**: Optimize image loading and implement code splitting
-4. **Search Functionality**: Implement the search feature suggested by the header button
-5. **Footer Enhancement**: Expand the basic footer with additional links and information
-6. **Content Management**: Implement a proper CMS connection or markdown processing
-7. **Animations**: Add subtle transitions between page navigations
-
-## Live Site Review (https://blog-simplified.vercel.app/)
-
-After reviewing the deployed site, I've identified the following observations:
-
-### General Impressions
-- The site is visually clean and minimalist, following modern blog design principles
-- The typography is readable and well-scaled
-- Navigation is intuitive and straightforward
-- The blue accent color provides good contrast with the light theme background
-
-### Features Working Well
-1. **Header**: The header with "MyBlog" branding is consistent across all pages
-2. **Theme Switching**: Light/dark theme toggle works properly and persists between page refreshes
-3. **Responsive Design**: The site adapts well to different screen sizes
-4. **Blog Posts**: Individual posts display properly with navigation between posts
-5. **Tag System**: Tags are displayed and clickable, leading to filtered post lists
-
-### Issues & Improvement Opportunities
-
-#### Navigation
-- When navigating between pages, there's no visual indication of the current page in the navigation menu
-- Adding an "active" state to the current navigation item would improve user orientation
-
-#### Homepage
-- The homepage prominently features all posts rather than showing just the latest few
-- Consider limiting to 3-5 most recent posts with a clear "View All" link
-
-#### Blog Post Page
-- The author section could use more visual distinction
-- Code blocks in blog posts could benefit from syntax highlighting
-- The "Back to the blog" link at the bottom is useful but could be more prominently styled
-
-#### Tags Implementation
-- The tags page provides a good overview, but the tag counts appear in the same color as the tags
-- Consider making the counts visually distinct (lighter color or smaller size)
-- Tag filtering works but there's no indication of how many total posts exist vs. how many are shown
-
-#### Mobile Experience
-- On smaller screens, the navigation menu disappears without a mobile menu replacement
-- Adding a hamburger menu for mobile would improve navigation on small screens
-- Some elements could use additional spacing on mobile views
-
-#### Content
-- The sample blog posts are well-formatted but relatively limited in number
-- Consider adding more diverse sample content to better showcase the blog capabilities
-
-#### Performance
-- The site loads quickly but there's no loading indicator during page transitions
-- Images in blog posts and author avatars could benefit from lazy loading
-
-### High Priority Improvements
-
-1. **Mobile Navigation**: Implement a mobile-friendly navigation solution
-2. **Active State Indicators**: Add visual indication of the current page in navigation
-3. **Blog Content Enhancement**: Implement syntax highlighting for code blocks
-4. **Homepage Refinement**: Limit homepage to featuring just recent posts
-5. **Search Implementation**: Add functionality to the search button in the header
-6. **Pagination**: Add pagination for the blog listing when more posts are added
-
-### Medium Priority Improvements
-
-1. **Content Filtering Options**: Add more ways to browse/filter content beyond tags
-2. **Author Profiles**: Enhance the author section with links to detailed profiles
-3. **Social Sharing**: Add social media sharing capabilities to blog posts
-4. **Related Posts**: Suggest related posts at the end of each blog post
-5. **Newsletter Integration**: Add a newsletter signup component
-
-### Low Priority Improvements
-
-1. **Comments System**: Add the ability for readers to comment on posts
-2. **Reading Time Indicator**: Show estimated reading time for each post
-3. **Table of Contents**: Add auto-generated table of contents for longer posts
-4. **Image Gallery**: Improve image handling within blog posts
-5. **Print Styles**: Optimize the blog for print viewing
-
-These improvements would enhance the already solid foundation and bring the blog closer to the reference design while maintaining its clean, efficient implementation using Svelte and vanilla CSS. 
-
-## Latest Implementation: Homepage Refinement
-- Limited homepage to display only the 5 most recent posts sorted by date (newest first)
-- Enhanced the "All Posts" link at the bottom with improved styling
-- Added proper padding to the homepage container
-- Made the "All Posts" link more visually prominent, matching the reference site
-
-The homepage now matches the design pattern of the reference Tailwind Nextjs Starter Blog site where only the latest posts are displayed on the home page, with a clear link to view all posts. 
-
-## Latest Implementation: Navigation Enhancements
-
-### 1. Active State Indicators
-- Added visual indicators for the active navigation item:
-  - Added a blue underline below the active link
-  - Made the active link text blue and slightly bolder
-  - Added proper ARIA attributes for accessibility
-- Created an isActive function that correctly handles nested routes (blog posts under Blog, tag pages under Tags)
-- Updated the Header component to accept currentRoute from App.svelte
-
-### 2. Scroll-to-Top Functionality
-- Implemented automatic scroll-to-top behavior when navigating between pages
-- Created a unified setRoute helper function in main.js
-- Added window.scrollTo(0, 0) to all navigation handlers
-- This ensures users always start at the top of the page when clicking navigation links
-
-These improvements enhance the user experience by providing clear visual feedback about the current page and ensuring consistent scrolling behavior when navigating through the blog. 
+  - Study the reference site carefully to understand the distinct layout needs of each page 
