@@ -50,12 +50,15 @@
     max-width: 768px;
     margin: 0 auto;
     padding: 0 1rem;
+    box-sizing: border-box;
+    overflow-x: hidden;
   }
   
   .page-header {
     margin-bottom: 3rem;
     border-bottom: 1px solid var(--color-border);
     padding-bottom: 2rem;
+    width: 100%;
   }
   
   .page-title {
@@ -64,6 +67,7 @@
     margin-bottom: 0.5rem;
     line-height: 1.2;
     letter-spacing: -0.025em;
+    word-break: break-word;
   }
   
   .page-subtitle {
@@ -74,12 +78,15 @@
   
   .posts-list {
     width: 100%;
+    box-sizing: border-box;
   }
   
   .post-item {
     margin-bottom: 3rem;
     padding-bottom: 3rem;
     border-bottom: 1px solid var(--color-border);
+    width: 100%;
+    box-sizing: border-box;
   }
   
   .post-date {
@@ -94,6 +101,10 @@
     font-weight: 700;
     margin: 0 0 0.75rem 0;
     line-height: 1.3;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
   }
   
   .post-title a {
@@ -112,6 +123,7 @@
     flex-wrap: wrap;
     gap: 0.5rem;
     margin-bottom: 1rem;
+    width: 100%;
   }
   
   .tag {
@@ -122,6 +134,8 @@
     color: var(--color-text);
     text-decoration: none;
     transition: background-color 0.2s ease;
+    margin-bottom: 0.25rem;
+    display: inline-block;
   }
   
   .tag:hover {
@@ -133,6 +147,8 @@
   .post-summary {
     margin: 0.75rem 0;
     line-height: 1.6;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
   }
   
   .read-more {
@@ -144,6 +160,7 @@
     text-decoration: none;
     font-weight: 500;
     transition: opacity 0.2s ease;
+    display: inline-block;
   }
   
   .read-more-link:hover {
@@ -155,6 +172,7 @@
     margin-top: 2rem;
     text-align: center;
     padding: 1rem 0;
+    width: 100%;
   }
   
   .all-posts-link a {
@@ -171,5 +189,44 @@
   .all-posts-link a:hover {
     opacity: 0.8;
     text-decoration: underline;
+  }
+  
+  /* Mobile responsive styles */
+  @media (max-width: 640px) {
+    .home-page {
+      padding: 0 0.75rem;
+    }
+    
+    .page-title {
+      font-size: 2.25rem;
+    }
+    
+    .page-subtitle {
+      font-size: 1rem;
+    }
+    
+    .post-title {
+      font-size: 1.5rem;
+    }
+    
+    .post-summary {
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+    
+    .post-item {
+      margin-bottom: 2rem;
+      padding-bottom: 2rem;
+    }
+    
+    .tag {
+      padding: 0.3rem 0.8rem;
+      margin-right: 0.25rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .read-more-link {
+      padding: 0.5rem 0;
+    }
   }
 </style> 

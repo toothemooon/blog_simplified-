@@ -92,6 +92,18 @@
   --color-pink-rgb: var(--color-pink-rgb-dark);
 }
 
+/* Prevent horizontal scrolling on all devices */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+  position: relative;
+}
+
+/* Box-sizing for all elements to prevent width calculation issues */
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -110,6 +122,12 @@ a {
 
 a:hover {
   text-decoration: underline;
+}
+
+/* Make sure all images are responsive */
+img {
+  max-width: 100%;
+  height: auto;
 }
 
 /* Responsive containers */
@@ -162,6 +180,18 @@ p {
   margin-top: 0;
   margin-bottom: var(--space-md);
   line-height: 1.6;
+}
+
+/* Make sure all text wraps properly */
+p, h1, h2, h3, h4, h5, h6, li, td, th, figcaption, dt, dd {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  -ms-word-break: break-all;
+  word-break: break-word;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
 }
 
 /* Responsive spacing */
