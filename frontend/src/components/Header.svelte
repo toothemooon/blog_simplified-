@@ -110,7 +110,7 @@
 <header class="header">
   <div class="container header-container">
     <!-- Logo -->
-    <Logo />
+    <Logo size="default" />
     
     <!-- Desktop Navigation -->
     <div class="hide-on-mobile">

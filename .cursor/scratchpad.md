@@ -815,11 +815,11 @@ This is a classic Single Page Application (SPA) routing issue on static deployme
 
 4. **Technical Explanation**:
    - When a user:
-     1. Visits the root URL (`/`): Vercel serves the `index.html` file correctly
-     2. Navigates to `/projects` via internal links: The client-side router (page.js) handles this correctly
-     3. Directly enters `/projects` in the browser: Vercel can't find a physical `/projects` file/directory and likely serves the root `index.html` but without the correct routing context
+1. Visits the root URL (`/`): Vercel serves the `index.html` file correctly
+2. Navigates to `/projects` via internal links: The client-side router (page.js) handles this correctly
+3. Directly enters `/projects` in the browser: Vercel can't find a physical `/projects` file/directory and likely serves the root `index.html` but without the correct routing context
 
-   The JavaScript in the bundle expects to initialize with the current URL path to determine which component to render. Without proper configuration, this initialization doesn't happen correctly for direct URL access.
+The JavaScript in the bundle expects to initialize with the current URL path to determine which component to render. Without proper configuration, this initialization doesn't happen correctly for direct URL access.
 
 ### Solution: Vercel Configuration for SPA
 

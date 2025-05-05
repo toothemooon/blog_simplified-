@@ -32,6 +32,13 @@
     font-size: var(--font-size-2xl);
   }
   
+  .logo-text {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: visible;
+    min-width: max-content; /* Ensure text isn't truncated */
+  }
+  
   .logo-icon {
     display: inline-block;
     width: 2rem;
@@ -54,6 +61,10 @@
   @media (max-width: 480px) {
     .logo-text {
       font-size: var(--font-size-lg);
+      /* The following ensures text isn't cut off on mobile */
+      display: inline-block;
+      white-space: nowrap;
+      overflow: visible;
     }
     
     .logo-icon {
