@@ -4,6 +4,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import livereload from 'rollup-plugin-livereload';
 import terser from '@rollup/plugin-terser';
 import css from 'rollup-plugin-css-only';
+import { string } from 'rollup-plugin-string';
 import { spawn } from 'child_process';
 
 const production = !process.env.ROLLUP_WATCH;
@@ -32,10 +33,11 @@ function serve() {
 export default {
 	input: 'src/main.js',
 	output: {
+		dir: 'public/build',
+		format: 'es',
 		sourcemap: true,
-		format: 'iife',
 		name: 'app',
-		file: 'public/build/bundle.js'
+		chunkFileNames: '[name]-[hash].js'
 	},
 	plugins: [
 		svelte({
@@ -47,6 +49,11 @@ export default {
 		// we'll extract any component CSS out into
 		// a separate file - better for performance
 		css({ output: 'bundle.css' }),
+
+		// Plugin to handle markdown files as strings
+		string({
+			include: ['**/*.md']
+		}),
 
 		// If you have external dependencies installed from
 		// npm, you'll most likely need these plugins. In

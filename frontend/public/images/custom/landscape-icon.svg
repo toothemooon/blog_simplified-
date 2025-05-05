@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="300" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Circle background -->
+  <circle cx="150" cy="150" r="140" fill="#4a90e2" stroke="#3b78c3" stroke-width="5"/>
+  
+  <!-- Sky -->
+  <rect x="20" y="20" width="260" height="140" fill="#5aa0f7" rx="130" ry="70"/>
+  
+  <!-- Sun -->
+  <circle cx="220" cy="70" r="30" fill="#ffd84c"/>
+  
+  <!-- Clouds -->
+  <g fill="#ffffff">
+    <circle cx="80" cy="60" r="10"/>
+    <circle cx="100" cy="60" r="12"/>
+    <circle cx="120" cy="60" r="10"/>
+    
+    <circle cx="180" cy="90" r="8"/>
+    <circle cx="195" cy="90" r="10"/>
+    <circle cx="210" cy="90" r="8"/>
+  </g>
+  
+  <!-- Mountains -->
+  <g>
+    <polygon points="20,160 80,80 140,160" fill="#546e7a"/>
+    <polygon points="90,160 150,60 210,160" fill="#455a64"/>
+    <polygon points="170,160 230,90 290,160" fill="#607d8b"/>
+  </g>
+  
+  <!-- Hills -->
+  <path d="M0,160 Q75,130 150,160 Q225,130 300,160 L300,220 L0,220 Z" fill="#7cb342"/>
+  
+  <!-- Ground -->
+  <rect x="0" y="160" width="300" height="140" fill="#4c8c2c" rx="0" ry="0"/>
+  
+  <!-- Trees -->
+  <g>
+    <circle cx="70" cy="180" r="10" fill="#4caf50"/>
+    <circle cx="230" cy="170" r="15" fill="#388e3c"/>
+    <rect x="149" y="180" width="2" height="10" fill="#795548"/>
+    <circle cx="150" cy="175" r="8" fill="#388e3c"/>
+  </g>
+</svg> 

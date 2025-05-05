@@ -143,6 +143,8 @@
     class="search-dialog-backdrop" 
     on:click={handleClickOutside}
     on:keydown={handleKeydown}
+    role="dialog"
+    aria-label="Search dialog"
   >
     <!-- Dialog container -->
     <div class="search-dialog">

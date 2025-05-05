@@ -1,35 +1,33 @@
 <script>
-  import { posts } from '../../data/blog-data.js';
-  
-  // Sort posts by date (newest first)
-  const sortedPosts = [...posts].sort((a, b) => new Date(b.date) - new Date(a.date));
-  
-  // Generate unique tags list with counts
-  const tags = sortedPosts.reduce((acc, post) => {
-    if (post.tags && post.tags.length) {
-      post.tags.forEach(tag => {
-        if (!acc[tag]) {
-          acc[tag] = 0;
-        }
-        acc[tag]++;
-      });
-    }
-    return acc;
-  }, {});
-  
-  // Format date to display as Month DD, YYYY
-  function formatDate(dateStr) {
-    if (!dateStr) return '';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  }
+  import { onMount } from 'svelte';
+  import { getAllPosts, formatPostDate, getReadingTime } from '../../utils/blog-utils.js';
   
   // State
+  let posts = [];
+  let tags = {};
   let showMobileTags = false;
+  let loading = true;
+  
+  // Load posts on component mount
+  onMount(() => {
+    // Get posts from both new and legacy sources
+    posts = getAllPosts();
+    
+    // Generate unique tags list with counts
+    tags = posts.reduce((acc, post) => {
+      if (post.tags && post.tags.length) {
+        post.tags.forEach(tag => {
+          if (!acc[tag]) {
+            acc[tag] = 0;
+          }
+          acc[tag]++;
+        });
+      }
+      return acc;
+    }, {});
+    
+    loading = false;
+  });
   
   // Toggle mobile tags visibility
   function toggleMobileTags() {
@@ -42,58 +40,70 @@
     <h1 class="page-title">All Posts</h1>
   </div>
   
-  <!-- Mobile Tags Toggle Button -->
-  <button class="mobile-tags-toggle hide-on-desktop touch-target" on:click={toggleMobileTags}>
-    {showMobileTags ? 'Hide Tags' : 'Show Tags'} 
-    <span class="toggle-icon">{showMobileTags ? '−' : '+'}</span>
-  </button>
-  
-  <div class="blog-list-content">
-    <!-- Tags sidebar -->
-    <aside class="tags-sidebar" class:mobile-visible={showMobileTags}>
-      <div class="tags-header">All Posts</div>
-      
-      <ul class="tags-list">
-        {#each Object.entries(tags) as [tag, count]}
-          <li class="tag-item">
-            <a href="/tags/{tag}" class="tag-link touch-target">
-              <span class="tag-name">{tag}</span>
-              <span class="tag-count">({count})</span>
-            </a>
-          </li>
-        {/each}
-      </ul>
-    </aside>
-    
-    <!-- Posts list -->
-    <div class="posts-container">
-      {#each sortedPosts as post}
-        <article class="post-item">
-          <div class="post-date">
-            <span>Published on {formatDate(post.date)}</span>
-          </div>
-          
-          <h2 class="post-title">
-            <a href="/blog/{post.slug}">{post.title}</a>
-          </h2>
-          
-          {#if post.tags && post.tags.length > 0}
-            <div class="post-tags">
-              {#each post.tags as tag}
-                <a href="/tags/{tag}" class="tag">{tag}</a>
-              {/each}
-            </div>
-          {/if}
-          
-          <p class="post-summary">{post.summary}</p>
-          
-          <div class="read-more">
-            <a href="/blog/{post.slug}" class="read-more-link touch-target">Read more →</a>
-          </div>
-        </article>
-      {/each}
+  {#if loading}
+    <div class="loading-indicator">
+      <p>Loading posts...</p>
     </div>
-  </div>
+  {:else}
+    <!-- Mobile Tags Toggle Button -->
+    <button class="mobile-tags-toggle hide-on-desktop touch-target" on:click={toggleMobileTags}>
+      {showMobileTags ? 'Hide Tags' : 'Show Tags'} 
+      <span class="toggle-icon">{showMobileTags ? '−' : '+'}</span>
+    </button>
+    
+    <div class="blog-list-content">
+      <!-- Tags sidebar -->
+      <aside class="tags-sidebar" class:mobile-visible={showMobileTags}>
+        <div class="tags-header">All Posts</div>
+        
+        <ul class="tags-list">
+          {#each Object.entries(tags) as [tag, count]}
+            <li class="tag-item">
+              <a href="/tags/{tag}" class="tag-link touch-target">
+                <span class="tag-name">{tag}</span>
+                <span class="tag-count">({count})</span>
+              </a>
+            </li>
+          {/each}
+        </ul>
+      </aside>
+      
+      <!-- Posts list -->
+      <div class="posts-container">
+        {#if posts.length === 0}
+          <div class="no-posts">
+            <p>No posts found.</p>
+          </div>
+        {:else}
+          {#each posts as post}
+            <article class="post-item">
+              <div class="post-date">
+                <span>Published on {formatPostDate(post.date)}</span>
+              </div>
+              
+              <h2 class="post-title">
+                <a href="/blog/{post.slug}">{post.title}</a>
+              </h2>
+              
+              {#if post.tags && post.tags.length > 0}
+                <div class="post-tags">
+                  {#each post.tags as tag}
+                    <a href="/tags/{tag}" class="tag">{tag}</a>
+                  {/each}
+                </div>
+              {/if}
+              
+              <p class="post-summary">{post.summary}</p>
+              
+              <div class="read-more">
+                <a href="/blog/{post.slug}" class="read-more-link touch-target">Read more →</a>
+              </div>
+            </article>
+          {/each}
+        {/if}
+      </div>
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -111,6 +121,17 @@
     font-weight: 800;
     margin-bottom: var(--space-md);
     line-height: 1.2;
+  }
+  
+  .loading-indicator {
+    text-align: center;
+    padding: 3rem 0;
+  }
+  
+  .no-posts {
+    text-align: center;
+    padding: 3rem 0;
+    color: var(--color-text-light);
   }
   
   .blog-list-content {
@@ -206,108 +227,98 @@
   }
   
   .post-date {
-    font-size: var(--font-size-sm);
-    color: var(--color-text);
+    font-size: 0.875rem;
+    color: var(--color-text-secondary, var(--color-text));
     opacity: 0.7;
-    margin-bottom: var(--space-xs);
+    margin-bottom: var(--space-sm);
   }
   
   .post-title {
-    font-size: clamp(1.25rem, 4vw, 1.75rem);
+    font-size: 1.5rem;
     font-weight: 700;
-    margin: 0 0 var(--space-sm) 0;
     line-height: 1.3;
+    margin-bottom: var(--space-sm);
   }
   
   .post-title a {
-    color: var(--color-text);
+    color: var(--color-heading, var(--color-text));
     text-decoration: none;
-    transition: color 0.2s ease;
   }
   
   .post-title a:hover {
     color: var(--color-primary);
-    text-decoration: none;
   }
   
   .post-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-xs);
-    margin-bottom: var(--space-md);
+    gap: 0.5rem;
+    margin-bottom: var(--space-sm);
   }
   
   .tag {
-    font-size: var(--font-size-xs);
-    padding: 0.2rem 0.75rem;
+    font-size: 0.75rem;
+    background-color: var(--color-bg-secondary, #f0f0f0);
+    color: var(--color-text-light, #555);
+    padding: 0.25rem 0.5rem;
     border-radius: 0.25rem;
-    background-color: var(--color-border);
-    color: var(--color-text);
     text-decoration: none;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s;
   }
   
   .tag:hover {
     background-color: var(--color-primary);
-    color: white;
-    text-decoration: none;
+    color: var(--color-bg);
   }
   
   .post-summary {
-    margin: var(--space-sm) 0;
     line-height: 1.6;
+    margin-bottom: var(--space-md);
+    color: var(--color-text);
   }
   
   .read-more {
-    margin-top: var(--space-md);
+    margin-top: var(--space-sm);
   }
   
   .read-more-link {
     color: var(--color-primary);
     text-decoration: none;
     font-weight: 500;
-    transition: opacity 0.2s ease;
     display: inline-flex;
     align-items: center;
     height: var(--min-touch-target);
-    padding-right: var(--space-md);
+    padding: 0 var(--space-sm);
+    transition: color 0.2s;
+    -webkit-tap-highlight-color: transparent;
   }
   
   .read-more-link:hover {
-    opacity: 0.8;
+    color: var(--color-primary-dark, var(--color-primary));
     text-decoration: underline;
   }
   
-  /* Responsive styles */
+  /* Desktop styles */
   @media (min-width: 768px) {
-    .blog-list-header {
-      margin-bottom: var(--space-xl);
-    }
-    
-    .mobile-tags-toggle {
+    .hide-on-desktop {
       display: none;
     }
     
     .blog-list-content {
       flex-direction: row;
-      gap: var(--space-xl);
     }
     
     .tags-sidebar {
       display: block;
-      width: 220px;
-      flex-shrink: 0;
+      width: 12rem;
       position: sticky;
-      top: 80px;
+      top: var(--space-lg);
       align-self: flex-start;
-      height: auto;
-      border-bottom: none;
-      padding-bottom: 0;
+      margin-right: var(--space-xl);
     }
     
-    .post-item {
-      margin-bottom: var(--space-2xl);
-      padding-bottom: var(--space-2xl);
+    .posts-container {
+      flex: 1;
     }
   }
 </style> 
