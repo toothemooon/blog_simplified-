@@ -1,5 +1,5 @@
 export default {
-  title: 'China Chengda Engineering Co., Ltd. (中国成达工程有限公司)',
+  title: 'China Chengda Engineering Co., Ltd.',
   role: 'Safety Engineer',
   location: 'Mesaieed, Qatar',
   period: 'Feb 2023 – Jul 2023',

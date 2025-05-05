@@ -1,4 +1,4 @@
-# China Chengda Engineering Co., Ltd. (中国成达工程有限公司)
+# China Chengda Engineering Co., Ltd.
 
 ## Overview
 

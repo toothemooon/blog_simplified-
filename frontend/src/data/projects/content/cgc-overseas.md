@@ -1,4 +1,4 @@
-# CGC Overseas Construction Group (中地海外集团)
+# CGC Overseas Construction Group
 
 ## Overview
 

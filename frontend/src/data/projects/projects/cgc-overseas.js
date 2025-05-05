@@ -1,5 +1,5 @@
 export default {
-  title: 'CGC Overseas Construction Group (中地海外集团)',
+  title: 'CGC Overseas Construction Group',
   role: 'Business Assistant & Financial Administrator',
   location: 'Abeokuta, Nigeria & Abuja HQ',
   period: 'Mar 2021 – Jul 2022',
