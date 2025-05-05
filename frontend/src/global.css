@@ -117,7 +117,7 @@ a:hover {
   width: 100%;
   max-width: var(--container-width-reading);
   margin: 0 auto;
-  padding: 0 var(--space-md);
+  padding: 0 var(--space-lg);
   box-sizing: border-box;
 }
 
@@ -158,8 +158,12 @@ p {
 
 /* Responsive spacing */
 @media (max-width: 640px) {
-  .container, .container-narrow {
+  .container {
     padding: 0 var(--space-lg);
+  }
+  
+  .container-narrow {
+    padding: 0 var(--space-md);
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -172,7 +176,11 @@ p {
 }
 
 @media (max-width: 480px) {
-  .container, .container-narrow {
+  .container {
+    padding: 0 var(--space-md);
+  }
+  
+  .container-narrow {
     padding: 0 var(--space-md);
   }
 }

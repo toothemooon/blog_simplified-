@@ -126,7 +126,7 @@ Here are some reasons to use nested routes
   $: nextPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
 </script>
 
-<div class="blog-post-page">
+<div class="blog-post-page container-narrow">
   <article class="blog-post">
     <!-- Date -->
     <div class="post-date-container">
@@ -181,8 +181,10 @@ Here are some reasons to use nested routes
     <div class="post-navigation">
       {#if previousPost}
         <a href="/blog/{previousPost.slug}" class="nav-link prev-link">
-          <span class="nav-label">Previous Article</span>
-          <span class="nav-title">{previousPost.title}</span>
+          <span class="nav-label">PREVIOUS ARTICLE</span>
+          <span class="nav-title">
+            <span class="nav-arrow">←</span> {previousPost.title}
+          </span>
         </a>
       {:else}
         <div class="nav-placeholder"></div>
@@ -190,8 +192,10 @@ Here are some reasons to use nested routes
       
       {#if nextPost}
         <a href="/blog/{nextPost.slug}" class="nav-link next-link">
-          <span class="nav-label">Next Article</span>
-          <span class="nav-title">{nextPost.title}</span>
+          <span class="nav-label">NEXT ARTICLE</span>
+          <span class="nav-title">
+            {nextPost.title} <span class="nav-arrow">→</span>
+          </span>
         </a>
       {:else}
         <div class="nav-placeholder"></div>
@@ -207,9 +211,8 @@ Here are some reasons to use nested routes
 
 <style>
   .blog-post-page {
-    max-width: 42rem;
-    margin: 0 auto;
-    padding: 0 1rem;
+    padding-top: var(--space-xl);
+    padding-bottom: var(--space-2xl);
   }
 
   .blog-post {
@@ -362,7 +365,7 @@ Here are some reasons to use nested routes
     text-decoration: none;
     transition: color 0.2s ease;
     border-radius: 0.5rem;
-    padding: 0.5rem;
+    padding: 0.75rem;
     -webkit-tap-highlight-color: transparent;
   }
   
@@ -375,11 +378,12 @@ Here are some reasons to use nested routes
   }
 
   .nav-label {
-    font-size: 0.875rem;
+    font-size: 0.8rem;
     color: var(--color-text-secondary, var(--color-text));
     opacity: 0.7;
     margin-bottom: 0.5rem;
-    font-weight: normal;
+    font-weight: 500;
+    letter-spacing: 0.05em;
   }
 
   .nav-title {
@@ -387,6 +391,14 @@ Here are some reasons to use nested routes
     font-weight: 500;
     color: var(--color-primary);
     line-height: 1.4;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .nav-arrow {
+    font-size: 1.25rem;
+    line-height: 1;
   }
   
   .prev-link {
@@ -401,15 +413,16 @@ Here are some reasons to use nested routes
   /* Back to blog link */
   .back-link-container {
     text-align: center;
-    margin: 2rem 0 3rem;
-    padding-bottom: 1rem;
+    margin: 3rem 0;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
   }
   
   .back-link {
     color: var(--color-primary);
     text-decoration: none;
     font-weight: 500;
-    font-size: 1.125rem;
+    font-size: 1rem;
     transition: opacity 0.2s ease;
     display: inline-flex;
     align-items: center;
@@ -420,7 +433,6 @@ Here are some reasons to use nested routes
   
   .back-link:hover {
     text-decoration: underline;
-    opacity: 0.85;
   }
 
   @media (max-width: 768px) {
@@ -442,11 +454,17 @@ Here are some reasons to use nested routes
     .nav-link, .nav-placeholder {
       max-width: 100%;
       min-height: var(--min-touch-target);
-      padding: 0.75rem;
+      padding: 1rem;
+      border: 1px solid var(--color-border);
+      border-radius: 0.5rem;
     }
     
     .next-link {
       text-align: left;
+    }
+    
+    .next-link .nav-title {
+      flex-direction: row-reverse;
     }
   }
 </style> 
