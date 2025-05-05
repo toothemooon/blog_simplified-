@@ -12,10 +12,20 @@
 	// Props from router
 	export let currentRoute = '/';
 	export let params = {};
+	
+	// Log route changes for debugging
+	$: {
+		console.log('App received route:', currentRoute, 'with params:', params);
+	}
 </script>
 
 <div class="app">
 	<Header {currentRoute} />
+	
+	<!-- Development route indicator (remove in production) -->
+	<div class="debug-route" style="background-color: #f0f0f0; padding: 0.5rem; font-family: monospace; text-align: center; font-size: 0.8rem;">
+		Current Route: {currentRoute}
+	</div>
 	
 	<main class="container main-content">
 		{#if currentRoute === '/'}

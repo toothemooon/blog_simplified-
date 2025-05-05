@@ -1,6 +1,11 @@
 <script>
   import { projects } from '../../data/project-data.js';
   import ProjectCard from './ProjectCard.svelte';
+  import { onMount } from 'svelte';
+  
+  onMount(() => {
+    console.log('ProjectsPage mounted with', projects.length, 'projects');
+  });
 </script>
 
 <div class="projects-page">
