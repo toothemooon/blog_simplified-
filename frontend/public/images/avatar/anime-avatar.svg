@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Blue background circle -->
+  <circle cx="256" cy="256" r="256" fill="#3498db"/>
+  
+  <!-- Face shape -->
+  <path d="M256,380 C190,380 160,320 160,260 C160,180 190,130 256,130 C322,130 352,180 352,260 C352,320 322,380 256,380 Z" fill="#FFE0B2"/>
+  
+  <!-- Hair -->
+  <path d="M155,240 C155,170 180,120 256,120 C332,120 357,170 357,240 C357,240 357,190 357,170 C357,120 310,90 256,90 C202,90 155,120 155,170 C155,190 155,240 155,240 Z" fill="#222222"/>
+  
+  <!-- Eyes -->
+  <ellipse cx="210" cy="240" rx="15" ry="20" fill="#FFFFFF"/>
+  <ellipse cx="302" cy="240" rx="15" ry="20" fill="#FFFFFF"/>
+  <ellipse cx="210" cy="240" rx="8" ry="10" fill="#000000"/>
+  <ellipse cx="302" cy="240" rx="8" ry="10" fill="#000000"/>
+  
+  <!-- Eyebrows -->
+  <path d="M190,220 C200,210 220,210 230,220" fill="none" stroke="#000000" stroke-width="3" stroke-linecap="round"/>
+  <path d="M282,220 C292,210 312,210 322,220" fill="none" stroke="#000000" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- Mouth -->
+  <path d="M236,280 Q256,290 276,280" fill="none" stroke="#000000" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- Blush -->
+  <circle cx="200" cy="265" r="15" fill="#FFCDD2" opacity="0.6"/>
+  <circle cx="312" cy="265" r="15" fill="#FFCDD2" opacity="0.6"/>
+  
+  <!-- Neck -->
+  <path d="M230,380 L230,410 L282,410 L282,380" fill="#FFE0B2"/>
+  
+  <!-- Shirt collar -->
+  <path d="M220,410 L230,420 L256,420 L282,420 L292,410" fill="#9C27B0"/>
+</svg> 

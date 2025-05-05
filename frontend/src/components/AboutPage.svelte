@@ -13,13 +13,13 @@
   
   <div class="author-profile">
     <div class="avatar-container">
-      <img class="avatar" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Avatar" />
+      <img class="avatar" src="/images/avatar/scenery-avatar.svg" alt="Scenic landscape avatar with mountains and trees" />
     </div>
     
     <div class="author-info">
-      <h2 class="author-name">Tails Azimuth</h2>
-      <p class="author-title">Professor of Atmospheric Science</p>
-      <p class="author-institution">Stanford University</p>
+      <h2 class="author-name">サラダ</h2>
+      <p class="author-title">Coding Enthusiast</p>
+      <p class="author-institution">Sichuan International Studies University</p>
       
       <div class="social-links">
         {#each socialLinks as link}
@@ -35,11 +35,13 @@
   </div>
   
   <div class="bio-content">
-    <p>Tails Azimuth is a professor of atmospheric sciences at the Stanford AI Lab. His research interests includes complexity modelling of tailwinds, headwinds and crosswinds.</p>
+    <p>サラダ is a graduate of English Major at Sichuan International Studies University. was working in global projects in Africa and mid-east countries.
+      
+    <p>His current interests and focuses IT development and relevant job opportunities.</p>
     
-    <p>He leads the clean energy group which develops 3D air pollution-climate models, writes differential equation solvers, and manufactures titanium plated air ballons. In his free time he bakes raspberry pi.</p>
+    <p>He was in the management of Nigeria Ogun State water pond factory and pipeline projects, a safety engineer of Qatar QVC PVC project with e-CPW qualification issued by Qatar energy.
+    </p>
     
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed neque elit, tristique placerat feugiat ac, facilisis vitae arcu. Proin eget egestas augue. Praesent ut sem nec arcu pellentesque aliquet. Duis dapibus diam vel metus tempus vulputate.</p>
   </div>
 </div>
 
@@ -66,13 +68,19 @@
   
   .avatar-container {
     margin-bottom: 1.5rem;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--color-primary);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
   
   .avatar {
-    width: 128px;
-    height: 128px;
-    border-radius: 9999px;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    display: block;
   }
   
   .author-info {

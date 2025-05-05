@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Main circle with gradient sky background -->
+  <defs>
+    <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e88e5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#64b5f6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <circle cx="256" cy="256" r="256" fill="url(#skyGradient)"/>
+  
+  <!-- Sun -->
+  <circle cx="370" cy="120" r="40" fill="#fdd835"/>
+  <circle cx="370" cy="120" r="50" fill="#fdd835" opacity="0.3"/>
+  
+  <!-- Distant mountains -->
+  <path d="M0,300 L70,220 L120,260 L200,170 L250,230 L300,180 L370,240 L420,190 L500,260 L512,300 L0,300 Z" fill="#78909c" opacity="0.7"/>
+  
+  <!-- Closer mountains -->
+  <path d="M0,330 L60,240 L150,320 L210,220 L280,300 L340,230 L420,310 L480,240 L512,320 L512,350 L0,350 Z" fill="#546e7a"/>
+  
+  <!-- Grassy hills -->
+  <path d="M0,350 C50,330 100,360 150,340 C200,320 250,350 300,330 C350,310 400,350 450,330 C480,320 512,340 512,340 L512,400 L0,400 Z" fill="#43a047"/>
+  
+  <!-- Ground -->
+  <path d="M0,400 L512,400 L512,512 L0,512 Z" fill="#2e7d32"/>
+  
+  <!-- Distant trees on hills -->
+  <circle cx="40" cy="335" r="8" fill="#2e7d32"/>
+  <circle cx="60" cy="330" r="10" fill="#2e7d32"/>
+  <circle cx="85" cy="335" r="12" fill="#2e7d32"/>
+  <circle cx="135" cy="325" r="9" fill="#2e7d32"/>
+  <circle cx="150" cy="330" r="11" fill="#2e7d32"/>
+  <circle cx="280" cy="325" r="10" fill="#2e7d32"/>
+  <circle cx="300" cy="315" r="8" fill="#2e7d32"/>
+  <circle cx="330" cy="320" r="12" fill="#2e7d32"/>
+  <circle cx="390" cy="325" r="8" fill="#2e7d32"/>
+  <circle cx="420" cy="318" r="10" fill="#2e7d32"/>
+  <circle cx="450" cy="325" r="7" fill="#2e7d32"/>
+  
+  <!-- Trees in foreground -->
+  <!-- Tree 1 -->
+  <rect x="100" y="385" width="8" height="15" fill="#5d4037"/>
+  <path d="M104,365 L85,390 L123,390 Z" fill="#388e3c"/>
+  <path d="M104,375 L85,400 L123,400 Z" fill="#388e3c"/>
+  
+  <!-- Tree 2 -->
+  <rect x="400" y="385" width="8" height="15" fill="#5d4037"/>
+  <path d="M404,365 L385,390 L423,390 Z" fill="#388e3c"/>
+  <path d="M404,375 L385,400 L423,400 Z" fill="#388e3c"/>
+  
+  <!-- Tree 3 -->
+  <rect x="250" y="385" width="12" height="15" fill="#5d4037"/>
+  <circle cx="256" cy="365" r="20" fill="#388e3c"/>
+  
+  <!-- Small clouds -->
+  <circle cx="100" cy="100" r="15" fill="white" opacity="0.8"/>
+  <circle cx="120" cy="105" r="15" fill="white" opacity="0.8"/>
+  <circle cx="140" cy="100" r="15" fill="white" opacity="0.8"/>
+  
+  <circle cx="220" cy="140" r="10" fill="white" opacity="0.7"/>
+  <circle cx="240" cy="142" r="12" fill="white" opacity="0.7"/>
+  <circle cx="255" cy="140" r="10" fill="white" opacity="0.7"/>
+</svg> 
