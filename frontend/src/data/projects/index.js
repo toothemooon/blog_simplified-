@@ -5,9 +5,9 @@ import chengda from './projects/chengda';
 
 // Export array with fixed order: Ravencoin first, then Chengda, then CGC Overseas
 export const projects = [
-  ravencoin,  // Jan 2018 - Present (ongoing)
   chengda,    // Feb 2023 - Jul 2023
-  cgcOverseas // Mar 2021 - Jul 2022
+  cgcOverseas, // Mar 2021 - Jul 2022
+  ravencoin  // Jan 2017 - 2019
 ];
 
 // Function to get project by slug
