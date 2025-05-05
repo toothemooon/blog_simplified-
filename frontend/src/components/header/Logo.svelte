@@ -5,7 +5,7 @@
 
 <a href="/" class="logo {size}">
   <span class="logo-icon"></span>
-  <span class="logo-text">MyBlog</span>
+  <span class="logo-text">My</span>
 </a>
 
 <style>

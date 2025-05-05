@@ -384,6 +384,7 @@ Here are some reasons to use nested routes
     margin-bottom: 0.5rem;
     font-weight: 500;
     letter-spacing: 0.05em;
+    text-transform: uppercase;
   }
 
   .nav-title {
@@ -446,25 +447,20 @@ Here are some reasons to use nested routes
     }
     
     .post-navigation {
-      flex-direction: column;
-      gap: 1.5rem;
+      flex-direction: row;
+      gap: 1rem;
       padding: 1.5rem 0;
     }
     
     .nav-link, .nav-placeholder {
-      max-width: 100%;
+      max-width: 45%;
       min-height: var(--min-touch-target);
       padding: 1rem;
-      border: 1px solid var(--color-border);
       border-radius: 0.5rem;
     }
     
     .next-link {
-      text-align: left;
-    }
-    
-    .next-link .nav-title {
-      flex-direction: row-reverse;
+      text-align: right;
     }
   }
 </style> 
