@@ -62,7 +62,7 @@
     list-style: none;
     margin: 0;
     padding: 0;
-    gap: 2.5rem;
+    gap: 2rem;
   }
   
   @media (max-width: 768px) {

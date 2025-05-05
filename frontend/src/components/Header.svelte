@@ -109,11 +109,13 @@
 
 <header class="header">
   <div class="container header-container">
-    <!-- Logo and Navigation Container -->
-    <div class="logo-nav-container">
-      <!-- Logo -->
+    <!-- Logo -->
+    <div class="logo-container">
       <Logo size="default" />
-      
+    </div>
+    
+    <!-- Navigation and Actions -->
+    <div class="nav-actions-container">
       <!-- Desktop Navigation -->
       <div class="desktop-nav hide-on-mobile">
         <NavLinks 
@@ -121,45 +123,17 @@
           on:linkClick={handleLinkClick}
         />
       </div>
-    </div>
-    
-    <!-- Actions -->
-    <div class="header-actions">
-      <!-- Search Button -->
-      <SearchButton on:opensearch={handleOpenSearch} />
       
-      <!-- Theme Toggle -->
-      <div class="theme-toggle">
-        <button id="theme-button" on:click={toggleThemeMenu} aria-label="Toggle theme" class="theme-button">
-          {#if theme === 'light'}
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="5"></circle>
-              <line x1="12" y1="1" x2="12" y2="3"></line>
-              <line x1="12" y1="21" x2="12" y2="23"></line>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-              <line x1="1" y1="12" x2="3" y2="12"></line>
-              <line x1="21" y1="12" x2="23" y2="12"></line>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-            </svg>
-          {:else if theme === 'dark'}
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-            </svg>
-          {:else}
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-              <line x1="8" y1="21" x2="16" y2="21"></line>
-              <line x1="12" y1="17" x2="12" y2="21"></line>
-            </svg>
-          {/if}
-        </button>
+      <!-- Actions -->
+      <div class="header-actions">
+        <!-- Search Button -->
+        <SearchButton on:opensearch={handleOpenSearch} />
         
-        {#if showThemeMenu}
-          <div id="theme-menu" class="theme-menu">
-            <button on:click={() => applyTheme('light')} class="theme-option">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <!-- Theme Toggle -->
+        <div class="theme-toggle">
+          <button id="theme-button" on:click={toggleThemeMenu} aria-label="Toggle theme" class="theme-button">
+            {#if theme === 'light'}
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="5"></circle>
                 <line x1="12" y1="1" x2="12" y2="3"></line>
                 <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -170,34 +144,62 @@
                 <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
                 <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
               </svg>
-              <span>Light</span>
-            </button>
-            
-            <button on:click={() => applyTheme('dark')} class="theme-option">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            {:else if theme === 'dark'}
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
               </svg>
-              <span>Dark</span>
-            </button>
-            
-            <button on:click={() => applyTheme('system')} class="theme-option">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            {:else}
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
                 <line x1="8" y1="21" x2="16" y2="21"></line>
                 <line x1="12" y1="17" x2="12" y2="21"></line>
               </svg>
-              <span>System</span>
-            </button>
-          </div>
-        {/if}
-      </div>
-      
-      <!-- Mobile Menu Button -->
-      <div class="hide-on-desktop">
-        <MobileMenuButton 
-          isOpen={mobileMenuOpen}
-          on:click={toggleMobileMenu}
-        />
+            {/if}
+          </button>
+          
+          {#if showThemeMenu}
+            <div id="theme-menu" class="theme-menu">
+              <button on:click={() => applyTheme('light')} class="theme-option">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="5"></circle>
+                  <line x1="12" y1="1" x2="12" y2="3"></line>
+                  <line x1="12" y1="21" x2="12" y2="23"></line>
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                  <line x1="1" y1="12" x2="3" y2="12"></line>
+                  <line x1="21" y1="12" x2="23" y2="12"></line>
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+                <span>Light</span>
+              </button>
+              
+              <button on:click={() => applyTheme('dark')} class="theme-option">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+                <span>Dark</span>
+              </button>
+              
+              <button on:click={() => applyTheme('system')} class="theme-option">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                  <line x1="8" y1="21" x2="16" y2="21"></line>
+                  <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+                <span>System</span>
+              </button>
+            </div>
+          {/if}
+        </div>
+        
+        <!-- Mobile Menu Button -->
+        <div class="hide-on-desktop">
+          <MobileMenuButton 
+            isOpen={mobileMenuOpen}
+            on:click={toggleMobileMenu}
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -248,10 +250,15 @@
     padding: 0 var(--space-md);
   }
   
-  .logo-nav-container {
+  .logo-container {
     display: flex;
     align-items: center;
-    gap: 5rem; /* Further increased gap between logo and navigation */
+  }
+  
+  .nav-actions-container {
+    display: flex;
+    align-items: center;
+    gap: 2rem; /* Increased gap between nav items and actions */
   }
   
   .desktop-nav {
@@ -262,7 +269,7 @@
   .header-actions {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.75rem; /* Slightly increased gap between action items */
   }
   
   @media (min-width: 640px) {
