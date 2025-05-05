@@ -1,21 +1,8 @@
 <script>
-  import { posts } from '../../data/blog-data.js';
+  import { getAllPosts, formatPostDate } from '../../utils/blog-utils.js';
   
-  // Sort posts by date (newest first) and limit to 5 most recent
-  const recentPosts = [...posts]
-    .sort((a, b) => new Date(b.date) - new Date(a.date))
-    .slice(0, 5);
-  
-  // Format date to display as Month DD, YYYY
-  function formatDate(dateStr) {
-    if (!dateStr) return '';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  }
+  // Get 5 most recent posts
+  const recentPosts = getAllPosts().slice(0, 5);
 </script>
 
 <div class="home-page">
@@ -26,9 +13,9 @@
   
   <div class="posts-list">
     {#each recentPosts as post}
-      <div class="post-item">
+      <article class="post-item">
         <div class="post-date">
-          <span>Published on {formatDate(post.date)}</span>
+          <span>Published on {formatPostDate(post.date)}</span>
         </div>
         
         <h2 class="post-title">
@@ -48,7 +35,7 @@
         <div class="read-more">
           <a href="/blog/{post.slug}" class="read-more-link">Read more →</a>
         </div>
-      </div>
+      </article>
     {/each}
     
     <div class="all-posts-link">
@@ -67,6 +54,8 @@
   
   .page-header {
     margin-bottom: 3rem;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 2rem;
   }
   
   .page-title {
@@ -74,6 +63,7 @@
     font-weight: 800;
     margin-bottom: 0.5rem;
     line-height: 1.2;
+    letter-spacing: -0.025em;
   }
   
   .page-subtitle {
