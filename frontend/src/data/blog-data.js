@@ -183,13 +183,6 @@ Svelte's lightweight nature and intuitive syntax make it perfect for building pe
     ]
   },
   {
-    title: 'Building a Blog with Svelte',
-    date: '2023-06-05',
-    summary: 'A step-by-step guide to creating your own blog using Svelte and vanilla CSS',
-    content: `
-    `,
-  },
-  {
     title: 'The Power of Progressive Enhancement',
     date: '2023-07-15',
     summary: 'Understanding how progressive enhancement can improve your web applications',
