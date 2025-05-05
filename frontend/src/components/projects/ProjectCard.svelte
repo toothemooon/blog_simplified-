@@ -12,7 +12,7 @@
       <a href={project.link}>{project.title}</a>
     </h2>
     <p class="description">{project.description}</p>
-    <a href={project.link} class="learn-more">Learn more →</a>
+    <a href={project.link} class="learn-more touch-target">Learn more →</a>
   </div>
 </article>
 
@@ -29,8 +29,8 @@
   }
   
   .project-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px -3px rgba(0, 0, 0, 0.1);
   }
   
   .image-container {
@@ -48,18 +48,18 @@
   }
   
   .project-card:hover .project-image {
-    transform: scale(1.03);
+    transform: scale(1.02);
   }
   
   .content {
-    padding: var(--space-lg);
+    padding: var(--space-md);
     flex: 1;
     display: flex;
     flex-direction: column;
   }
   
   .title {
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-lg);
     font-weight: 600;
     margin-bottom: var(--space-sm);
     line-height: 1.3;
@@ -81,13 +81,17 @@
     margin-bottom: var(--space-md);
     line-height: 1.5;
     flex: 1;
+    font-size: 0.95rem;
   }
   
   .learn-more {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    height: var(--min-touch-target);
     color: var(--color-primary);
     text-decoration: none;
     font-weight: 500;
+    font-size: 0.95rem;
     transition: color 0.2s ease;
     margin-top: auto;
   }
@@ -96,13 +100,13 @@
     color: var(--color-secondary);
   }
   
-  @media (max-width: 640px) {
+  @media (min-width: 640px) {
     .content {
-      padding: var(--space-md);
+      padding: var(--space-lg);
     }
     
     .title {
-      font-size: var(--font-size-lg);
+      font-size: var(--font-size-xl);
     }
   }
 </style> 

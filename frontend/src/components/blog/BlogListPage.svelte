@@ -43,7 +43,7 @@
   </div>
   
   <!-- Mobile Tags Toggle Button -->
-  <button class="mobile-tags-toggle hide-on-desktop" on:click={toggleMobileTags}>
+  <button class="mobile-tags-toggle hide-on-desktop touch-target" on:click={toggleMobileTags}>
     {showMobileTags ? 'Hide Tags' : 'Show Tags'} 
     <span class="toggle-icon">{showMobileTags ? '−' : '+'}</span>
   </button>
@@ -56,7 +56,7 @@
       <ul class="tags-list">
         {#each Object.entries(tags) as [tag, count]}
           <li class="tag-item">
-            <a href="/tags/{tag}" class="tag-link">
+            <a href="/tags/{tag}" class="tag-link touch-target">
               <span class="tag-name">{tag}</span>
               <span class="tag-count">({count})</span>
             </a>
@@ -88,7 +88,7 @@
           <p class="post-summary">{post.summary}</p>
           
           <div class="read-more">
-            <a href="/blog/{post.slug}" class="read-more-link">Read more →</a>
+            <a href="/blog/{post.slug}" class="read-more-link touch-target">Read more →</a>
           </div>
         </article>
       {/each}
@@ -103,11 +103,11 @@
   }
   
   .blog-list-header {
-    margin-bottom: var(--space-xl);
+    margin-bottom: var(--space-lg);
   }
   
   .page-title {
-    font-size: clamp(2rem, 5vw, 3rem);
+    font-size: clamp(1.75rem, 5vw, 2.5rem);
     font-weight: 800;
     margin-bottom: var(--space-md);
     line-height: 1.2;
@@ -133,6 +133,7 @@
     background-color: var(--color-bg);
     color: var(--color-text);
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
   }
   
   .toggle-icon {
@@ -149,10 +150,12 @@
   .tags-sidebar.mobile-visible {
     display: block;
     margin-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: var(--space-lg);
   }
   
   .tags-header {
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-lg);
     font-weight: 700;
     margin-bottom: var(--space-md);
   }
@@ -164,16 +167,18 @@
   }
   
   .tag-item {
-    margin-bottom: var(--space-sm);
+    margin-bottom: var(--space-xs);
   }
   
   .tag-link {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     color: var(--color-text);
     text-decoration: none;
     padding: var(--space-xs) 0;
     transition: color 0.2s ease;
+    height: var(--min-touch-target);
   }
   
   .tag-link:hover {
@@ -196,6 +201,10 @@
     border-bottom: 1px solid var(--color-border);
   }
   
+  .post-item:last-child {
+    border-bottom: none;
+  }
+  
   .post-date {
     font-size: var(--font-size-sm);
     color: var(--color-text);
@@ -204,7 +213,7 @@
   }
   
   .post-title {
-    font-size: clamp(1.5rem, 4vw, 1.75rem);
+    font-size: clamp(1.25rem, 4vw, 1.75rem);
     font-weight: 700;
     margin: 0 0 var(--space-sm) 0;
     line-height: 1.3;
@@ -258,6 +267,10 @@
     text-decoration: none;
     font-weight: 500;
     transition: opacity 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    height: var(--min-touch-target);
+    padding-right: var(--space-md);
   }
   
   .read-more-link:hover {
@@ -267,6 +280,10 @@
   
   /* Responsive styles */
   @media (min-width: 768px) {
+    .blog-list-header {
+      margin-bottom: var(--space-xl);
+    }
+    
     .mobile-tags-toggle {
       display: none;
     }
@@ -278,8 +295,14 @@
     
     .tags-sidebar {
       display: block;
-      width: 250px;
+      width: 220px;
       flex-shrink: 0;
+      position: sticky;
+      top: 80px;
+      align-self: flex-start;
+      height: auto;
+      border-bottom: none;
+      padding-bottom: 0;
     }
     
     .post-item {

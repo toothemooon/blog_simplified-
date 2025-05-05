@@ -18,17 +18,17 @@
 
 <style>
   .projects-page {
-    padding-top: var(--space-xl);
-    padding-bottom: var(--space-2xl);
+    padding-top: var(--space-lg);
+    padding-bottom: var(--space-xl);
   }
   
   .page-header {
-    margin-bottom: var(--space-xl);
+    margin-bottom: var(--space-lg);
     text-align: center;
   }
   
   .page-title {
-    font-size: clamp(2rem, 5vw, 2.5rem);
+    font-size: clamp(1.75rem, 5vw, 2.5rem);
     font-weight: 700;
     margin-bottom: var(--space-sm);
   }
@@ -44,13 +44,24 @@
   .projects-grid {
     display: grid;
     grid-template-columns: repeat(1, 1fr);
-    gap: var(--space-xl);
-    margin-top: var(--space-xl);
+    gap: var(--space-lg);
+    margin-top: var(--space-lg);
   }
   
   @media (min-width: 640px) {
+    .projects-page {
+      padding-top: var(--space-xl);
+      padding-bottom: var(--space-2xl);
+    }
+    
+    .page-header {
+      margin-bottom: var(--space-xl);
+    }
+    
     .projects-grid {
       grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-xl);
+      margin-top: var(--space-xl);
     }
   }
   

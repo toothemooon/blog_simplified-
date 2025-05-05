@@ -30,6 +30,8 @@
     border-radius: 0.25rem;
     transition: background-color 0.15s ease;
     cursor: pointer;
+    min-height: var(--min-touch-target);
+    -webkit-tap-highlight-color: transparent;
   }
   
   .search-result:hover,
@@ -47,6 +49,7 @@
   .result-title {
     font-size: 1rem;
     font-weight: 500;
+    padding: 0.25rem 0;
   }
   
   .result-title :global(mark) {
@@ -55,5 +58,11 @@
     padding: 0 0.1rem;
     border-radius: 0.125rem;
     font-weight: 600;
+  }
+  
+  @media (max-width: 640px) {
+    .search-result {
+      padding: 1rem;
+    }
   }
 </style> 

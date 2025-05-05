@@ -361,6 +361,13 @@ Here are some reasons to use nested routes
     max-width: 45%;
     text-decoration: none;
     transition: color 0.2s ease;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .nav-link:hover {
+    background-color: rgba(var(--color-primary-rgb), 0.05);
   }
   
   .nav-placeholder {
@@ -404,6 +411,11 @@ Here are some reasons to use nested routes
     font-weight: 500;
     font-size: 1.125rem;
     transition: opacity 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    height: var(--min-touch-target);
+    padding: 0 var(--space-md);
+    -webkit-tap-highlight-color: transparent;
   }
   
   .back-link:hover {
@@ -424,10 +436,13 @@ Here are some reasons to use nested routes
     .post-navigation {
       flex-direction: column;
       gap: 1.5rem;
+      padding: 1.5rem 0;
     }
     
     .nav-link, .nav-placeholder {
       max-width: 100%;
+      min-height: var(--min-touch-target);
+      padding: 0.75rem;
     }
     
     .next-link {

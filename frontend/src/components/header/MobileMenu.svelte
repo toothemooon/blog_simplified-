@@ -1,6 +1,7 @@
 <script>
   import { createEventDispatcher, onMount } from 'svelte';
   import { fade, fly } from 'svelte/transition';
+  import Logo from './Logo.svelte';
   
   // Props
   export let currentRoute = '/';
@@ -61,21 +62,33 @@
     class="mobile-menu-backdrop" 
     on:click={() => dispatch('close')}
     transition:fade={{ duration: 200 }}
+    role="presentation"
   ></div>
   
   <div 
     class="mobile-menu" 
-    transition:fly={{ y: -20, duration: 300, opacity: 1 }}
+    class:open={isOpen}
     role="dialog" 
     aria-label="Mobile navigation"
   >
+    <div class="mobile-menu-header">
+      <Logo size="small" />
+      <button 
+        class="close-button"
+        aria-label="Close menu"
+        on:click={() => dispatch('close')}
+      >
+        ×
+      </button>
+    </div>
+    
     <nav class="mobile-nav">
       {#each navLinks as link}
         <a 
           href={link.href} 
           class="mobile-nav-link" 
           class:active={isActive(link)}
-          on:click|preventDefault={handleLinkClick}
+          on:click={handleLinkClick}
           aria-current={isActive(link) ? 'page' : undefined}
         >
           {link.text}
@@ -99,31 +112,63 @@
   
   .mobile-menu {
     position: fixed;
-    top: var(--mobile-header-height, 60px);
+    top: 0;
     left: 0;
-    width: 100%;
+    width: 80%;
+    max-width: 300px;
+    height: 100vh;
     background-color: var(--color-bg);
     z-index: var(--z-index-modal);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-height: calc(100vh - var(--mobile-header-height, 60px));
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .mobile-menu.open {
+    transform: translateX(0);
+  }
+  
+  .mobile-menu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md);
+    border-bottom: 1px solid var(--color-border);
+  }
+  
+  .close-button {
+    background: none;
+    border: none;
+    font-size: 1.75rem;
+    color: var(--color-text);
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
   }
   
   .mobile-nav {
     display: flex;
     flex-direction: column;
-    padding: var(--space-lg);
+    padding: var(--space-md);
   }
   
   .mobile-nav-link {
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-lg);
     padding: var(--space-md) 0;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
     color: var(--color-text);
     text-decoration: none;
     border-bottom: 1px solid var(--color-border);
     transition: color 0.2s ease;
-    display: flex;
-    align-items: center;
   }
   
   .mobile-nav-link:last-child {

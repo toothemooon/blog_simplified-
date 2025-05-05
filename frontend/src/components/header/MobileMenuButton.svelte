@@ -40,10 +40,16 @@
     z-index: var(--z-index-sticky);
     color: var(--color-text);
     transition: color 0.2s ease;
+    border-radius: 4px;
+    -webkit-tap-highlight-color: transparent;
   }
   
   .mobile-menu-button:hover {
     color: var(--color-primary);
+  }
+  
+  .mobile-menu-button:active {
+    background-color: rgba(0, 0, 0, 0.05);
   }
   
   .hamburger-icon {
@@ -59,6 +65,7 @@
     height: 2px;
     background-color: currentColor;
     transition: transform 0.25s ease, opacity 0.2s ease;
+    border-radius: 1px;
   }
   
   .bar-1 {

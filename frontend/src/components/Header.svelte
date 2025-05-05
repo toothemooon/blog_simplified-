@@ -120,14 +120,6 @@
       />
     </div>
     
-    <!-- Mobile Menu Button -->
-    <div class="hide-on-desktop">
-      <MobileMenuButton 
-        isOpen={mobileMenuOpen}
-        on:click={toggleMobileMenu}
-      />
-    </div>
-    
     <!-- Actions -->
     <div class="header-actions">
       <!-- Search Button -->
@@ -196,6 +188,14 @@
           </div>
         {/if}
       </div>
+      
+      <!-- Mobile Menu Button -->
+      <div class="hide-on-desktop">
+        <MobileMenuButton 
+          isOpen={mobileMenuOpen}
+          on:click={toggleMobileMenu}
+        />
+      </div>
     </div>
   </div>
   
@@ -220,18 +220,17 @@
     position: sticky;
     top: 0;
     z-index: var(--z-index-sticky);
-    padding: var(--space-sm) 0;
     border-bottom: 1px solid var(--color-border);
     background-color: var(--color-bg);
-    height: var(--mobile-header-height, 60px);
+    height: 60px;
     display: flex;
     align-items: center;
   }
   
   @media (min-width: 640px) {
     .header {
-      height: var(--desktop-header-height, 70px);
-      padding: var(--space-md) 0;
+      height: 70px;
+      padding: var(--space-sm) 0;
     }
   }
   
@@ -239,12 +238,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    height: 100%;
   }
   
   .header-actions {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    margin-left: auto;
   }
   
   @media (min-width: 640px) {
@@ -261,9 +262,12 @@
     border: none;
     cursor: pointer;
     color: var(--color-text);
-    padding: 0.5rem;
-    border-radius: 0.25rem;
+    padding: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: 4px;
     transition: background-color 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
   }
   
   .theme-button:hover {
@@ -293,7 +297,8 @@
     align-items: center;
     gap: 0.5rem;
     width: 100%;
-    padding: 0.5rem;
+    padding: 0.75rem 0.5rem;
+    min-height: 44px;
     background: none;
     border: none;
     cursor: pointer;
@@ -305,5 +310,15 @@
   
   .theme-option:hover {
     background-color: var(--color-border);
+  }
+  
+  @media (max-width: 480px) {
+    .hide-on-mobile {
+      display: none;
+    }
+    
+    .hide-on-desktop {
+      display: block;
+    }
   }
 </style> 
