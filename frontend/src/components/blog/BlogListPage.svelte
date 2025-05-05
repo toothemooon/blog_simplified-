@@ -27,22 +27,39 @@
       day: 'numeric'
     });
   }
+  
+  // State
+  let showMobileTags = false;
+  
+  // Toggle mobile tags visibility
+  function toggleMobileTags() {
+    showMobileTags = !showMobileTags;
+  }
 </script>
 
-<div class="blog-list-page">
+<div class="blog-list-page container">
   <div class="blog-list-header">
     <h1 class="page-title">All Posts</h1>
   </div>
   
+  <!-- Mobile Tags Toggle Button -->
+  <button class="mobile-tags-toggle hide-on-desktop" on:click={toggleMobileTags}>
+    {showMobileTags ? 'Hide Tags' : 'Show Tags'} 
+    <span class="toggle-icon">{showMobileTags ? '−' : '+'}</span>
+  </button>
+  
   <div class="blog-list-content">
     <!-- Tags sidebar -->
-    <aside class="tags-sidebar">
+    <aside class="tags-sidebar" class:mobile-visible={showMobileTags}>
       <div class="tags-header">All Posts</div>
       
       <ul class="tags-list">
         {#each Object.entries(tags) as [tag, count]}
           <li class="tag-item">
-            <a href="/tags/{tag}" class="tag-link">{tag} ({count})</a>
+            <a href="/tags/{tag}" class="tag-link">
+              <span class="tag-name">{tag}</span>
+              <span class="tag-count">({count})</span>
+            </a>
           </li>
         {/each}
       </ul>
@@ -51,7 +68,7 @@
     <!-- Posts list -->
     <div class="posts-container">
       {#each sortedPosts as post}
-        <div class="post-item">
+        <article class="post-item">
           <div class="post-date">
             <span>Published on {formatDate(post.date)}</span>
           </div>
@@ -73,7 +90,7 @@
           <div class="read-more">
             <a href="/blog/{post.slug}" class="read-more-link">Read more →</a>
           </div>
-        </div>
+        </article>
       {/each}
     </div>
   </div>
@@ -81,38 +98,63 @@
 
 <style>
   .blog-list-page {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1rem;
+    padding-top: var(--space-xl);
+    padding-bottom: var(--space-2xl);
   }
   
   .blog-list-header {
-    margin-bottom: 3rem;
+    margin-bottom: var(--space-xl);
   }
   
   .page-title {
-    font-size: 3rem;
+    font-size: clamp(2rem, 5vw, 3rem);
     font-weight: 800;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--space-md);
     line-height: 1.2;
   }
   
   .blog-list-content {
     display: flex;
-    gap: 3rem;
+    flex-direction: column;
+    gap: var(--space-xl);
+  }
+  
+  /* Mobile tags toggle */
+  .mobile-tags-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: var(--space-md);
+    margin-bottom: var(--space-md);
+    font-weight: 500;
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    cursor: pointer;
+  }
+  
+  .toggle-icon {
+    font-size: 1.25rem;
+    font-weight: bold;
   }
   
   /* Tags Sidebar */
   .tags-sidebar {
-    width: 25%;
-    flex-shrink: 0;
+    width: 100%;
+    display: none;
+  }
+  
+  .tags-sidebar.mobile-visible {
+    display: block;
+    margin-bottom: var(--space-lg);
   }
   
   .tags-header {
-    font-size: 1.5rem;
+    font-size: var(--font-size-xl);
     font-weight: 700;
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--space-md);
   }
   
   .tags-list {
@@ -122,17 +164,25 @@
   }
   
   .tag-item {
-    margin-bottom: 0.75rem;
+    margin-bottom: var(--space-sm);
   }
   
   .tag-link {
+    display: flex;
+    justify-content: space-between;
     color: var(--color-text);
     text-decoration: none;
+    padding: var(--space-xs) 0;
     transition: color 0.2s ease;
   }
   
   .tag-link:hover {
     color: var(--color-primary);
+  }
+  
+  .tag-count {
+    color: var(--color-text);
+    opacity: 0.7;
   }
   
   /* Posts List */
@@ -141,22 +191,22 @@
   }
   
   .post-item {
-    margin-bottom: 3rem;
-    padding-bottom: 3rem;
+    margin-bottom: var(--space-xl);
+    padding-bottom: var(--space-xl);
     border-bottom: 1px solid var(--color-border);
   }
   
   .post-date {
-    font-size: 0.9rem;
+    font-size: var(--font-size-sm);
     color: var(--color-text);
     opacity: 0.7;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--space-xs);
   }
   
   .post-title {
-    font-size: 1.75rem;
+    font-size: clamp(1.5rem, 4vw, 1.75rem);
     font-weight: 700;
-    margin: 0 0 0.75rem 0;
+    margin: 0 0 var(--space-sm) 0;
     line-height: 1.3;
   }
   
@@ -174,12 +224,12 @@
   .post-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-md);
   }
   
   .tag {
-    font-size: 0.8rem;
+    font-size: var(--font-size-xs);
     padding: 0.2rem 0.75rem;
     border-radius: 0.25rem;
     background-color: var(--color-border);
@@ -195,12 +245,12 @@
   }
   
   .post-summary {
-    margin: 0.75rem 0;
+    margin: var(--space-sm) 0;
     line-height: 1.6;
   }
   
   .read-more {
-    margin-top: 1rem;
+    margin-top: var(--space-md);
   }
   
   .read-more-link {
@@ -215,19 +265,26 @@
     text-decoration: underline;
   }
   
-  /* Mobile Responsive */
-  @media (max-width: 768px) {
+  /* Responsive styles */
+  @media (min-width: 768px) {
+    .mobile-tags-toggle {
+      display: none;
+    }
+    
     .blog-list-content {
-      flex-direction: column;
+      flex-direction: row;
+      gap: var(--space-xl);
     }
     
     .tags-sidebar {
-      width: 100%;
-      margin-bottom: 2rem;
+      display: block;
+      width: 250px;
+      flex-shrink: 0;
     }
     
-    .post-title {
-      font-size: 1.5rem;
+    .post-item {
+      margin-bottom: var(--space-2xl);
+      padding-bottom: var(--space-2xl);
     }
   }
 </style> 

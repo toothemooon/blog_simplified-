@@ -2,49 +2,52 @@
   import { onMount } from 'svelte';
   import SearchButton from './search/SearchButton.svelte';
   import SearchDialog from './search/SearchDialog.svelte';
+  import Logo from './header/Logo.svelte';
+  import NavLinks from './header/NavLinks.svelte';
+  import MobileMenu from './header/MobileMenu.svelte';
+  import MobileMenuButton from './header/MobileMenuButton.svelte';
   
   // Props: accept currentRoute from App.svelte
   export let currentRoute = '/';
 
-  // Navigation links
-  const navLinks = [
-    { text: 'Blog', href: '/blog', route: '/blog-list' },
-    { text: 'Tags', href: '/tags', route: '/tags-list' },
-    { text: 'Projects', href: '/projects', route: '/projects' },
-    { text: 'About', href: '/about', route: '/about' }
-  ];
-  
-  // Check if a navigation link is active
-  function isActive(link) {
-    if (currentRoute === '/') {
-      return link.href === '/';
-    }
-    
-    if (currentRoute === '/blog-post') {
-      return link.route === '/blog-list';
-    }
-    
-    if (currentRoute === '/tag') {
-      return link.route === '/tags-list';
-    }
-    
-    return currentRoute === link.route;
-  }
-  
-  // Theme state
+  // State variables
   let theme = 'light';
   let showThemeMenu = false;
-  
-  // Search dialog state
   let showSearchDialog = false;
+  let mobileMenuOpen = false;
+  let isMobile = false;
+  let windowWidth;
   
-  // Initialize theme from localStorage on mount
+  // Initialize theme and check screen size on mount
   onMount(() => {
+    // Load theme from localStorage
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) {
       theme = savedTheme;
       applyTheme(theme);
     }
+    
+    // Set up resize handler to detect mobile screens
+    const handleResize = () => {
+      windowWidth = window.innerWidth;
+      isMobile = windowWidth < 640;
+      
+      // Auto-close mobile menu when resizing to desktop
+      if (!isMobile && mobileMenuOpen) {
+        mobileMenuOpen = false;
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Initial check
+    
+    // Set up click outside handler
+    document.addEventListener('click', handleClickOutside);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      document.removeEventListener('click', handleClickOutside);
+    };
   });
   
   // Apply theme to document
@@ -91,43 +94,42 @@
     showSearchDialog = false;
   }
   
-  // Add click outside listener
-  onMount(() => {
-    document.addEventListener('click', handleClickOutside);
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
-  });
+  // Toggle mobile menu
+  function toggleMobileMenu() {
+    mobileMenuOpen = !mobileMenuOpen;
+  }
+  
+  // Handle navigation link click
+  function handleLinkClick() {
+    if (isMobile) {
+      mobileMenuOpen = false;
+    }
+  }
 </script>
 
 <header class="header">
-  <div class="container flex items-center justify-between">
+  <div class="container header-container">
     <!-- Logo -->
-    <a href="/" class="logo">
-      <span class="logo-icon"></span>
-      <span class="logo-text">MyBlog</span>
-    </a>
+    <Logo />
     
-    <!-- Navigation -->
-    <nav class="nav">
-      <ul class="nav-list">
-        {#each navLinks as link}
-          <li class="nav-item">
-            <a 
-              href={link.href} 
-              class="nav-link" 
-              class:active={isActive(link)}
-              aria-current={isActive(link) ? 'page' : undefined}
-            >
-              {link.text}
-            </a>
-          </li>
-        {/each}
-      </ul>
-    </nav>
+    <!-- Desktop Navigation -->
+    <div class="hide-on-mobile">
+      <NavLinks 
+        {currentRoute}
+        on:linkClick={handleLinkClick}
+      />
+    </div>
+    
+    <!-- Mobile Menu Button -->
+    <div class="hide-on-desktop">
+      <MobileMenuButton 
+        isOpen={mobileMenuOpen}
+        on:click={toggleMobileMenu}
+      />
+    </div>
     
     <!-- Actions -->
-    <div class="actions flex items-center gap-4">
+    <div class="header-actions">
       <!-- Search Button -->
       <SearchButton on:opensearch={handleOpenSearch} />
       
@@ -196,6 +198,14 @@
       </div>
     </div>
   </div>
+  
+  <!-- Mobile Menu -->
+  <MobileMenu 
+    isOpen={mobileMenuOpen}
+    {currentRoute}
+    on:linkClick={handleLinkClick}
+    on:close={() => mobileMenuOpen = false}
+  />
 </header>
 
 <!-- Search Dialog -->
@@ -207,72 +217,43 @@
 
 <style>
   .header {
-    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: var(--z-index-sticky);
+    padding: var(--space-sm) 0;
     border-bottom: 1px solid var(--color-border);
     background-color: var(--color-bg);
-  }
-  
-  .logo {
+    height: var(--mobile-header-height, 60px);
     display: flex;
     align-items: center;
-    font-weight: bold;
-    font-size: 1.5rem;
-    color: var(--color-text);
-    text-decoration: none;
   }
   
-  .logo:hover {
-    text-decoration: none;
+  @media (min-width: 640px) {
+    .header {
+      height: var(--desktop-header-height, 70px);
+      padding: var(--space-md) 0;
+    }
   }
   
-  .logo-icon {
-    display: inline-block;
-    width: 2rem;
-    height: 2rem;
-    margin-right: 0.5rem;
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 70%, 0 100%);
-  }
-  
-  .nav-list {
+  .header-container {
     display: flex;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    gap: 2rem;
+    align-items: center;
+    justify-content: space-between;
   }
   
-  .nav-link {
-    color: var(--color-text);
-    font-weight: 500;
-    text-decoration: none;
-    transition: color 0.2s ease;
-    padding-bottom: 0.25rem;
-    position: relative;
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
   
-  .nav-link:hover {
-    color: var(--color-primary);
-    text-decoration: none;
+  @media (min-width: 640px) {
+    .header-actions {
+      gap: 1rem;
+    }
   }
   
-  .nav-link.active {
-    color: var(--color-primary);
-    font-weight: 600;
-  }
-  
-  .nav-link.active::after {
-    content: '';
-    position: absolute;
-    bottom: -0.25rem;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background-color: var(--color-primary);
-    border-radius: 1px;
-  }
-  
-  .search-button, .theme-button {
+  .theme-button {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -285,7 +266,7 @@
     transition: background-color 0.2s ease;
   }
   
-  .search-button:hover, .theme-button:hover {
+  .theme-button:hover {
     background-color: var(--color-border);
   }
   
@@ -303,7 +284,7 @@
     border-radius: 0.5rem;
     padding: 0.5rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 10;
+    z-index: var(--z-index-dropdown);
     min-width: 10rem;
   }
   
@@ -324,18 +305,5 @@
   
   .theme-option:hover {
     background-color: var(--color-border);
-  }
-  
-  /* Responsive styles */
-  @media (max-width: 768px) {
-    .nav-list {
-      gap: 1rem;
-    }
-  }
-  
-  @media (max-width: 640px) {
-    .nav {
-      display: none;
-    }
   }
 </style> 
