@@ -1,8 +1,11 @@
 <script>
-  import { posts } from '../../data/blog-data.js';
+  import { getAllPosts } from '../../utils/blog-utils.js';
+  
+  // Get all posts
+  const allPosts = getAllPosts();
   
   // Generate unique tags list with counts
-  const tags = posts.reduce((acc, post) => {
+  const tags = allPosts.reduce((acc, post) => {
     if (post.tags && post.tags.length) {
       post.tags.forEach(tag => {
         if (!acc[tag]) {

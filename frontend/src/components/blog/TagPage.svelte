@@ -1,25 +1,14 @@
 <script>
-  import { posts } from '../../data/blog-data.js';
+  import { getAllPosts, formatPostDate } from '../../utils/blog-utils.js';
   
   // Tag parameter from URL
   export let tag = '';
   
-  // Sort posts by date (newest first)
-  const sortedPosts = [...posts].sort((a, b) => new Date(b.date) - new Date(a.date));
+  // Get all posts and sort by date (newest first)
+  const allPosts = getAllPosts();
   
   // Filter posts by tag
-  $: filteredPosts = sortedPosts.filter(post => post.tags && post.tags.includes(tag));
-  
-  // Format date
-  function formatDate(dateStr) {
-    if (!dateStr) return '';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  }
+  $: filteredPosts = allPosts.filter(post => post.tags && post.tags.includes(tag));
 </script>
 
 <div class="tag-page">
@@ -30,7 +19,7 @@
       {#each filteredPosts as post}
         <div class="post-item">
           <div class="post-date">
-            <span>Published on {formatDate(post.date)}</span>
+            <span>Published on {formatPostDate(post.date)}</span>
           </div>
           
           <h2 class="post-title">
