@@ -40,6 +40,16 @@ page('/tags/:tag', (ctx) => {
 	setRoute('/tag', { tag: ctx.params.tag });
 });
 
+// Projects listing page
+page('/projects', () => {
+	setRoute('/projects-list');
+});
+
+// Individual project page
+page('/projects/:id', (ctx) => {
+	setRoute('/project-detail', { id: ctx.params.id });
+});
+
 // Start the router
 page.start();
 
