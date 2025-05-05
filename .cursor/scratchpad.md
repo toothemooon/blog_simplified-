@@ -1089,6 +1089,141 @@ Based on the comparison, here's a prioritized implementation plan:
 - [ ] Create utility functions for date formatting and tag handling
 - [ ] Refine card styling to match target site
 - [ ] Implement mobile-friendly navigation
+- [ ] Implement search functionality
+  - [ ] Create SearchButton component
+  - [ ] Develop SearchDialog modal
+  - [ ] Implement basic search logic
+  - [ ] Add keyboard shortcuts
+  - [ ] Enhance with animations and polish
+- [ ] Add code block copy functionality
+- [ ] Create newsletter subscription component
+- [ ] Implement table of contents for long articles
+- [ ] Add pagination to blog listing
+
+This plan will guide our ongoing development to transform the current site into a more feature-complete and polished implementation that matches or exceeds the target site's functionality.
+
+## Search Functionality Implementation Plan
+
+After reviewing the search experience in [Tailwind Nextjs Starter Blog](https://tailwind-nextjs-starter-blog.vercel.app/) and comparing with our current implementation at [blog-simplified](https://blog-simplified.vercel.app/), I've developed a detailed plan for implementing a similar search functionality.
+
+### Current Status
+- The blog-simplified site has a non-functional search button in the header
+- Clicking this button doesn't trigger any search interface
+- The button is styled and positioned correctly in the header
+
+### Analysis of Target Implementation
+The Tailwind Nextjs Starter Blog implements a sophisticated command palette style search:
+- Clean modal overlay with a prominent search box
+- Keyboard shortcut indicator (ESC) in the top corner
+- Results organized under "CONTENT" heading
+- Post results display date and title information
+- Results appear to be grouped by year
+- Smooth animations for opening/closing
+- Keyboard navigation support
+
+### Implementation Components
+
+1. **Component Architecture**
+   ```
+   src/
+   └── components/
+       └── search/
+           ├── SearchButton.svelte     # Button to trigger search dialog
+           ├── SearchDialog.svelte     # Main search modal
+           ├── SearchResult.svelte     # Individual search result item
+           └── SearchResultGroup.svelte # Grouped results (e.g., by year)
+   ```
+
+2. **Utils Directory**
+   ```
+   src/
+   └── utils/
+       └── search.js    # Search utilities including:
+                        # - Text indexing
+                        # - Result scoring/ranking
+                        # - Text highlighting
+                        # - Group organization
+   ```
+
+### Technical Implementation Details
+
+1. **Search Button**
+   - Replace existing button with functional component
+   - Add keyboard shortcut (`/` key) to open search dialog
+   - Include proper ARIA attributes for accessibility
+
+2. **Search Dialog**
+   - Modal dialog with backdrop and focus trap
+   - Input field with auto-focus
+   - Keyboard navigation support
+   - "ESC" key to close dialog
+   - Search-as-you-type functionality
+   - Responsive design for mobile devices
+
+3. **Search Logic**
+   - Client-side search implementation
+   - Index post titles, summaries, tags, and possibly content
+   - Tokenize and normalize search terms for better matching
+   - Implement debouncing for performance
+   - Score and rank results by relevance
+   - Group results by year with collapsible sections
+   - Highlight matching text in results
+
+4. **Polish and Refinements**
+   - Subtle animations for dialog opening/closing
+   - Loading state for search in progress
+   - Empty state for no results
+   - Clear button for search input
+   - History of recent searches (optional)
+   - Keyboard shortcuts display in UI
+
+### Implementation Phases
+
+1. **Phase 1: Basic Functionality**
+   - Create SearchButton component
+   - Implement basic SearchDialog
+   - Add simple text matching against titles and summaries
+   - Display basic results list
+
+2. **Phase 2: Enhanced Experience**
+   - Add keyboard shortcuts and navigation
+   - Implement result grouping by year
+   - Add animations and transitions
+   - Improve mobile experience
+
+3. **Phase 3: Refinements**
+   - Implement advanced search with filters
+   - Add fuzzy matching for better results
+   - Optimize performance for larger datasets
+   - Add search analytics (optional)
+
+### Accessibility Considerations
+- Implement proper focus management
+- Add appropriate ARIA attributes
+- Ensure keyboard navigability
+- Provide clear visual indicators
+- Support screen readers with proper announcements
+
+### Performance Optimizations
+- Implement search index caching
+- Use debounced input handling
+- Lazy load search dialog until needed
+- Optimize result rendering with virtualization for large result sets
+
+This search implementation will significantly enhance the user experience on our blog, providing intuitive content discovery similar to the reference implementation while maintaining our Svelte and vanilla CSS architecture.
+
+### Upcoming Tasks
+
+- [ ] Extract PostCard component
+- [ ] Create utility functions for date formatting and tag handling
+- [ ] Refine card styling to match target site
+- [ ] Implement mobile-friendly navigation
+- [ ] Implement search functionality
+  - [ ] Create SearchButton component
+  - [ ] Develop SearchDialog modal
+  - [ ] Implement basic search logic
+  - [ ] Add keyboard shortcuts
+  - [ ] Enhance with animations and polish
 - [ ] Add code block copy functionality
 - [ ] Create newsletter subscription component
 - [ ] Implement table of contents for long articles

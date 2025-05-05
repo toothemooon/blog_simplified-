@@ -1,5 +1,7 @@
 <script>
   import { onMount } from 'svelte';
+  import SearchButton from './search/SearchButton.svelte';
+  import SearchDialog from './search/SearchDialog.svelte';
   
   // Props: accept currentRoute from App.svelte
   export let currentRoute = '/';
@@ -32,6 +34,9 @@
   // Theme state
   let theme = 'light';
   let showThemeMenu = false;
+  
+  // Search dialog state
+  let showSearchDialog = false;
   
   // Initialize theme from localStorage on mount
   onMount(() => {
@@ -77,6 +82,15 @@
     }
   }
   
+  // Handle search dialog open/close
+  function handleOpenSearch() {
+    showSearchDialog = true;
+  }
+  
+  function handleCloseSearch() {
+    showSearchDialog = false;
+  }
+  
   // Add click outside listener
   onMount(() => {
     document.addEventListener('click', handleClickOutside);
@@ -115,12 +129,7 @@
     <!-- Actions -->
     <div class="actions flex items-center gap-4">
       <!-- Search Button -->
-      <button class="search-button" aria-label="Search">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-      </button>
+      <SearchButton on:opensearch={handleOpenSearch} />
       
       <!-- Theme Toggle -->
       <div class="theme-toggle">
@@ -188,6 +197,13 @@
     </div>
   </div>
 </header>
+
+<!-- Search Dialog -->
+<SearchDialog 
+  isOpen={showSearchDialog} 
+  on:close={handleCloseSearch}
+  on:open={handleOpenSearch}
+/>
 
 <style>
   .header {

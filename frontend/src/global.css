@@ -7,6 +7,7 @@
   --color-bg-light: #ffffff;
   --color-text-light: #1a202c;
   --color-primary-light: #3182ce; 
+  --color-primary-rgb-light: 49, 130, 206; /* RGB version of primary color */
   --color-secondary-light: #4299e1;
   --color-accent-light: #63b3ed;
   --color-border-light: #e2e8f0;
@@ -15,6 +16,7 @@
   --color-bg-dark: #1a202c;
   --color-text-dark: #f7fafc;
   --color-primary-dark: #4299e1;
+  --color-primary-rgb-dark: 66, 153, 225; /* RGB version of primary color */
   --color-secondary-dark: #63b3ed;
   --color-accent-dark: #90cdf4;
   --color-border-dark: #4a5568;
@@ -23,6 +25,7 @@
   --color-bg: var(--color-bg-light);
   --color-text: var(--color-text-light);
   --color-primary: var(--color-primary-light);
+  --color-primary-rgb: var(--color-primary-rgb-light);
   --color-secondary: var(--color-secondary-light);
   --color-accent: var(--color-accent-light);
   --color-border: var(--color-border-light);
@@ -33,6 +36,7 @@
   --color-bg: var(--color-bg-dark);
   --color-text: var(--color-text-dark);
   --color-primary: var(--color-primary-dark);
+  --color-primary-rgb: var(--color-primary-rgb-dark);
   --color-secondary: var(--color-secondary-dark);
   --color-accent: var(--color-accent-dark);
   --color-border: var(--color-border-dark);
