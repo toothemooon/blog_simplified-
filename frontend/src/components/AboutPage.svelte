@@ -35,13 +35,9 @@
   </div>
   
   <div class="bio-content">
-    <p>サラダ is a graduate of English Major at Sichuan International Studies University. was working in global projects in Africa and mid-east countries.
+    <p>サラダ is a graduate of English Major at Sichuan International Studies University. was working in oversea projects in Africa and mid-east countries.
       
     <p>His current interests and focuses IT development and relevant job opportunities.</p>
-    
-    <p>He was in the management of Nigeria Ogun State water pond factory and pipeline projects, a safety engineer of Qatar QVC PVC project with e-CPW qualification issued by Qatar energy.
-    </p>
-    
   </div>
 </div>
 
