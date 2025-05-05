@@ -194,6 +194,34 @@ p, h1, h2, h3, h4, h5, h6, li, td, th, figcaption, dt, dd, a, span, button {
   hyphens: auto;
 }
 
+/* Better focus styles - remove outline for mouse but keep for keyboard */
+:focus {
+  outline: none;
+}
+
+/* Only show focus styles for keyboard navigation */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* For non-supporting browsers, revert to default focus styles */
+@supports not selector(:focus-visible) {
+  :focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+/* Reset focus style for mouse interaction on clickable elements in the header */
+.app-header a:focus:not(:focus-visible),
+.app-header button:focus:not(:focus-visible),
+.search-button:focus:not(:focus-visible),
+.theme-toggle:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
+
 /* Add specific handling for long URLs and code snippets */
 pre, code {
   white-space: pre-wrap;
@@ -284,12 +312,6 @@ pre, code {
   .hide-on-desktop {
     display: none;
   }
-}
-
-/* Focus states for accessibility */
-:focus {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
 }
 
 /* Screen reader only class */
