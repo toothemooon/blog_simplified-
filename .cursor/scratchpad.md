@@ -34,6 +34,375 @@
 ## Background and Motivation
 The goal is to build a modern blog similar to https://tailwind-nextjs-starter-blog.vercel.app/blog but using Svelte 4 for the framework and vanilla CSS for styling instead of Next.js and Tailwind CSS. This approach will leverage the existing Svelte codebase while still creating a clean, responsive blog with good performance.
 
+## Projects Section Implementation Plan
+
+Based on the user's request, we'll implement a Projects section following a similar approach to the Ravencoin blog posts, focusing on layout and structure first. The implementation will mirror the structure of the Time Machine blog post from the reference site.
+
+### Project Data Structure
+
+We'll create a modular system for projects similar to our blog posts:
+
+```
+frontend/src/
+└── data/
+    └── projects/
+        ├── index.js             # Central management file for projects
+        ├── projects/            # Project metadata files
+        │   ├── ravencoin.js
+        │   ├── cgc-overseas.js
+        │   └── chengda.js
+        └── content/             # Detailed content files (for future implementation)
+            ├── ravencoin.md
+            ├── cgc-overseas.md
+            └── chengda.md
+```
+
+### Project Metadata Structure
+
+Each project will have a consistent metadata structure:
+
+```javascript
+// src/data/projects/projects/ravencoin.js
+export default {
+  title: 'Ravencoin (Volunteer Project)',
+  role: 'Community Moderator',
+  location: 'Remote',
+  period: 'Jan 2018 – Present',
+  slug: 'ravencoin',
+  summary: 'Founded and managed the Chinese RVN community, promoting Ravencoin's growth and blockchain education in Chinese-speaking regions.',
+  tags: ['blockchain', 'community', 'volunteer', 'translation'],
+  metadata: {
+    type: 'Volunteer Project',
+    field: 'Blockchain',
+    teamSize: 'Community-based',
+    role: 'Community Moderator'
+  },
+  // For future detailed content
+  getContent: () => import('../content/ravencoin.md')
+}
+```
+
+### Component Implementation Plan
+
+1. **ProjectsPage.svelte**
+   - List view of all projects
+   - Similar to BlogListPage but styled specifically for projects
+   - Each project displayed as a card with key information
+
+2. **ProjectDetailPage.svelte**
+   - Detailed view of a single project
+   - Similar layout to The Time Machine blog post
+   - Structured sections for project details
+   - Will initially just show the introduction
+
+3. **Project Item Component Structure**
+   - Title and period
+   - Role and location
+   - Project type/metadata
+   - Summary and key achievements (bullet points)
+   - Tags
+
+### Implementation Steps
+
+#### Phase 1: Data Structure Setup (2 hours)
+
+1. Create the projects directory structure
+2. Create the project metadata files for the three projects
+3. Set up the index.js file to manage projects
+4. Create placeholder content files
+
+#### Phase 2: Component Implementation (4 hours)
+
+1. Create ProjectsPage.svelte with list view
+2. Create ProjectDetailPage.svelte with detailed view
+3. Update App.svelte to include project routes
+4. Create utility functions for project data in project-utils.js
+
+#### Phase 3: Styling and Layout (2 hours)
+
+1. Style ProjectsPage to match the site's aesthetic
+2. Style ProjectDetailPage similar to The Time Machine blog post
+3. Ensure responsive design for all screen sizes
+4. Test across different viewports
+
+### Project Data to Implement
+
+#### Project 1: Ravencoin
+- **Title**: Ravencoin (Volunteer Project)
+- **Role**: Community Moderator
+- **Location**: Remote
+- **Period**: Jan 2018 – Present
+- **Summary**: 
+  - Founded and managed the Chinese RVN community
+  - Engaged in cross-cultural communication
+  - Coordinated with iOS developers on Chinese UI translation
+  - Translated official announcements
+  - Moderated 1,400+ member community
+  - Bridged communication between mining operators and buyers
+
+#### Project 2: CGC Overseas Construction Group
+- **Title**: CGC Overseas Construction Group (中地海外集团)
+- **Role**: Business Assistant & Financial Administrator
+- **Location**: Abeokuta, Nigeria & Abuja HQ
+- **Period**: Mar 2021 – Jul 2022
+- **Summary**: 
+  - Built relationships with state stakeholders
+  - Organized bi-weekly project meetings
+  - Drafted contracts with subcontractors
+  - Resolved critical issues through diplomatic negotiation
+  - Handled daily operations of project bank accounts
+  - Managed payroll and HR affairs
+
+#### Project 3: China Chengda Engineering Co., Ltd.
+- **Title**: China Chengda Engineering Co., Ltd. (中国成达工程有限公司)
+- **Role**: Safety Engineer
+- **Location**: Mesaieed, Qatar
+- **Period**: Feb 2023 – Jul 2023
+- **Summary**: 
+  - Obtained E-CPW safety permit
+  - Oversaw safety equipment procurement
+  - Led multicultural safety team
+  - Monitored safety work permits
+  - Drafted emergency response plans
+  - Compiled safety reports and coordinated safety campaigns
+
+### Detailed Component Structure
+
+#### ProjectsPage.svelte
+```svelte
+<script>
+  import { getAllProjects } from '../../utils/project-utils.js';
+  
+  const projects = getAllProjects();
+</script>
+
+<div class="projects-page">
+  <div class="page-header">
+    <h1 class="page-title">Projects</h1>
+    <p class="page-subtitle">A showcase of my professional experience and achievements</p>
+  </div>
+  
+  <div class="projects-list">
+    {#each projects as project}
+      <article class="project-item">
+        <div class="project-metadata">
+          <span class="project-period">{project.period}</span>
+        </div>
+        
+        <h2 class="project-title">
+          <a href="/projects/{project.slug}">{project.title}</a>
+        </h2>
+        
+        <div class="project-role-location">
+          <span class="project-role">{project.role}</span>
+          <span class="project-location">{project.location}</span>
+        </div>
+        
+        <p class="project-summary">{project.summary}</p>
+        
+        {#if project.tags && project.tags.length > 0}
+          <div class="project-tags">
+            {#each project.tags as tag}
+              <span class="tag">{tag}</span>
+            {/each}
+          </div>
+        {/if}
+        
+        <div class="read-more">
+          <a href="/projects/{project.slug}" class="read-more-link">View details →</a>
+        </div>
+      </article>
+    {/each}
+  </div>
+</div>
+```
+
+#### ProjectDetailPage.svelte
+```svelte
+<script>
+  import { getProject } from '../../utils/project-utils.js';
+  
+  export let slug = '';
+  
+  let project = null;
+  let loading = true;
+  let error = null;
+  
+  $: if (slug) {
+    loadProject(slug);
+  }
+  
+  async function loadProject(projectSlug) {
+    if (!projectSlug) return;
+    
+    loading = true;
+    error = null;
+    
+    try {
+      const projectData = await getProject(projectSlug);
+      
+      if (!projectData) {
+        error = 'Project not found';
+        project = null;
+      } else {
+        project = projectData;
+      }
+    } catch (err) {
+      console.error('Error loading project:', err);
+      error = 'Failed to load project';
+    } finally {
+      loading = false;
+    }
+  }
+</script>
+
+<div class="project-detail-page container-narrow">
+  {#if loading}
+    <div class="loading-indicator">
+      <p>Loading project...</p>
+    </div>
+  {:else if error}
+    <div class="error-message">
+      <h2>Error</h2>
+      <p>{error}</p>
+      <a href="/projects">Return to projects list</a>
+    </div>
+  {:else if project}
+    <article class="project-detail">
+      <!-- Period -->
+      <div class="project-period-container">
+        <time class="project-period">{project.period}</time>
+      </div>
+      
+      <!-- Title -->
+      <h1 class="project-title">{project.title}</h1>
+      
+      <!-- Role and Location -->
+      <div class="project-role-location">
+        <span class="project-role">{project.role}</span>
+        <span class="location-separator">|</span>
+        <span class="project-location">{project.location}</span>
+      </div>
+      
+      <!-- Metadata -->
+      <div class="project-metadata">
+        <div class="metadata-group">
+          <span class="metadata-label">Type:</span>
+          <span class="metadata-value">{project.metadata.type}</span>
+        </div>
+        
+        <div class="metadata-group">
+          <span class="metadata-label">Field:</span>
+          <span class="metadata-value">{project.metadata.field}</span>
+        </div>
+        
+        <div class="metadata-group">
+          <span class="metadata-label">Team Size:</span>
+          <span class="metadata-value">{project.metadata.teamSize}</span>
+        </div>
+        
+        <div class="metadata-group">
+          <span class="metadata-label">Role:</span>
+          <span class="metadata-value">{project.metadata.role}</span>
+        </div>
+      </div>
+      
+      <!-- Summary -->
+      <div class="project-summary">
+        <h2>Overview</h2>
+        <p>{project.summary}</p>
+      </div>
+      
+      <!-- Tags -->
+      {#if project.tags && project.tags.length > 0}
+        <div class="project-tags">
+          {#each project.tags as tag}
+            <span class="tag">{tag}</span>
+          {/each}
+        </div>
+      {/if}
+    </article>
+  {:else}
+    <div class="not-found">
+      <h2>Project Not Found</h2>
+      <p>The project you're looking for doesn't exist or has been removed.</p>
+      <a href="/projects">Return to projects list</a>
+    </div>
+  {/if}
+</div>
+```
+
+### Routing Updates
+
+Update App.svelte to include the project routes:
+
+```svelte
+<script>
+  import page from 'page';
+  import ProjectsPage from './components/projects/ProjectsPage.svelte';
+  import ProjectDetailPage from './components/projects/ProjectDetailPage.svelte';
+  
+  // ... existing code
+  
+  // Projects routes
+  page('/projects', () => {
+    component = ProjectsPage;
+    props = {};
+  });
+  
+  page('/projects/:slug', (ctx) => {
+    component = ProjectDetailPage;
+    props = { slug: ctx.params.slug };
+  });
+  
+  // ... existing code
+</script>
+```
+
+### Utility Functions
+
+Create a new file `project-utils.js` with functions:
+
+```javascript
+import { projects, getProjectBySlug } from '../data/projects';
+
+/**
+ * Get all projects
+ */
+export function getAllProjects() {
+  return projects;
+}
+
+/**
+ * Get a specific project by slug
+ */
+export async function getProject(slug) {
+  const project = getProjectBySlug(slug);
+  if (!project) return null;
+  
+  return project;
+}
+```
+
+## Confidence Level for Implementation
+
+With this detailed plan, I'm 100% confident we can implement the Projects section following the structure similar to the Ravencoin blog posts. The plan provides:
+
+1. Clear data structure for the project metadata
+2. Detailed component structure that aligns with the existing blog design
+3. Implementation steps with time estimates
+4. Specific project data to be included
+
+This implementation focuses on layout and structure first, with the detailed content to be added later as requested. The structure mirrors The Time Machine blog post from the reference site, displaying metadata in a structured way similar to the reference.
+
+## Next Steps
+
+After approval of this plan, we'll proceed with:
+1. Creating the project data files
+2. Implementing the ProjectsPage and ProjectDetailPage components
+3. Setting up the routing
+4. Styling the components to match the site's aesthetic
+
 ## Comparison with Target Site
 
 After reviewing both the current blog-simplified site at https://blog-simplified.vercel.app/ and our target reference https://tailwind-nextjs-starter-blog.vercel.app/, I've identified the following gaps and opportunities for improvement:
@@ -180,7 +549,7 @@ For each phase:
 
 | Task | Status | Priority | Estimated Effort | Notes |
 |------|--------|----------|-----------------|-------|
-| Implement Projects Section | 🔄 Planned | High | 8 hours | Create pages, data structure and routing |
+| Implement Projects Section | 🔄 In Progress | High | 8 hours | Create pages, data structure and routing |
 | Add Basic Footer | 🔄 Planned | High | 4 hours | Social links, site info, consistent styling |
 | Fix 404 Pages | 🔄 Planned | High | 2 hours | Custom 404 page and proper redirects |
 | Add Pagination | 🔄 Planned | High | 4 hours | For blog listing with URL parameter support |
