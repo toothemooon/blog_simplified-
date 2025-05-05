@@ -3,7 +3,7 @@
 ## Background and Motivation
 The goal is to build a modern blog similar to https://tailwind-nextjs-starter-blog.vercel.app/blog but using Svelte 4 for the framework and vanilla CSS for styling instead of Next.js and Tailwind CSS. This approach will leverage the existing Svelte codebase while still creating a clean, responsive blog with good performance.
 
-## Latest Codebase Review (2023-11-22)
+## Latest Codebase Review (2023-12-03)
 
 After conducting a thorough review of the codebase, I've identified the current structure, implementation status, and areas for improvement.
 
@@ -11,29 +11,42 @@ After conducting a thorough review of the codebase, I've identified the current 
 The project follows a clean, organized directory structure:
 ```
 frontend/
-├── docs/                   # Project documentation
-├── public/                 # Static assets
-│   ├── build/              # Build output directory
-│   ├── favicon.png         # Site favicon
-│   ├── index.html          # HTML entry point
-│   └── global.css          # Public global CSS
+├── docs/                     # Project documentation
+├── public/                   # Static assets
+│   ├── build/                # Build output directory
+│   ├── favicon.png           # Site favicon
+│   ├── index.html            # HTML entry point
+│   └── global.css            # Public global CSS
 ├── src/
 │   ├── components/
-│   │   ├── Header.svelte   # Navigation and theme controls
-│   │   └── blog/           # Blog-specific components
-│   │       ├── HomePage.svelte
-│   │       ├── BlogListPage.svelte
-│   │       ├── BlogPostPage.svelte
-│   │       ├── TagsPage.svelte
-│   │       └── TagPage.svelte
+│   │   ├── Header.svelte     # Navigation and theme controls (341 lines)
+│   │   ├── blog/             # Blog-specific components
+│   │   │   ├── HomePage.svelte (185 lines)
+│   │   │   ├── BlogListPage.svelte (233 lines)
+│   │   │   ├── BlogPostPage.svelte (437 lines)
+│   │   │   ├── TagsPage.svelte (80 lines)
+│   │   │   └── TagPage.svelte (195 lines)
+│   │   ├── projects/         # Projects-specific components
+│   │   │   ├── ProjectsPage.svelte (57 lines)
+│   │   │   ├── ProjectCard.svelte (84 lines)
+│   │   │   └── ProjectDetailPage.svelte (160 lines)
+│   │   ├── search/           # Search components 
+│   │   │   ├── SearchButton.svelte (43 lines)
+│   │   │   ├── SearchDialog.svelte (306 lines)
+│   │   │   ├── SearchResult.svelte (59 lines)
+│   │   │   └── SearchResultGroup.svelte (46 lines)
+│   │   └── AboutPage.svelte  # About page component (163 lines)
 │   ├── data/
-│   │   └── blog-data.js    # Blog post data centralized in one file
-│   ├── App.svelte          # Main app shell with route handling
-│   ├── main.js             # Page.js routing and app initialization
-│   └── global.css          # Global CSS variables and utilities
-├── rollup.config.js        # Rollup bundler configuration
-├── package.json            # Project dependencies
-└── README.md               # Project documentation
+│   │   ├── blog-data.js      # Blog post data (304 lines)
+│   │   └── project-data.js   # Project data (23 lines)
+│   ├── utils/                # Utility functions
+│   │   └── search.js         # Search utility functions (163 lines)
+│   ├── App.svelte            # Main app shell with route handling
+│   ├── main.js               # Page.js routing and app initialization
+│   └── global.css            # Global CSS variables and utilities
+├── rollup.config.js          # Rollup bundler configuration
+├── package.json              # Project dependencies
+└── README.md                 # Project documentation
 ```
 
 ## Latest Review of Source Folder Structure and Deployed Site (2023-11-25)
@@ -44,12 +57,12 @@ The `src` folder has a clean and focused structure that follows a component-base
 
 1. **Entry Points**:
    - `main.js` (836 bytes, 46 lines): Application bootstrap and routing configuration
-   - `App.svelte` (1.4KB, 60 lines): Main application shell and route rendering
+   - `App.svelte` (1.4KB, 69 lines): Main application shell and route rendering
    - `global.css` (1.8KB, 82 lines): Global styles and theming variables
 
 2. **Components Organization**:
    - **Top-level Components**:
-     - `Header.svelte` (9.8KB, 325 lines): Main navigation header with theme switching
+     - `Header.svelte` (10.0KB, 341 lines): Main navigation header with theme switching
    - **Domain-specific Components**:
      - `blog/HomePage.svelte` (3.7KB, 185 lines): Home page showing recent posts
      - `blog/BlogListPage.svelte` (4.5KB, 233 lines): Blog listing with tag filtering
@@ -68,14 +81,15 @@ The `src` folder has a clean and focused structure that follows a component-base
    - Data is centralized in a separate data directory
 
 2. **Component Size Concerns**:
-   - `Header.svelte` (325 lines) and `BlogPostPage.svelte` (437 lines) are significantly large
+   - `Header.svelte` (341 lines) and `BlogPostPage.svelte` (437 lines) are significantly large
    - These components could benefit from further decomposition into smaller sub-components
 
-3. **Missing Directories**:
-   - No dedicated `utils/` directory for shared utility functions
-   - No `lib/` directory for shared/reusable components
+3. **Directory Structure Improvements**:
+   - ✓ Added `utils/` directory with search utilities
+   - Still missing `lib/` directory for shared/reusable components
+   - Could benefit from a dedicated `layouts/` directory for page layouts
 
-4. **Structure Improvements Needed**:
+4. **Code Organization Improvements Needed**:
    - Common functionality like date formatting is duplicated across components
    - Post card rendering is duplicated in HomePage and BlogListPage
    - Shared UI elements (tags, cards, buttons) are not extracted into reusable components
@@ -122,9 +136,9 @@ The deployed site successfully implements a modern blog with the following featu
 
 ### Deployed Site Issues and Missing Features
 
-1. **Missing Sections**:
-   - **Projects Section**: The "Projects" link in the navigation leads to a blank/non-existent page
-   - **About Page**: The "About" link in the navigation leads to a blank/non-existent page
+1. **Partially Implemented Sections**:
+   - ✓ **Projects Section**: Successfully implemented with ProjectsPage, ProjectCard, and ProjectDetailPage components
+   - ✓ **About Page**: Successfully implemented with AboutPage component
    - **404 Page**: No custom 404 page for invalid routes
 
 2. **Mobile Experience Issues**:
@@ -133,37 +147,39 @@ The deployed site successfully implements a modern blog with the following featu
    - Two-column layout on BlogListPage doesn't adapt well to mobile screens
 
 3. **Functionality Limitations**:
-   - Search button is non-functional
+   - ✓ **Search functionality**: Successfully implemented with SearchButton, SearchDialog, SearchResult, and SearchResultGroup components
    - No pagination for blog listing
    - Code blocks in blog posts lack syntax highlighting
    - No table of contents for long articles
 
 4. **Visual Enhancement Opportunities**:
    - Footer is minimal with limited information
-   - No animations or transitions for interactions
+   - No animations or transitions for interactions (except for search dialog)
    - Limited visual distinction between different types of content
    - No loading indicators during navigation
 
 ### Correlation Between Source Structure and Deployed Site
 
-The source structure directly reflects the implemented features on the deployed site:
+The source structure reflects the implemented features on the deployed site:
 
-1. The five blog components (HomePage, BlogListPage, BlogPostPage, TagsPage, TagPage) correspond exactly to the five main page types on the site
-2. The routing in main.js matches the navigation paths on the deployed site
-3. The missing Projects and About pages in the source align with their absence on the deployed site
-4. The theme switching functionality in Header.svelte is working correctly on the deployed site
+1. The blog components (HomePage, BlogListPage, BlogPostPage, TagsPage, TagPage) correspond to the main blog-related pages
+2. The projects components (ProjectsPage, ProjectCard, ProjectDetailPage) implement the Projects section
+3. The AboutPage component implements the About page
+4. The search components (SearchButton, SearchDialog, SearchResult, SearchResultGroup) implement the search functionality
+5. The theme switching functionality in Header.svelte works correctly
 
 ### Recommendations for Structure Improvement
 
-Based on both source structure and deployed site review:
+Based on the current structure and outstanding needs:
 
-1. **Create Utils Directory**:
+1. **Expand Utils Directory**:
    ```
    src/
    └── utils/
-       ├── date.js        # Date formatting utilities
-       ├── tags.js        # Tag handling utilities
-       └── formatting.js  # Text formatting utilities
+       ├── search.js      # Search utility functions (existing)
+       ├── date.js        # Date formatting utilities (needed)
+       ├── tags.js        # Tag handling utilities (needed)
+       └── formatting.js  # Text formatting utilities (needed)
    ```
 
 2. **Create Lib Directory for Shared Components**:
@@ -177,25 +193,25 @@ Based on both source structure and deployed site review:
            └── LoadingIndicator.svelte # Loading state component
    ```
 
-3. **Create Projects Directory**:
+3. **Create Mobile Navigation Components**:
    ```
    src/
    └── components/
-       └── projects/
-           ├── ProjectsPage.svelte     # Projects listing page
-           ├── ProjectCard.svelte      # Project card component
-           └── ProjectDetailPage.svelte # Individual project page
+       └── header/
+           ├── MobileMenu.svelte     # Mobile menu component
+           ├── MobileMenuButton.svelte # Hamburger button component
+           ├── NavLinks.svelte       # Navigation links component
+           └── ThemeToggle.svelte    # Theme toggle component
    ```
 
-4. **Create About and 404 Pages**:
+4. **Create 404 Page**:
    ```
    src/
    └── components/
-       ├── AboutPage.svelte         # About page component
        └── NotFoundPage.svelte      # 404 page component
    ```
 
-These improvements would enhance the maintainability of the source code while completing the missing features observed on the deployed site.
+These improvements would enhance the maintainability of the source code while addressing the remaining issues.
 
 ## Comprehensive Source Code Review
 
@@ -219,7 +235,6 @@ Below is a detailed review of all files in the `src` directory, evaluating each 
 - Route names follow a consistent pattern
 
 **Areas for Improvement**:
-- Missing routes for Projects and About pages
 - No 404 fallback route for invalid URLs
 - No route grouping as the application grows
 - Limited comments for explaining the routing strategy
@@ -227,13 +242,13 @@ Below is a detailed review of all files in the `src` directory, evaluating each 
 - No code splitting or lazy loading of routes
 
 **Recommendations**:
-1. Add routes for the Projects section (`/projects` and `/projects/:id`)
-2. Add a route for the About page (`/about`)
-3. Implement a catch-all route for 404 errors
-4. Consider organizing routes by feature area
-5. Add TypeScript for type safety in route parameters
+1. Implement a catch-all route for 404 errors
+2. Consider organizing routes by feature area
+3. Add more comments for complex routing logic
+4. Add TypeScript for type safety in route parameters
+5. Consider implementing code splitting for better performance
 
-### 2. `frontend/src/App.svelte` (1.4KB, 60 lines)
+### 2. `frontend/src/App.svelte` (1.4KB, 69 lines)
 
 **Purpose**: Main application shell that orchestrates the application's structure and conditional rendering based on the current route.
 
@@ -250,9 +265,10 @@ Below is a detailed review of all files in the `src` directory, evaluating each 
 - Good use of CSS variables for theming
 - Clear conditional rendering based on routes
 - Passes current route to Header for active state indicators
+- Includes all main sections: Home, Blog, Tags, Projects, About
 
 **Areas for Improvement**:
-- Missing conditions for Projects, About, and 404 pages
+- Missing condition for 404 page
 - Uses a series of if/else statements that could become unwieldy
 - Footer implementation is minimal
 - No transition animations between route changes
@@ -260,7 +276,7 @@ Below is a detailed review of all files in the `src` directory, evaluating each 
 - No error boundary for handling component errors
 
 **Recommendations**:
-1. Add conditionals for missing pages (Projects, About, 404)
+1. Add conditional for 404 page
 2. Consider using a map or switch pattern for route handling
 3. Implement a proper Footer component
 4. Add page transition animations
@@ -305,7 +321,7 @@ Below is a detailed review of all files in the `src` directory, evaluating each 
 6. Add CSS variables for animations and transitions
 7. Consider adding more semantic color variables (success, error, warning)
 
-### 4. `frontend/src/components/Header.svelte` (9.8KB, 325 lines)
+### 4. `frontend/src/components/Header.svelte` (10.0KB, 341 lines)
 
 This is a large component, so I'll focus on the key aspects.
 
@@ -316,7 +332,7 @@ This is a large component, so I'll focus on the key aspects.
 - Navigation menu with links to main sections
 - Theme switching (light/dark/system) with persistent preference
 - Active state indicators for current page
-- Search button (placeholder)
+- Search button with functional search implementation
 - Responsive styling
 
 **Strengths**:
@@ -327,24 +343,22 @@ This is a large component, so I'll focus on the key aspects.
 - Active route indicators for better UX
 - ARIA attributes for accessibility
 - Event listeners properly cleaned up on component destruction
+- Integration with search functionality
 
 **Areas for Improvement**:
 - Mobile menu is missing for smaller screens
-- Search button is non-functional
-- Some duplication in SVG code
+- Component is very large (341 lines) and could be broken down
 - Dropdown positioning could be improved for mobile
-- Complex component that could be broken down
 - Limited animations and transitions
 - No keyboard navigation for theme menu
 
 **Recommendations**:
 1. Implement a hamburger menu for mobile screens
 2. Extract SVG icons to separate components
-3. Add keyboard navigation for the theme menu
-4. Implement the search functionality or remove the button
+3. Break down into smaller sub-components (NavLinks, ThemeToggle, etc.)
+4. Add keyboard navigation for the theme menu
 5. Add smooth transitions for interactive elements
-6. Split into smaller sub-components
-7. Enhance accessibility features
+6. Enhance accessibility features
 
 ### 5. `frontend/src/components/blog/HomePage.svelte` (3.7KB, 185 lines)
 
@@ -573,22 +587,22 @@ This is a large component, so I'll focus on the key aspects.
 1. **Code Duplication**: Significant duplication of code patterns (post cards, date formatting)
 2. **Component Size**: Several large components that could be broken down
 3. **Mobile Experience**: Limited mobile-specific optimizations and navigation
-4. **Missing Features**: Projects section, About page, and 404 handling not implemented
+4. **Missing Features**: 404 handling not implemented
 5. **Error Handling**: Limited error states and fallbacks
-6. **Utility Functions**: No shared utility functions for common operations
+6. **Utility Functions**: Partial implementation of shared utility functions (search.js exists, but date formatting still duplicated)
 
 ### Technical Debt Items
 1. **Extract Shared Components**: Post card, tag chips, and other repeated UI elements
 2. **Create Utility Functions**: Date formatting, tag handling, and other repeated logic
 3. **Enhance Mobile Experience**: Add mobile menu and improve responsive layouts
-4. **Implement Missing Pages**: Projects, About, and 404 pages
+4. **Implement 404 Page**: Create a NotFoundPage component for invalid routes
 5. **Add Type Safety**: Consider TypeScript or PropType validation
 6. **Improve Accessibility**: Add keyboard navigation, focus management, and ARIA attributes
 
 ### Immediate Improvement Opportunities
-1. **Create a Utils Directory**: For shared helper functions
+1. ✓ **Create a Utils Directory**: Successfully implemented with search.js
 2. **Extract Common Components**: Move repeated UI elements to shared components
-3. **Implement Projects Section**: Complete the planned functionality
+3. ✓ **Implement Projects Section**: Successfully implemented with ProjectsPage, ProjectCard, and ProjectDetailPage
 4. **Add Mobile Menu**: Implement hamburger menu for mobile devices
 5. **Create 404 Page**: Add fallback for invalid routes
 
@@ -608,14 +622,14 @@ This is a large component, so I'll focus on the key aspects.
    - Add README files to document directory purposes
 
 ### Phase 2: Missing Features Implementation
-1. Implement Projects Section
-   - Create project data structure
-   - Implement ProjectsPage component
-   - Add individual project detail page
-   - Update routing in main.js
-2. Create About Page
-   - Implement AboutPage component
-   - Add route in main.js
+1. ✓ Implement Projects Section
+   - ✓ Create project data structure
+   - ✓ Implement ProjectsPage component
+   - ✓ Add individual project detail page
+   - ✓ Update routing in main.js
+2. ✓ Create About Page
+   - ✓ Implement AboutPage component
+   - ✓ Add route in main.js
 3. Add 404 Page
    - Create NotFoundPage component
    - Add catch-all route in main.js
@@ -1084,10 +1098,28 @@ Based on the comparison, here's a prioritized implementation plan:
 
 ### Upcoming Tasks
 
+- [ ] Implement responsive design improvements
+  - [ ] Phase 1: Foundation
+    - [ ] Add breakpoint CSS variables to global.css
+    - [ ] Create responsive container component
+    - [ ] Update base typography to be responsive
+  - [ ] Phase 2: Mobile Menu
+    - [ ] Create header/ directory for components
+    - [ ] Implement MobileMenuButton component with animated hamburger icon
+    - [ ] Create NavLinks component for desktop navigation
+    - [ ] Implement MobileMenu component for mobile navigation drawer
+    - [ ] Refactor Header.svelte to use new components with responsive behavior
+  - [ ] Phase 3: Core Layout Components
+    - [ ] Update BlogListPage with mobile-first responsive layout
+    - [ ] Enhance ProjectsPage grid with proper breakpoints
+    - [ ] Optimize SearchDialog component for mobile screens
+  - [ ] Phase 4: Refinements
+    - [ ] Test across multiple device sizes (320px to 1280px)
+    - [ ] Fix any responsive issues identified in testing
+    - [ ] Add touch-specific optimizations for mobile
 - [ ] Extract PostCard component
 - [ ] Create utility functions for date formatting and tag handling
 - [ ] Refine card styling to match target site
-- [ ] Implement mobile-friendly navigation
 - [x] Implement search functionality
   - [x] Create SearchButton component
   - [x] Develop SearchDialog modal
@@ -1211,25 +1243,6 @@ The Tailwind Nextjs Starter Blog implements a sophisticated command palette styl
 
 This search implementation will significantly enhance the user experience on our blog, providing intuitive content discovery similar to the reference implementation while maintaining our Svelte and vanilla CSS architecture.
 
-### Upcoming Tasks
-
-- [ ] Extract PostCard component
-- [ ] Create utility functions for date formatting and tag handling
-- [ ] Refine card styling to match target site
-- [ ] Implement mobile-friendly navigation
-- [x] Implement search functionality
-  - [x] Create SearchButton component
-  - [x] Develop SearchDialog modal
-  - [x] Implement basic search logic
-  - [x] Add keyboard shortcuts
-  - [x] Enhance with animations and polish
-- [ ] Add code block copy functionality
-- [ ] Create newsletter subscription component
-- [ ] Implement table of contents for long articles
-- [ ] Add pagination to blog listing
-
-This plan will guide our ongoing development to transform the current site into a more feature-complete and polished implementation that matches or exceeds the target site's functionality.
-
 ## Search Functionality Implementation Status
 
 After implementing the search functionality based on the previous plan, here's a detailed review of what has been accomplished:
@@ -1339,21 +1352,542 @@ After implementing the search functionality based on the previous plan, here's a
 
 This implementation successfully delivers a functional search experience similar to the target site, with proper keyboard navigation, result grouping, and term highlighting. While there are areas for refinement, the core functionality is complete and working as expected.
 
-### Upcoming Tasks
+## Responsive Design Implementation Plan (2023-12-03)
 
-- [ ] Extract PostCard component
-- [ ] Create utility functions for date formatting and tag handling
-- [ ] Refine card styling to match target site
-- [ ] Implement mobile-friendly navigation
-- [x] Implement search functionality
-  - [x] Create SearchButton component
-  - [x] Develop SearchDialog modal
-  - [x] Implement basic search logic
-  - [x] Add keyboard shortcuts
-  - [x] Enhance with animations and polish
-- [ ] Add code block copy functionality
-- [ ] Create newsletter subscription component
-- [ ] Implement table of contents for long articles
-- [ ] Add pagination to blog listing
+After reviewing the current codebase and identifying responsive design issues, particularly the lack of a mobile menu in the Header component, I've developed a comprehensive implementation plan to ensure the site works flawlessly across all device sizes.
 
-This plan will guide our ongoing development to transform the current site into a more feature-complete and polished implementation that matches or exceeds the target site's functionality. 
+### Current Responsive Design Issues
+
+1. **Header Navigation Issues**:
+   - Navigation menu becomes crowded on smaller screens
+   - No hamburger menu for mobile navigation
+   - Search button positioning is not optimized for mobile
+   - Theme switcher dropdown needs adjustment for touch interfaces
+
+2. **Layout Issues**:
+   - Two-column layout on BlogListPage doesn't adapt well to mobile screens
+   - Grid layouts in ProjectsPage need better responsive behavior
+   - Content padding is inconsistent across different screen sizes
+   - SearchDialog component needs mobile optimization
+
+3. **Typography and Spacing**:
+   - Font sizes don't properly scale down on smaller screens
+   - Line lengths are too long on some mobile views
+   - Spacing between elements needs adjustment for mobile
+
+### Mobile-First Implementation Strategy
+
+To achieve 100% confidence in our responsive design implementation, we'll adopt a mobile-first approach:
+
+1. Define breakpoints and create CSS variables for them
+2. Implement responsive container components
+3. Rebuild layouts using flexbox/grid with mobile-first media queries
+4. Test extensively on real devices
+
+### Header Mobile Menu Implementation
+
+The Header.svelte component (currently 341 lines) needs significant refactoring to support a responsive mobile menu. Here's the detailed implementation plan:
+
+#### 1. Component Structure
+
+First, we'll refactor the Header component into smaller sub-components:
+
+```
+components/
+├── Header.svelte                # Main header container
+└── header/
+    ├── NavLinks.svelte          # Navigation links component
+    ├── MobileMenu.svelte        # Mobile menu component
+    ├── MobileMenuButton.svelte  # Hamburger button component
+    ├── ThemeToggle.svelte       # Theme switching component
+    └── Logo.svelte              # Site logo component
+```
+
+#### 2. Header.svelte Refactoring
+
+```svelte
+<script>
+  import { onMount } from 'svelte';
+  import Logo from './header/Logo.svelte';
+  import NavLinks from './header/NavLinks.svelte';
+  import MobileMenu from './header/MobileMenu.svelte';
+  import MobileMenuButton from './header/MobileMenuButton.svelte';
+  import ThemeToggle from './header/ThemeToggle.svelte';
+  import SearchButton from './search/SearchButton.svelte';
+
+  // Props
+  export let currentRoute = '/';
+  
+  // State
+  let mobileMenuOpen = false;
+  let isSearchOpen = false;
+  let windowWidth;
+  let isMobile = false;
+  
+  // Toggle mobile menu
+  function toggleMobileMenu() {
+    mobileMenuOpen = !mobileMenuOpen;
+  }
+  
+  // Close mobile menu when a link is clicked
+  function handleLinkClick() {
+    if (isMobile) {
+      mobileMenuOpen = false;
+    }
+  }
+  
+  // Open search dialog
+  function openSearch() {
+    isSearchOpen = true;
+  }
+  
+  // Responsive behavior
+  onMount(() => {
+    const handleResize = () => {
+      windowWidth = window.innerWidth;
+      isMobile = windowWidth < 768;
+      
+      // Auto-close mobile menu on resize to desktop
+      if (!isMobile && mobileMenuOpen) {
+        mobileMenuOpen = false;
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Initial check
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  });
+</script>
+
+<header>
+  <div class="header-container">
+    <Logo />
+    
+    {#if isMobile}
+      <MobileMenuButton 
+        isOpen={mobileMenuOpen} 
+        on:click={toggleMobileMenu} 
+      />
+    {:else}
+      <NavLinks 
+        {currentRoute} 
+        on:linkClick={handleLinkClick} 
+      />
+    {/if}
+    
+    <div class="header-actions">
+      <SearchButton on:opensearch={openSearch} />
+      <ThemeToggle />
+    </div>
+  </div>
+  
+  {#if isMobile && mobileMenuOpen}
+    <MobileMenu 
+      {currentRoute} 
+      on:linkClick={handleLinkClick} 
+    />
+  {/if}
+</header>
+
+<style>
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+    width: 100%;
+  }
+  
+  .header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1rem;
+    height: 60px;
+    max-width: var(--content-width-lg, 1200px);
+    margin: 0 auto;
+  }
+  
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  @media (min-width: 768px) {
+    .header-container {
+      padding: 0 2rem;
+      height: 70px;
+    }
+    
+    .header-actions {
+      gap: 1rem;
+    }
+  }
+</style>
+```
+
+#### 3. MobileMenuButton.svelte Implementation
+
+```svelte
+<script>
+  import { createEventDispatcher } from 'svelte';
+  
+  export let isOpen = false;
+  
+  const dispatch = createEventDispatcher();
+  
+  function handleClick() {
+    dispatch('click');
+  }
+</script>
+
+<button 
+  class="mobile-menu-button" 
+  aria-label={isOpen ? 'Close menu' : 'Open menu'}
+  aria-expanded={isOpen}
+  on:click={handleClick}
+>
+  <span class="hamburger-icon" class:open={isOpen}>
+    <span class="bar bar-1"></span>
+    <span class="bar bar-2"></span>
+    <span class="bar bar-3"></span>
+  </span>
+</button>
+
+<style>
+  .mobile-menu-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 101;
+  }
+  
+  .hamburger-icon {
+    position: relative;
+    width: 24px;
+    height: 20px;
+  }
+  
+  .bar {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--color-text);
+    transition: transform 0.25s ease, opacity 0.2s ease;
+  }
+  
+  .bar-1 {
+    top: 0;
+  }
+  
+  .bar-2 {
+    top: 9px;
+  }
+  
+  .bar-3 {
+    bottom: 0;
+  }
+  
+  /* Animation for the hamburger icon */
+  .open .bar-1 {
+    transform: translateY(9px) rotate(45deg);
+  }
+  
+  .open .bar-2 {
+    opacity: 0;
+  }
+  
+  .open .bar-3 {
+    transform: translateY(-9px) rotate(-45deg);
+  }
+</style>
+```
+
+#### 4. MobileMenu.svelte Implementation
+
+```svelte
+<script>
+  import { createEventDispatcher } from 'svelte';
+  
+  export let currentRoute = '/';
+  
+  const dispatch = createEventDispatcher();
+  
+  const navLinks = [
+    { text: 'Blog', href: '/blog', route: '/blog-list' },
+    { text: 'Tags', href: '/tags', route: '/tags-list' },
+    { text: 'Projects', href: '/projects', route: '/projects' },
+    { text: 'About', href: '/about', route: '/about' }
+  ];
+  
+  function isActive(link) {
+    if (currentRoute === '/') {
+      return link.href === '/';
+    }
+    
+    if (currentRoute === '/blog-post') {
+      return link.route === '/blog-list';
+    }
+    
+    if (currentRoute === '/tag') {
+      return link.route === '/tags-list';
+    }
+    
+    return currentRoute === link.route;
+  }
+  
+  function handleLinkClick() {
+    dispatch('linkClick');
+  }
+</script>
+
+<div class="mobile-menu">
+  <nav class="mobile-nav">
+    {#each navLinks as link}
+      <a 
+        href={link.href} 
+        class="mobile-nav-link" 
+        class:active={isActive(link)}
+        on:click|preventDefault={handleLinkClick}
+      >
+        {link.text}
+      </a>
+    {/each}
+  </nav>
+</div>
+
+<style>
+  .mobile-menu {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 60px);
+    background-color: var(--color-bg);
+    z-index: 99;
+    overflow-y: auto;
+    animation: slideIn 0.3s ease;
+  }
+  
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .mobile-nav {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+  }
+  
+  .mobile-nav-link {
+    font-size: 1.25rem;
+    padding: 1rem 0;
+    color: var(--color-text);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-border);
+    transition: color 0.2s ease;
+  }
+  
+  .mobile-nav-link:last-child {
+    border-bottom: none;
+  }
+  
+  .mobile-nav-link.active {
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+</style>
+```
+
+#### 5. Global CSS Variables for Responsive Design
+
+We'll add these variables to `global.css`:
+
+```css
+:root {
+  /* ... existing variables ... */
+  
+  /* Breakpoints */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  
+  /* Container widths */
+  --content-width-sm: 100%;
+  --content-width-md: 90%;
+  --content-width-lg: 1200px;
+  
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  
+  /* Mobile-specific spacing */
+  --mobile-padding: 1rem;
+  --mobile-header-height: 60px;
+  --desktop-header-height: 70px;
+}
+```
+
+### Testing the Mobile Menu Implementation
+
+To ensure 100% confidence in our implementation, we'll follow this testing approach:
+
+1. **Device Testing:**
+   - Test on real iOS and Android devices
+   - Test in Chrome DevTools device emulation mode
+   - Test at various screen widths (320px, 375px, 414px, 768px, etc.)
+
+2. **Interaction Testing:**
+   - Verify the hamburger button opens/closes the menu
+   - Ensure menu closes when a link is clicked
+   - Test that the menu closes when resizing to desktop
+   - Verify smooth animations on opening/closing
+
+3. **Accessibility Testing:**
+   - Test with keyboard navigation
+   - Ensure proper ARIA attributes
+   - Verify screen reader compatibility
+   - Check color contrast for all elements
+
+### Responsive Design Implementation for Other Components
+
+After implementing the mobile menu, we'll apply similar responsive design principles to other key components:
+
+#### 1. BlogListPage Two-Column Layout
+
+```svelte
+<style>
+  .blog-layout {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .tag-sidebar {
+    margin-bottom: 2rem;
+  }
+  
+  @media (min-width: 768px) {
+    .blog-layout {
+      flex-direction: row;
+    }
+    
+    .tag-sidebar {
+      width: 250px;
+      flex-shrink: 0;
+      margin-right: 2rem;
+      margin-bottom: 0;
+    }
+    
+    .blog-content {
+      flex-grow: 1;
+    }
+  }
+</style>
+```
+
+#### 2. Responsive ProjectsPage Grid
+
+```svelte
+<style>
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  @media (min-width: 640px) {
+    .projects-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .projects-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>
+```
+
+#### 3. SearchDialog Mobile Optimization
+
+```svelte
+<style>
+  .search-dialog {
+    width: 95%;
+    max-width: 500px;
+    max-height: 80vh;
+  }
+  
+  @media (max-width: 640px) {
+    .search-dialog {
+      width: 100%;
+      max-width: 100%;
+      max-height: 90vh;
+      border-radius: 0;
+    }
+    
+    .search-input {
+      font-size: 0.875rem;
+    }
+    
+    .search-result-group {
+      padding: 0.5rem;
+    }
+  }
+</style>
+```
+
+### Implementation Roadmap
+
+To ensure we approach responsive design systematically, we'll follow this phased approach:
+
+#### Phase 1: Foundation
+1. Add responsive breakpoint variables to global.css
+2. Create a responsive container component
+
+#### Phase 2: Mobile Menu
+1. Implement MobileMenuButton component
+2. Create MobileMenu component
+3. Refactor Header.svelte
+
+#### Phase 3: Core Layout Improvements
+1. Update BlogListPage with responsive layout
+2. Enhance ProjectsPage grid
+3. Optimize SearchDialog for mobile
+
+#### Phase 4: Typography and Spacing
+1. Update typography scale for mobile
+2. Adjust spacing and padding for smaller screens
+3. Fix line length issues on mobile
+
+#### Phase 5: Testing and Refinement
+1. Test on real devices
+2. Fix any issues found during testing
+3. Performance optimization for mobile
+
+By following this comprehensive approach, we'll achieve 100% confidence in our responsive design implementation, starting with the critical mobile menu component. 
