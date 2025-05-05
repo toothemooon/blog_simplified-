@@ -109,15 +109,18 @@
 
 <header class="header">
   <div class="container header-container">
-    <!-- Logo -->
-    <Logo size="default" />
-    
-    <!-- Desktop Navigation -->
-    <div class="hide-on-mobile">
-      <NavLinks 
-        {currentRoute}
-        on:linkClick={handleLinkClick}
-      />
+    <!-- Logo and Navigation Container -->
+    <div class="logo-nav-container">
+      <!-- Logo -->
+      <Logo size="default" />
+      
+      <!-- Desktop Navigation -->
+      <div class="desktop-nav hide-on-mobile">
+        <NavLinks 
+          {currentRoute}
+          on:linkClick={handleLinkClick}
+        />
+      </div>
     </div>
     
     <!-- Actions -->
@@ -239,13 +242,27 @@
     align-items: center;
     justify-content: space-between;
     height: 100%;
+    width: 100%;
+    max-width: var(--container-width-lg);
+    margin: 0 auto;
+    padding: 0 var(--space-md);
+  }
+  
+  .logo-nav-container {
+    display: flex;
+    align-items: center;
+    gap: 5rem; /* Further increased gap between logo and navigation */
+  }
+  
+  .desktop-nav {
+    display: flex;
+    align-items: center;
   }
   
   .header-actions {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-left: auto;
   }
   
   @media (min-width: 640px) {

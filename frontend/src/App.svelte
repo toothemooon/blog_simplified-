@@ -41,7 +41,7 @@
 	<!-- Simple footer - will be implemented properly later -->
 	<footer class="footer">
 		<div class="container">
-			<p>&copy; {new Date().getFullYear()} • MyBlog • Built by サラダ</p>
+			<p>&copy; {new Date().getFullYear()} • Sarada's Blog • Built with Svelte 4</p>
 		</div>
 	</footer>
 </div>
