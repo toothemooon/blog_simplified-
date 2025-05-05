@@ -13,6 +13,10 @@ The project follows a clean, organized directory structure:
 frontend/
 ├── docs/                   # Project documentation
 ├── public/                 # Static assets
+│   ├── build/              # Build output directory
+│   ├── favicon.png         # Site favicon
+│   ├── index.html          # HTML entry point
+│   └── global.css          # Public global CSS
 ├── src/
 │   ├── components/
 │   │   ├── Header.svelte   # Navigation and theme controls
@@ -32,60 +36,173 @@ frontend/
 └── README.md               # Project documentation
 ```
 
+## Latest Review of Source Folder Structure and Deployed Site (2023-11-25)
+
+### Source Folder Structure Analysis
+
+The `src` folder has a clean and focused structure that follows a component-based architecture pattern:
+
+1. **Entry Points**:
+   - `main.js` (836 bytes, 46 lines): Application bootstrap and routing configuration
+   - `App.svelte` (1.4KB, 60 lines): Main application shell and route rendering
+   - `global.css` (1.8KB, 82 lines): Global styles and theming variables
+
+2. **Components Organization**:
+   - **Top-level Components**:
+     - `Header.svelte` (9.8KB, 325 lines): Main navigation header with theme switching
+   - **Domain-specific Components**:
+     - `blog/HomePage.svelte` (3.7KB, 185 lines): Home page showing recent posts
+     - `blog/BlogListPage.svelte` (4.5KB, 233 lines): Blog listing with tag filtering
+     - `blog/BlogPostPage.svelte` (9.9KB, 437 lines): Individual blog post display
+     - `blog/TagsPage.svelte` (1.5KB, 80 lines): Page showing all tags
+     - `blog/TagPage.svelte` (4.0KB, 195 lines): Page showing posts filtered by tag
+
+3. **Data Management**:
+   - `data/blog-data.js` (8.4KB, 304 lines): Central data store for blog posts
+
+### Key Observations on Source Structure
+
+1. **Clean Separation of Concerns**:
+   - Clear distinction between components, data, and application setup
+   - Domain-specific components are properly grouped in the `blog/` directory
+   - Data is centralized in a separate data directory
+
+2. **Component Size Concerns**:
+   - `Header.svelte` (325 lines) and `BlogPostPage.svelte` (437 lines) are significantly large
+   - These components could benefit from further decomposition into smaller sub-components
+
+3. **Missing Directories**:
+   - No dedicated `utils/` directory for shared utility functions
+   - No `lib/` directory for shared/reusable components
+   - No `projects/` directory for Projects section components
+
+4. **Structure Improvements Needed**:
+   - Common functionality like date formatting is duplicated across components
+   - Post card rendering is duplicated in HomePage and BlogListPage
+   - Shared UI elements (tags, cards, buttons) are not extracted into reusable components
+
+### Deployed Site Review (https://blog-simplified.vercel.app/)
+
+The deployed site successfully implements a modern blog with the following features:
+
+1. **Overall Design**:
+   - Clean, minimalist design with good use of whitespace
+   - Consistent typography and color scheme
+   - Responsive layout that works on different screen sizes
+   - Light/dark theme switching functionality
+
+2. **Navigation and Structure**:
+   - Clear navigation header with links to main sections
+   - Active page indicator in navigation
+   - Theme switching toggle in the header
+   - Smooth transitions between pages
+
+3. **Homepage**:
+   - "Latest" heading with subtitle
+   - Recent blog posts displayed in a single column
+   - Each post shows date, title, tags, summary, and "Read more" link
+   - "All Posts" link at the bottom to view the complete blog listing
+
+4. **Blog Listing Page**:
+   - Two-column layout with tags sidebar on the left
+   - Post listing on the right
+   - Tag filtering functionality
+   - Consistent post card design matching the homepage
+
+5. **Individual Blog Posts**:
+   - Clean article layout with proper typography
+   - Metadata including date, author, and tags
+   - Previous/next post navigation
+   - Author section at the bottom
+   - "Back to the blog" link
+
+6. **Tags System**:
+   - Tags page showing all available tags with post counts
+   - Individual tag pages showing filtered posts
+   - Consistent tag styling across the site
+
+### Deployed Site Issues and Missing Features
+
+1. **Missing Sections**:
+   - **Projects Section**: The "Projects" link in the navigation leads to a blank/non-existent page
+   - **About Page**: The "About" link in the navigation leads to a blank/non-existent page
+   - **404 Page**: No custom 404 page for invalid routes
+
+2. **Mobile Experience Issues**:
+   - No hamburger menu for mobile navigation
+   - Navigation menu becomes crowded on smaller screens
+   - Two-column layout on BlogListPage doesn't adapt well to mobile screens
+
+3. **Functionality Limitations**:
+   - Search button is non-functional
+   - No pagination for blog listing
+   - Code blocks in blog posts lack syntax highlighting
+   - No table of contents for long articles
+
+4. **Visual Enhancement Opportunities**:
+   - Footer is minimal with limited information
+   - No animations or transitions for interactions
+   - Limited visual distinction between different types of content
+   - No loading indicators during navigation
+
+### Correlation Between Source Structure and Deployed Site
+
+The source structure directly reflects the implemented features on the deployed site:
+
+1. The five blog components (HomePage, BlogListPage, BlogPostPage, TagsPage, TagPage) correspond exactly to the five main page types on the site
+2. The routing in main.js matches the navigation paths on the deployed site
+3. The missing Projects and About pages in the source align with their absence on the deployed site
+4. The theme switching functionality in Header.svelte is working correctly on the deployed site
+
+### Recommendations for Structure Improvement
+
+Based on both source structure and deployed site review:
+
+1. **Create Utils Directory**:
+   ```
+   src/
+   └── utils/
+       ├── date.js        # Date formatting utilities
+       ├── tags.js        # Tag handling utilities
+       └── formatting.js  # Text formatting utilities
+   ```
+
+2. **Create Lib Directory for Shared Components**:
+   ```
+   src/
+   └── lib/
+       └── components/
+           ├── PostCard.svelte       # Reusable post card
+           ├── TagChip.svelte        # Reusable tag component
+           ├── Button.svelte         # Reusable button component
+           └── LoadingIndicator.svelte # Loading state component
+   ```
+
+3. **Create Projects Directory**:
+   ```
+   src/
+   └── components/
+       └── projects/
+           ├── ProjectsPage.svelte     # Projects listing page
+           ├── ProjectCard.svelte      # Project card component
+           └── ProjectDetailPage.svelte # Individual project page
+   ```
+
+4. **Create About and 404 Pages**:
+   ```
+   src/
+   └── components/
+       ├── AboutPage.svelte         # About page component
+       └── NotFoundPage.svelte      # 404 page component
+   ```
+
+These improvements would enhance the maintainability of the source code while completing the missing features observed on the deployed site.
+
 ## Comprehensive Source Code Review
 
 Below is a detailed review of all files in the `src` directory, evaluating each file's purpose, implementation, strengths, and areas for improvement.
 
 ### 1. `frontend/src/main.js` (836 bytes, 46 lines)
-
-```javascript
-import App from './App.svelte';
-import page from 'page';
-
-const app = new App({
-	target: document.body,
-	props: {
-		currentRoute: '/',
-		params: {}
-	}
-});
-
-// Helper function to set route and scroll to top
-function setRoute(route, params = {}) {
-	window.scrollTo(0, 0);
-	app.$set({ currentRoute: route, params });
-}
-
-// Set up routing
-page('/', () => {
-	setRoute('/');
-});
-
-// Blog listing page
-page('/blog', () => {
-	setRoute('/blog-list');
-});
-
-// Individual blog post page
-page('/blog/:slug', (ctx) => {
-	setRoute('/blog-post', { slug: ctx.params.slug });
-});
-
-// Tags page showing all tags
-page('/tags', () => {
-	setRoute('/tags-list');
-});
-
-// Individual tag page showing posts with a specific tag
-page('/tags/:tag', (ctx) => {
-	setRoute('/tag', { tag: ctx.params.tag });
-});
-
-// Start the router
-page.start();
-
-export default app;
-```
 
 **Purpose**: Entry point for the application that initializes the Svelte app and sets up client-side routing with page.js.
 
@@ -118,69 +235,6 @@ export default app;
 5. Add TypeScript for type safety in route parameters
 
 ### 2. `frontend/src/App.svelte` (1.4KB, 60 lines)
-
-```svelte
-<script>
-	import Header from './components/Header.svelte';
-	import HomePage from './components/blog/HomePage.svelte';
-	import BlogPostPage from './components/blog/BlogPostPage.svelte';
-	import BlogListPage from './components/blog/BlogListPage.svelte';
-	import TagsPage from './components/blog/TagsPage.svelte';
-	import TagPage from './components/blog/TagPage.svelte';
-	import './global.css';
-	
-	// Props from router
-	export let currentRoute = '/';
-	export let params = {};
-</script>
-
-<div class="app">
-	<Header {currentRoute} />
-	
-	<main class="container main-content">
-		{#if currentRoute === '/'}
-			<HomePage />
-		{:else if currentRoute === '/blog-list'}
-			<BlogListPage />
-		{:else if currentRoute === '/blog-post'}
-			<BlogPostPage slug={params.slug} />
-		{:else if currentRoute === '/tags-list'}
-			<TagsPage />
-		{:else if currentRoute === '/tag'}
-			<TagPage tag={params.tag} />
-		{/if}
-	</main>
-
-	<!-- Simple footer - will be implemented properly later -->
-	<footer class="footer">
-		<div class="container">
-			<p>&copy; {new Date().getFullYear()} • MyBlog • Built by サラダ</p>
-		</div>
-	</footer>
-</div>
-
-<style>
-	.app {
-		min-height: 100vh;
-		display: flex;
-		flex-direction: column;
-	}
-	
-	.main-content {
-		flex: 1;
-		padding: 2rem 0;
-	}
-	
-	.footer {
-		padding: 1.5rem 0;
-		text-align: center;
-		border-top: 1px solid var(--color-border);
-		font-size: 0.9rem;
-		color: var(--color-text);
-		opacity: 0.7;
-	}
-</style>
-```
 
 **Purpose**: Main application shell that orchestrates the application's structure and conditional rendering based on the current route.
 
@@ -215,104 +269,6 @@ export default app;
 6. Consider adding an error boundary for catching errors
 
 ### 3. `frontend/src/global.css` (1.8KB, 82 lines)
-
-```css
-:root {
-  /* Light theme colors */
-  --color-bg: #ffffff;
-  --color-text: #1a202c;
-  --color-primary: #3b82f6;
-  --color-secondary: #6b7280;
-  --color-border: #e2e8f0;
-  --color-muted: #f9fafb;
-  --color-highlight: #f7fafc;
-  
-  /* Fonts */
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  
-  /* Sizes */
-  --container-width: 1024px;
-  --header-height: 4rem;
-}
-
-/* Dark theme */
-.dark-theme {
-  --color-bg: #1a202c;
-  --color-text: #f7fafc;
-  --color-primary: #63b3ed;
-  --color-secondary: #a0aec0;
-  --color-border: #2d3748;
-  --color-muted: #2d3748;
-  --color-highlight: #2d3748;
-}
-
-/* Global styles */
-body {
-  font-family: var(--font-sans);
-  background-color: var(--color-bg);
-  color: var(--color-text);
-  margin: 0;
-  padding: 0;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-a {
-  color: var(--color-primary);
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-.container {
-  width: 100%;
-  max-width: var(--container-width);
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  margin-top: 0;
-  margin-bottom: 0.5rem;
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-p {
-  margin-top: 0;
-  margin-bottom: 1rem;
-}
-
-.flex {
-  display: flex;
-}
-
-.items-center {
-  align-items: center;
-}
-
-.justify-between {
-  justify-content: space-between;
-}
-
-.gap-4 {
-  gap: 1rem;
-}
-
-code {
-  font-family: var(--font-mono);
-  background-color: var(--color-muted);
-  padding: 0.2rem 0.4rem;
-  border-radius: 0.25rem;
-  font-size: 0.875em;
-}
-```
 
 **Purpose**: Global CSS styles that define theme variables, base styles, and utility classes.
 
@@ -604,17 +560,6 @@ This is a large component, so I'll focus on the key aspects.
 6. Implement caching for better performance
 7. Add error handling for missing or malformed data
 
-### 11. `frontend/src/lib/components/` (Empty Directory)
-
-**Purpose**: Appears to be intended for shared/library components but is currently empty.
-
-**Recommendations**:
-1. Move shared components here (extract post card, tag component, etc.)
-2. Implement utility components like Button, Input, etc.
-3. Create layout components for reuse
-4. Add a README.md to document the purpose of this directory
-5. Consider removing if not intended for use
-
 ## Overall Assessment of the Source Code
 
 ### Strengths
@@ -722,10 +667,25 @@ These improvements will significantly enhance the maintainability, user experien
   - [x] Task 5.3: Document code patterns and examples
 - [ ] Phase 6: Projects Section Implementation
   - [ ] Task 6.1: Create projects data structure
-  - [ ] Task 6.2: Implement ProjectsPage component
-  - [ ] Task 6.3: Create ProjectCard component
-  - [ ] Task 6.4: Implement ProjectDetailPage component
-  - [ ] Task 6.5: Add projects routing
+    - [ ] Subtask 6.1.1: Define project schema with all necessary fields
+    - [ ] Subtask 6.1.2: Create sample project data (at least 2-3 projects)
+    - [ ] Subtask 6.1.3: Set up project-data.js in the data directory
+  - [ ] Task 6.2: Create components/projects directory
+  - [ ] Task 6.3: Implement ProjectsPage component
+    - [ ] Subtask 6.3.1: Create page layout with header and grid
+    - [ ] Subtask 6.3.2: Implement responsive grid for project cards
+    - [ ] Subtask 6.3.3: Style to match site design language
+  - [ ] Task 6.4: Implement ProjectCard component
+    - [ ] Subtask 6.4.1: Create card layout with image, title, and description
+    - [ ] Subtask 6.4.2: Add hover effects and transitions
+    - [ ] Subtask 6.4.3: Ensure responsive behavior at all breakpoints
+  - [ ] Task 6.5: Implement ProjectDetailPage component
+    - [ ] Subtask 6.5.1: Create detailed project view layout
+    - [ ] Subtask 6.5.2: Add navigation between projects
+    - [ ] Subtask 6.5.3: Implement "Back to Projects" link
+  - [ ] Task 6.6: Update routing in main.js and App.svelte
+  - [ ] Task 6.7: Prepare project images and static assets
+  - [ ] Task 6.8: Test and refine Projects section implementation
 - [ ] Phase 7: Code Organization and Cleanup
   - [ ] Task 7.1: Create utils directory for shared functions
   - [ ] Task 7.2: Extract shared components
@@ -805,6 +765,513 @@ For the next phase of development, I recommend focusing on implementing the Proj
    - Ensure responsive design across all screen sizes
 
 This implementation will complete the core content sections of the blog site, making it more closely match the reference site while maintaining the clean Svelte 4 and vanilla CSS approach.
+
+## Detailed Projects Section Implementation Plan
+
+After examining the target site (https://tailwind-nextjs-starter-blog.vercel.app/projects), I'll create a comprehensive plan for implementing the Projects section in our Svelte 4 blog. The Projects page should display a collection of projects in a clean, grid-based layout with consistent styling.
+
+### 1. Project Data Structure
+
+First, we need to create a structured data format for projects. This will be similar to our blog post data structure but tailored for project information:
+
+```javascript
+// src/data/project-data.js
+export const projects = [
+  {
+    id: "search-engine",
+    title: "A Search Engine",
+    description: "What if you could look up any information in the world? Webpages, images, videos and more. Google has many features to help you find exactly what you're looking for.",
+    image: "/images/projects/search-engine.jpg", // 16:9 aspect ratio hero image
+    link: "/projects/search-engine",
+    tags: ["web", "search", "information"],
+    date: "2023-01-15", // For sorting or displaying creation/update date
+    featured: true
+  },
+  {
+    id: "time-machine",
+    title: "The Time Machine",
+    description: "Imagine being able to travel back in time or to the future. Simple turn the knob to the desired date and press \"Go\". No more worrying about lost keys or forgotten headphones with this simple yet affordable solution.",
+    image: "/images/projects/time-machine.jpg",
+    link: "/projects/time-machine",
+    tags: ["hardware", "time", "innovation"],
+    date: "2023-03-22",
+    featured: false
+  }
+]
+```
+
+### 2. Component Architecture
+
+Based on the target site and our existing code structure, we'll implement the following components:
+
+#### 2.1 ProjectsPage.svelte (Main Projects Listing)
+
+This component will:
+- Display a header with "Projects" title and descriptive subtitle
+- Render a grid of project cards
+- Handle responsive layout for different screen sizes
+- Follow the same styling conventions as our blog components
+
+```
+// src/components/projects/ProjectsPage.svelte
+<script>
+  import { projects } from '../../data/project-data.js';
+  import ProjectCard from './ProjectCard.svelte';
+</script>
+
+<div class="container mx-auto px-4 py-12">
+  <header class="mb-12">
+    <h1 class="text-3xl font-bold">Projects</h1>
+    <p class="text-secondary mt-2">Showcase your projects with a hero image (16 x 9)</p>
+  </header>
+  
+  <div class="projects-grid">
+    {#each projects as project (project.id)}
+      <ProjectCard {project} />
+    {/each}
+  </div>
+</div>
+
+<style>
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 2rem;
+  }
+  
+  @media (min-width: 640px) {
+    .projects-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .projects-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
+```
+
+#### 2.2 ProjectCard.svelte (Individual Project Card)
+
+This component will:
+- Display project information in a card format
+- Show the hero image, title, description, and "Learn more" link
+- Handle consistent styling across all project cards
+- Implement hover effects for better user interaction
+
+```
+// src/components/projects/ProjectCard.svelte
+<script>
+  export let project;
+</script>
+
+<article class="project-card">
+  <a href={project.link} class="image-container">
+    <img src={project.image} alt={project.title} class="project-image">
+  </a>
+  
+  <div class="content">
+    <h2 class="title">
+      <a href={project.link}>{project.title}</a>
+    </h2>
+    <p class="description">{project.description}</p>
+    <a href={project.link} class="learn-more">Learn more →</a>
+  </div>
+</article>
+
+<style>
+  .project-card {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    background-color: var(--card-bg);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  }
+  
+  .project-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+  
+  .image-container {
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    display: block;
+  }
+  
+  .project-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  
+  .project-card:hover .project-image {
+    transform: scale(1.05);
+  }
+  
+  .content {
+    padding: 1.5rem;
+  }
+  
+  .title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+  
+  .title a {
+    color: var(--heading-color);
+    text-decoration: none;
+  }
+  
+  .description {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+  }
+  
+  .learn-more {
+    display: inline-block;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+  
+  .learn-more:hover {
+    color: var(--primary-color-dark);
+  }
+</style>
+```
+
+#### 2.3 ProjectDetailPage.svelte (Individual Project Detail)
+
+This component will:
+- Display a full project detail page
+- Show a larger hero image, complete description, and additional information
+- Include navigation to return to the projects list
+- Match the styling and structure of our blog post pages
+
+```
+// src/components/projects/ProjectDetailPage.svelte
+<script>
+  import { projects } from '../../data/project-data.js';
+  
+  export let params = {};
+  
+  $: project = projects.find(p => p.id === params.id);
+  $: prevProject = getPreviousProject(project);
+  $: nextProject = getNextProject(project);
+  
+  function getPreviousProject(currentProject) {
+    if (!currentProject) return null;
+    const index = projects.findIndex(p => p.id === currentProject.id);
+    return index > 0 ? projects[index - 1] : null;
+  }
+  
+  function getNextProject(currentProject) {
+    if (!currentProject) return null;
+    const index = projects.findIndex(p => p.id === currentProject.id);
+    return index < projects.length - 1 ? projects[index + 1] : null;
+  }
+</script>
+
+{#if project}
+  <article class="project-detail">
+    <header>
+      <h1 class="title">{project.title}</h1>
+      
+      <div class="hero-image-container">
+        <img src={project.image} alt={project.title} class="hero-image">
+      </div>
+    </header>
+    
+    <div class="content">
+      <p class="description">{project.description}</p>
+      
+      <!-- Additional project details would go here -->
+    </div>
+    
+    <div class="navigation">
+      <div class="nav-item prev">
+        {#if prevProject}
+          <a href={prevProject.link}>← {prevProject.title}</a>
+        {:else}
+          <span class="disabled">← Previous Project</span>
+        {/if}
+      </div>
+      
+      <div class="nav-item next">
+        {#if nextProject}
+          <a href={nextProject.link}>{nextProject.title} →</a>
+        {:else}
+          <span class="disabled">Next Project →</span>
+        {/if}
+      </div>
+    </div>
+    
+    <div class="back-link">
+      <a href="/projects">← Back to Projects</a>
+    </div>
+  </article>
+{:else}
+  <div class="not-found">
+    <h1>Project Not Found</h1>
+    <p>Sorry, the project you're looking for doesn't exist or has been removed.</p>
+    <a href="/projects">← Back to Projects</a>
+  </div>
+{/if}
+
+<style>
+  .project-detail {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+  
+  .title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--heading-color);
+  }
+  
+  .hero-image-container {
+    margin-bottom: 2rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+  
+  .hero-image {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+  }
+  
+  .content {
+    margin-bottom: 2rem;
+    line-height: 1.7;
+  }
+  
+  .description {
+    font-size: 1.125rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .navigation {
+    display: flex;
+    justify-content: space-between;
+    margin: 3rem 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+  }
+  
+  .nav-item a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  
+  .nav-item a:hover {
+    color: var(--primary-color-dark);
+  }
+  
+  .disabled {
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+  
+  .back-link {
+    margin-top: 2rem;
+  }
+  
+  .back-link a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  
+  .back-link a:hover {
+    color: var(--primary-color-dark);
+  }
+  
+  .not-found {
+    text-align: center;
+    padding: 4rem 1rem;
+  }
+  
+  .not-found h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .not-found a {
+    display: inline-block;
+    margin-top: 1.5rem;
+    color: var(--primary-color);
+    text-decoration: none;
+  }
+</style>
+```
+
+### 3. Routing Implementation
+
+We need to update the routing in `main.js` to support the Projects section:
+
+```javascript
+// src/main.js additions
+import ProjectsPage from './components/projects/ProjectsPage.svelte';
+import ProjectDetailPage from './components/projects/ProjectDetailPage.svelte';
+
+// Add these routes
+page('/projects', () => setRoute({ page: 'projects' }));
+page('/projects/:id', (ctx) => setRoute({ page: 'project-detail', params: ctx.params }));
+```
+
+We also need to update `App.svelte` to render the new components:
+
+```svelte
+<!-- src/App.svelte additions -->
+<script>
+  // Add these imports
+  import ProjectsPage from './components/projects/ProjectsPage.svelte';
+  import ProjectDetailPage from './components/projects/ProjectDetailPage.svelte';
+  
+  // Existing code...
+</script>
+
+<!-- Add these conditional renders inside the main element -->
+{#if route.page === 'projects'}
+  <ProjectsPage />
+{:else if route.page === 'project-detail'}
+  <ProjectDetailPage params={route.params} />
+{/if}
+```
+
+### 4. Static Assets
+
+We need to create a directory for project images and add the required hero images:
+
+```
+public/
+└── images/
+    └── projects/
+        ├── search-engine.jpg
+        └── time-machine.jpg
+```
+
+These images should have a 16:9 aspect ratio as specified in the target site.
+
+### 5. Implementation Steps Breakdown
+
+1. **Create Project Data Structure**
+   - Create `src/data/project-data.js` file with initial project data
+   - Include all necessary fields (id, title, description, image, link, etc.)
+   - Add at least 2-3 sample projects with realistic data
+
+2. **Set Up Project Components Directory**
+   - Create `src/components/projects/` directory
+   - Add all three components (ProjectsPage, ProjectCard, ProjectDetailPage)
+   - Follow consistent naming conventions with existing components
+
+3. **Create ProjectsPage Component**
+   - Implement the main projects listing page
+   - Create responsive grid layout for project cards
+   - Style header and content area to match site design
+
+4. **Create ProjectCard Component**
+   - Implement card layout for individual projects
+   - Style to match the blog post cards but with appropriate differences
+   - Add hover effects and transitions for better UX
+
+5. **Create ProjectDetailPage Component**
+   - Implement detailed project view
+   - Add navigation between projects
+   - Create fallback for non-existent projects
+
+6. **Update Routing**
+   - Add new routes to `main.js`
+   - Update `App.svelte` to render the new components
+   - Test navigation and routing behavior
+
+7. **Prepare Static Assets**
+   - Create project images directory
+   - Add properly sized hero images (16:9 aspect ratio)
+   - Optimize images for web performance
+
+8. **Test and Refine**
+   - Test on different screen sizes
+   - Ensure consistent styling with rest of site
+   - Verify all links and navigation works correctly
+
+### 6. Success Criteria
+
+The Projects section implementation will be considered successful when:
+
+1. The Projects page displays a responsive grid of project cards
+2. Each card shows a hero image, title, description, and "Learn more" link
+3. Clicking on a project card navigates to a detailed project page
+4. The detailed project page displays full project information
+5. Navigation between projects works correctly
+6. The design is consistent with the rest of the site
+7. The page is fully responsive and works on mobile, tablet, and desktop
+8. All transitions and animations are smooth and enhance the user experience
+
+## Project Status Board
+- [x] Phase 1: Project Setup and Configuration
+  - [x] Task 1.1: Ensure correct Svelte 4 setup
+  - [x] Task 1.2: Create CSS architecture
+  - [x] Task 1.3: Set up ES module configuration
+  - [x] Task 1.4: Add Svelte 4 documentation reference
+- [x] Phase 2: Page Structure Implementation
+  - [x] Task 2.1: Create header component
+    - [x] Subtask 2.1.1: Add active state indicators for navigation
+  - [x] Task 2.2: Create HomePage component
+    - [x] Subtask 2.2.1: Limit homepage to 5 most recent posts
+    - [x] Subtask 2.2.2: Enhance "All Posts" link styling
+  - [x] Task 2.3: Create BlogPage component
+  - [ ] Task 2.4: Create footer component
+- [x] Phase 3: Blog Content Components
+  - [x] Task 3.1: Create BlogCard component (integrated in page components)
+  - [x] Task 3.2: Create BlogList component (integrated in page components)
+  - [x] Task 3.3: Create TagList component (integrated in page components)
+  - [x] Task 3.4: Create BlogPost component
+- [x] Phase 4: Routing Implementation
+  - [x] Task 4.1: Implement client-side routing
+  - [x] Task 4.2: Create route handlers
+  - [x] Task 4.3: Set up dynamic routes
+  - [x] Task 4.4: Add scroll-to-top on navigation
+  - [ ] Task 4.5: Create a 404 page component
+- [x] Phase 5: Documentation
+  - [x] Task 5.1: Create Svelte 4 reference documentation
+  - [x] Task 5.2: Document project structure and architecture
+  - [x] Task 5.3: Document code patterns and examples
+- [ ] Phase 6: Projects Section Implementation
+  - [ ] Task 6.1: Create projects data structure
+    - [ ] Subtask 6.1.1: Define project schema with all necessary fields
+    - [ ] Subtask 6.1.2: Create sample project data (at least 2-3 projects)
+    - [ ] Subtask 6.1.3: Set up project-data.js in the data directory
+  - [ ] Task 6.2: Create components/projects directory
+  - [ ] Task 6.3: Implement ProjectsPage component
+    - [ ] Subtask 6.3.1: Create page layout with header and grid
+    - [ ] Subtask 6.3.2: Implement responsive grid for project cards
+    - [ ] Subtask 6.3.3: Style to match site design language
+  - [ ] Task 6.4: Implement ProjectCard component
+    - [ ] Subtask 6.4.1: Create card layout with image, title, and description
+    - [ ] Subtask 6.4.2: Add hover effects and transitions
+    - [ ] Subtask 6.4.3: Ensure responsive behavior at all breakpoints
+  - [ ] Task 6.5: Implement ProjectDetailPage component
+    - [ ] Subtask 6.5.1: Create detailed project view layout
+    - [ ] Subtask 6.5.2: Add navigation between projects
+    - [ ] Subtask 6.5.3: Implement "Back to Projects" link
+  - [ ] Task 6.6: Update routing in main.js and App.svelte
+  - [ ] Task 6.7: Prepare project images and static assets
+  - [ ] Task 6.8: Test and refine Projects section implementation
+- [ ] Phase 7: Code Organization and Cleanup
+  - [ ] Task 7.1: Create utils directory for shared functions
+  - [ ] Task 7.2: Extract shared components
+  - [ ] Task 7.3: Improve mobile experience
 
 ## Executor's Feedback or Assistance Requests
 We've fixed the ES module configuration issue in the Rollup build setup but encountered multiple failures when trying to implement blog post components. We also realized we were mixing concepts between the homepage and blog page. We need to create separate components for these distinct page types, each with their own layout, while still reusing common components like BlogCard.
