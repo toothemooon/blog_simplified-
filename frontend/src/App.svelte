@@ -32,7 +32,7 @@
 		{:else if currentRoute === '/projects-list'}
 			<ProjectsPage />
 		{:else if currentRoute === '/project-detail'}
-			<ProjectDetailPage params={params} />
+			<ProjectDetailPage slug={params.id} />
 		{:else if currentRoute === '/about'}
 			<AboutPage />
 		{/if}

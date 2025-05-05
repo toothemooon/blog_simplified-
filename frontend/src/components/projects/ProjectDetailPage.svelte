@@ -1,217 +1,383 @@
 <script>
-  import { projects } from '../../data/project-data.js';
+  import { getProject, formatProjectPeriod, getRelatedProjectsBySlug } from '../../utils/project-utils.js';
   
-  export let params = {};
+  export let slug = '';
   
-  $: projectId = params.id || '';
-  $: project = projects.find(p => p.id === projectId);
-  $: prevProject = getPreviousProject(project);
-  $: nextProject = getNextProject(project);
+  let project = null;
+  let loading = true;
+  let error = null;
+  let relatedProjects = [];
   
-  function getPreviousProject(currentProject) {
-    if (!currentProject) return null;
-    const index = projects.findIndex(p => p.id === currentProject.id);
-    return index > 0 ? projects[index - 1] : null;
+  $: if (slug) {
+    loadProject(slug);
   }
   
-  function getNextProject(currentProject) {
-    if (!currentProject) return null;
-    const index = projects.findIndex(p => p.id === currentProject.id);
-    return index < projects.length - 1 ? projects[index + 1] : null;
+  async function loadProject(projectSlug) {
+    if (!projectSlug) return;
+    
+    loading = true;
+    error = null;
+    
+    try {
+      const projectData = await getProject(projectSlug);
+      
+      if (!projectData) {
+        error = 'Project not found';
+        project = null;
+      } else {
+        project = projectData;
+        relatedProjects = getRelatedProjectsBySlug(projectSlug);
+      }
+    } catch (err) {
+      console.error('Error loading project:', err);
+      error = 'Failed to load project';
+    } finally {
+      loading = false;
+    }
   }
 </script>
 
-{#if project}
-  <article class="project-detail container-narrow">
-    <header>
-      <h1 class="title">{project.title}</h1>
-      
-      <div class="hero-image-container">
-        <img src={project.image} alt={project.title} class="hero-image">
-      </div>
-    </header>
-    
-    <div class="content">
-      <p class="description">{project.description}</p>
-      
-      <!-- Additional project details would go here -->
+<div class="project-detail-page container-narrow">
+  {#if loading}
+    <div class="loading-indicator">
+      <p>Loading project...</p>
     </div>
-    
-    <div class="navigation">
-      <div class="nav-item prev">
-        {#if prevProject}
-          <span class="nav-label">PREVIOUS PROJECT</span>
-          <a href={prevProject.link} class="nav-link">
-            <span class="nav-arrow">←</span> {prevProject.title}
-          </a>
-        {:else}
-          <span class="nav-label disabled">PREVIOUS PROJECT</span>
-          <span class="disabled">← Previous Project</span>
+  {:else if error}
+    <div class="error-message">
+      <h2>Error</h2>
+      <p>{error}</p>
+      <a href="/projects">Return to projects list</a>
+    </div>
+  {:else if project}
+    <article class="project-detail">
+      <!-- Period -->
+      <div class="project-date-container">
+        <span class="project-period">{formatProjectPeriod(project.period)}</span>
+      </div>
+      
+      <!-- Title -->
+      <h1 class="project-title">{project.title}</h1>
+      
+      <!-- Role and Location -->
+      <div class="project-role-location">
+        <span class="project-role">{project.role}</span>
+        {#if project.location}
+          <span class="location-separator"> | </span>
+          <span class="project-location">{project.location}</span>
         {/if}
       </div>
       
-      <div class="nav-item next">
-        {#if nextProject}
-          <span class="nav-label">NEXT PROJECT</span>
-          <a href={nextProject.link} class="nav-link">
-            {nextProject.title} <span class="nav-arrow">→</span>
-          </a>
-        {:else}
-          <span class="nav-label disabled">NEXT PROJECT</span>
-          <span class="disabled">Next Project →</span>
+      <!-- Metadata -->
+      <div class="project-metadata">
+        {#if project.metadata}
+          {#each Object.entries(project.metadata) as [key, value]}
+            <div class="metadata-group">
+              <span class="metadata-label">{key.charAt(0).toUpperCase() + key.slice(1)}:</span>
+              <span class="metadata-value">{value}</span>
+            </div>
+          {/each}
         {/if}
       </div>
+      
+      <!-- Project Details -->
+      {#if project.projects && project.projects.length > 0}
+        <div class="project-subprojects">
+          <h2>Project Details</h2>
+          <ul class="subprojects-list">
+            {#each project.projects as subproject}
+              <li class="subproject-item">
+                <span class="subproject-name">{subproject.name}</span>
+                {#if subproject.value}
+                  <span class="subproject-value">({subproject.value})</span>
+                {/if}
+              </li>
+            {/each}
+          </ul>
+        </div>
+      {/if}
+      
+      <!-- Summary -->
+      <div class="project-summary">
+        <h2>Overview</h2>
+        <p>{project.summary}</p>
+      </div>
+      
+      <!-- Achievements -->
+      {#if project.achievements && project.achievements.length > 0}
+        <div class="project-achievements">
+          <h2>Key Achievements</h2>
+          <ul class="achievements-list">
+            {#each project.achievements as achievement}
+              <li>{achievement}</li>
+            {/each}
+          </ul>
+        </div>
+      {/if}
+      
+      <!-- Tags -->
+      {#if project.tags && project.tags.length > 0}
+        <div class="project-tags">
+          {#each project.tags as tag}
+            <span class="tag">{tag}</span>
+          {/each}
+        </div>
+      {/if}
+      
+      <!-- Related Projects -->
+      {#if relatedProjects.length > 0}
+        <div class="related-projects">
+          <h2>Related Projects</h2>
+          <div class="related-projects-list">
+            {#each relatedProjects as relatedProject}
+              <div class="related-project-item">
+                <a href="/projects/{relatedProject.slug}" class="related-project-link">
+                  <span class="related-project-title">{relatedProject.title}</span>
+                  <span class="related-project-period">{formatProjectPeriod(relatedProject.period)}</span>
+                </a>
+              </div>
+            {/each}
+          </div>
+        </div>
+      {/if}
+      
+      <!-- Back to Projects -->
+      <div class="back-to-projects">
+        <a href="/projects">← Back to all projects</a>
+      </div>
+    </article>
+  {:else}
+    <div class="not-found">
+      <h2>Project Not Found</h2>
+      <p>The project you're looking for doesn't exist or has been removed.</p>
+      <a href="/projects">Return to projects list</a>
     </div>
-    
-    <div class="back-link">
-      <a href="/projects" class="back-btn">← Back to Projects</a>
-    </div>
-  </article>
-{:else}
-  <div class="not-found container-narrow">
-    <h1>Project Not Found</h1>
-    <p>Sorry, the project you're looking for doesn't exist or has been removed.</p>
-    <a href="/projects" class="back-btn">← Back to Projects</a>
-  </div>
-{/if}
+  {/if}
+</div>
 
 <style>
-  .project-detail {
-    padding-top: var(--space-xl);
-    padding-bottom: var(--space-2xl);
+  .project-detail-page {
+    margin: 0 auto;
+    padding: 2rem 1rem;
   }
   
-  .title {
-    font-size: clamp(1.75rem, 5vw, 2.5rem);
-    font-weight: 700;
+  .project-detail {
+    width: 100%;
+  }
+  
+  .project-date-container {
+    font-size: 0.9rem;
+    color: var(--color-text);
+    opacity: 0.7;
+    margin-bottom: 0.5rem;
+  }
+  
+  .project-title {
+    font-size: 2.5rem;
+    line-height: 1.2;
+    margin: 0.5rem 0 1rem;
+    color: var(--color-heading, var(--color-text));
+  }
+  
+  .project-role-location {
+    font-size: 1.25rem;
     margin-bottom: 1.5rem;
     color: var(--color-text);
-    line-height: 1.2;
   }
   
-  .hero-image-container {
-    margin-bottom: 2rem;
+  .project-role {
+    font-weight: 600;
+  }
+  
+  .location-separator {
+    opacity: 0.5;
+    margin: 0 0.5rem;
+  }
+  
+  .project-metadata {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+    padding: 1.5rem;
+    background-color: var(--color-bg-secondary, #f5f5f5);
     border-radius: 0.5rem;
-    overflow: hidden;
   }
   
-  .hero-image {
-    width: 100%;
-    aspect-ratio: 16/9;
-    object-fit: cover;
+  .metadata-group {
+    display: flex;
+    flex-direction: column;
   }
   
-  .content {
-    margin-bottom: 2rem;
-    line-height: 1.7;
+  .metadata-label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    color: var(--color-heading, var(--color-text));
   }
   
-  .description {
-    font-size: clamp(1rem, 3vw, 1.125rem);
+  .metadata-value {
+    font-size: 1rem;
+  }
+  
+  .project-summary, .project-achievements, .project-subprojects, .related-projects {
+    margin: 2rem 0;
+  }
+  
+  .project-summary h2, .project-achievements h2, .project-subprojects h2, .related-projects h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--color-heading, var(--color-text));
+  }
+  
+  .project-summary p {
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+  
+  .achievements-list, .subprojects-list {
+    list-style-type: disc;
+    padding-left: 1.5rem;
     margin-bottom: 1.5rem;
   }
   
-  .navigation {
+  .achievements-list li, .subprojects-list li {
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+  }
+  
+  .subproject-value {
+    font-weight: 600;
+    color: var(--color-primary);
+  }
+  
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 2rem 0;
+  }
+  
+  .tag {
+    font-size: 0.8rem;
+    padding: 0.2rem 0.75rem;
+    border-radius: 0.25rem;
+    background-color: var(--color-border);
+    color: var(--color-text);
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+    display: inline-block;
+  }
+  
+  .related-projects-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .related-project-item {
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    transition: all 0.2s ease;
+  }
+  
+  .related-project-item:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .related-project-link {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    margin: 3rem 0;
+    text-decoration: none;
+  }
+  
+  .related-project-title {
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 0.5rem;
+  }
+  
+  .related-project-period {
+    font-size: 0.8rem;
+    color: var(--color-text);
+    opacity: 0.7;
+  }
+  
+  .back-to-projects {
+    margin-top: 3rem;
     padding-top: 1.5rem;
     border-top: 1px solid var(--color-border);
   }
   
-  .nav-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  
-  .nav-label {
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--color-text);
-    opacity: 0.7;
-    letter-spacing: 0.05em;
-  }
-  
-  .nav-link {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+  .back-to-projects a {
+    display: inline-block;
     color: var(--color-primary);
     text-decoration: none;
-    transition: color 0.2s ease;
     font-weight: 500;
-    font-size: 1.125rem;
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    margin-left: -0.75rem;
-    -webkit-tap-highlight-color: transparent;
+    transition: opacity 0.2s ease;
   }
   
-  .nav-link:hover {
-    background-color: rgba(var(--color-primary-rgb), 0.05);
-  }
-  
-  .nav-arrow {
-    font-size: 1.25rem;
-    line-height: 1;
-  }
-  
-  .disabled {
-    color: var(--color-text);
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-  
-  .back-link {
-    margin-top: 3rem;
-    text-align: center;
-    padding-top: 1rem;
-    border-top: 1px solid var(--color-border);
-  }
-  
-  .back-btn {
-    color: var(--color-primary);
-    text-decoration: none;
-    transition: color 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    height: var(--min-touch-target);
-    font-weight: 500;
-    font-size: 1rem;
-    padding: 0 var(--space-md);
-    -webkit-tap-highlight-color: transparent;
-  }
-  
-  .back-btn:hover {
+  .back-to-projects a:hover {
+    opacity: 0.8;
     text-decoration: underline;
   }
   
-  .not-found {
+  .loading-indicator, .error-message, .not-found {
     text-align: center;
-    padding: 4rem 1rem;
+    padding: 3rem 0;
   }
   
-  .not-found h1 {
-    font-size: 2rem;
+  .error-message h2, .not-found h2 {
     margin-bottom: 1rem;
+    color: var(--color-heading);
   }
   
-  @media (min-width: 768px) {
-    .navigation {
-      flex-direction: row;
-      justify-content: space-between;
+  .error-message a, .not-found a {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+    border-radius: 0.25rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  
+  .error-message a:hover, .not-found a:hover {
+    background-color: var(--color-primary);
+    color: white;
+  }
+  
+  @media (max-width: 640px) {
+    .project-title {
+      font-size: 2rem;
     }
     
-    .nav-item.next {
-      text-align: right;
+    .project-role-location {
+      font-size: 1.1rem;
+      flex-direction: column;
     }
     
-    .nav-item.next .nav-link {
-      margin-left: auto;
-      margin-right: -0.75rem;
-      justify-content: flex-end;
+    .location-separator {
+      display: none;
+    }
+    
+    .project-location {
+      display: block;
+      margin-top: 0.25rem;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+    
+    .project-metadata {
+      grid-template-columns: 1fr;
+    }
+    
+    .related-projects-list {
+      grid-template-columns: 1fr;
     }
   }
 </style> 
