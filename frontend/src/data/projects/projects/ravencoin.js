@@ -2,7 +2,7 @@ export default {
   title: 'Ravencoin (Volunteer Project)',
   role: 'Community Moderator',
   location: 'Remote',
-  period: 'Jan 2018 – Present',
+  period: 'Jan 2018 – 2021',
   slug: 'ravencoin',
   summary: 'Founded and managed the Chinese RVN community, promoting Ravencoin\'s growth and blockchain education in Chinese-speaking regions.',
   achievements: [
