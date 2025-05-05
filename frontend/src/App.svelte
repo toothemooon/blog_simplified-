@@ -7,6 +7,7 @@
 	import TagPage from './components/blog/TagPage.svelte';
 	import ProjectsPage from './components/projects/ProjectsPage.svelte';
 	import ProjectDetailPage from './components/projects/ProjectDetailPage.svelte';
+	import AboutPage from './components/AboutPage.svelte';
 	import './global.css';
 	
 	// Props from router
@@ -32,6 +33,8 @@
 			<ProjectsPage />
 		{:else if currentRoute === '/project-detail'}
 			<ProjectDetailPage params={params} />
+		{:else if currentRoute === '/about'}
+			<AboutPage />
 		{/if}
 	</main>
 

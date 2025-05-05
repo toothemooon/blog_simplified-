@@ -762,6 +762,94 @@ To precisely match the target site's aesthetics, we should address:
 
 These refinements will elevate our implementation from functionally equivalent to visually identical to the target site, while still maintaining the benefits of our Svelte 4 and vanilla CSS approach.
 
+## Vercel Deployment Issue Diagnosis
+
+After reviewing the Vercel deployment logs and examining the issue where the projects page shows correctly on localhost but displays homepage content when deployed to Vercel, I can provide a comprehensive diagnosis.
+
+### Deployment Log Analysis
+
+The Vercel deployment logs show a successful build process:
+
+```
+[09:20:07.163] created public/build/bundle.js in 2.6s
+[09:20:07.236] Build Completed in /vercel/output [5s]
+[09:20:07.261] Deploying outputs...
+[09:20:08.370] 
+[09:20:08.650] Deployment completed
+```
+
+There are only warnings about unused CSS selectors in BlogPostPage.svelte, which are unrelated to the routing issue:
+
+```
+[09:20:07.155] (!) Plugin svelte: Unused CSS selector ".post-content h1"
+```
+
+### Root Cause: SPA Routing Configuration
+
+This is a classic Single Page Application (SPA) routing issue on static deployments. Here's what's happening:
+
+1. **Development vs. Production Environment Discrepancy**:
+   - In local development, the dev server automatically routes all requests to `index.html`
+   - On Vercel, direct navigation to non-root routes like `/projects` attempts to find actual files/directories at that path
+
+2. **Missing Vercel Routing Configuration**:
+   - No `vercel.json` configuration file is present to instruct Vercel how to handle SPA routes
+   - Without this configuration, Vercel falls back to serving the homepage content for all routes
+
+3. **Client-side Routing Limitations**:
+   - Our application uses page.js for client-side routing
+   - Client-side routing works for navigating within the application but not for direct URL access in production without proper server configuration
+
+### Technical Explanation
+
+When a user:
+1. Visits the root URL (`/`): Vercel serves the `index.html` file correctly
+2. Navigates to `/projects` via internal links: The client-side router (page.js) handles this correctly
+3. Directly enters `/projects` in the browser: Vercel can't find a physical `/projects` file/directory and likely serves the root `index.html` but without the correct routing context
+
+The JavaScript in the bundle expects to initialize with the current URL path to determine which component to render. Without proper configuration, this initialization doesn't happen correctly for direct URL access.
+
+### Solution: Vercel Configuration for SPA
+
+The absence of specific errors in the logs confirms this is a configuration issue rather than a code bug. We need to add a `vercel.json` file to the project root with the following configuration:
+
+```json
+{
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
+}
+```
+
+This configuration tells Vercel:
+1. First, try to serve actual files from the filesystem if they exist
+2. For any route that doesn't match a physical file, serve `index.html` instead
+3. This allows the client-side router to take over and render the correct component based on the URL
+
+### Implementation Steps
+
+1. **Create Vercel Configuration File**:
+   - Add a `vercel.json` file to the project root with the configuration above
+   - This is the most important step to resolve the issue
+
+2. **Verify SPA Routing Bundle**:
+   - Ensure our bundled JavaScript properly initializes routing based on the current URL
+   - Check that `page.js` initialization in `main.js` runs correctly on page load
+
+3. **Add 404 Handling** (optional improvement):
+   - Implement a catch-all route in `main.js` to handle truly invalid routes
+   - Create a `NotFoundPage.svelte` component for better user experience
+
+### Expected Outcome
+
+After implementing the `vercel.json` configuration:
+1. Direct navigation to `/projects` should correctly show the Projects page
+2. All client-side routing should continue to work as expected
+3. Page refreshes on any route should maintain the correct view
+
+This solution addresses the fundamental issue with SPA deployments on Vercel and similar static hosting platforms where server-side routing configuration is needed to support client-side routing.
+
 ## Project Status Board
 - [x] Phase 1: Project Setup and Configuration
   - [x] Task 1.1: Ensure correct Svelte 4 setup

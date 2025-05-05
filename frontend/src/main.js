@@ -50,6 +50,16 @@ page('/projects/:id', (ctx) => {
 	setRoute('/project-detail', { id: ctx.params.id });
 });
 
+// About page
+page('/about', () => {
+	setRoute('/about');
+});
+
+// Add a catch-all route for 404s
+page('*', () => {
+	setRoute('/');
+});
+
 // Start the router
 page.start();
 
