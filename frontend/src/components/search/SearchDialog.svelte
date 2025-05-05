@@ -145,6 +145,7 @@
     on:keydown={handleKeydown}
     role="dialog"
     aria-label="Search dialog"
+    tabindex="-1"
   >
     <!-- Dialog container -->
     <div class="search-dialog">

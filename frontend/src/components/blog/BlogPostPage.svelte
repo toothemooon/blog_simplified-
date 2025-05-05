@@ -271,6 +271,28 @@
 </div>
 
 <style>
+  /* 
+   * IMPORTANT: The following CSS selectors for .post-content elements
+   * will be flagged as "unused" by the Svelte compiler. This is expected and can be safely ignored.
+   * 
+   * These selectors target HTML elements that are dynamically generated when rendering
+   * Markdown content in the blog post. Since this content is loaded at runtime and not
+   * statically defined in the template, Svelte can't detect the relationship.
+   * 
+   * Do not remove these selectors even if they appear unused!
+   */
+  
+  .post-container {
+    width: 100%;
+    max-width: 768px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+  
+  .post-header {
+    margin-bottom: 2rem;
+  }
+  
   .blog-post-page {
     margin-top: 2rem;
   }

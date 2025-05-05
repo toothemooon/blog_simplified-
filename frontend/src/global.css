@@ -183,15 +183,21 @@ p {
 }
 
 /* Make sure all text wraps properly */
-p, h1, h2, h3, h4, h5, h6, li, td, th, figcaption, dt, dd {
+p, h1, h2, h3, h4, h5, h6, li, td, th, figcaption, dt, dd, a, span, button {
   overflow-wrap: break-word;
   word-wrap: break-word;
-  -ms-word-break: break-all;
+  -ms-word-break: break-word;
   word-break: break-word;
   -ms-hyphens: auto;
   -moz-hyphens: auto;
   -webkit-hyphens: auto;
   hyphens: auto;
+}
+
+/* Add specific handling for long URLs and code snippets */
+pre, code {
+  white-space: pre-wrap;
+  overflow-x: auto;
 }
 
 /* Responsive spacing */
@@ -210,6 +216,13 @@ p, h1, h2, h3, h4, h5, h6, li, td, th, figcaption, dt, dd {
   
   p {
     font-size: 1rem;
+    line-height: 1.7;
+  }
+  
+  /* Improve readability on small screens */
+  .post-title, .page-title {
+    font-size: clamp(1.5rem, 7vw, 2.25rem);
+    letter-spacing: -0.01em;
   }
 }
 
@@ -220,6 +233,11 @@ p, h1, h2, h3, h4, h5, h6, li, td, th, figcaption, dt, dd {
   
   .container-narrow {
     padding: 0 var(--space-md);
+  }
+  
+  /* Further optimize for very small screens */
+  html, body {
+    font-size: 15px;
   }
 }
 
