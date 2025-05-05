@@ -3,23 +3,12 @@ import ravencoin from './projects/ravencoin';
 import cgcOverseas from './projects/cgc-overseas';
 import chengda from './projects/chengda';
 
-// Export array with metadata only (sorted by period, newest first)
+// Export array with fixed order: Ravencoin first, then Chengda, then CGC Overseas
 export const projects = [
-  ravencoin,
-  cgcOverseas,
-  chengda
-].sort((a, b) => {
-  // Extract year and month from period end date
-  const aEndDate = a.period.split('–')[1]?.trim() || a.period;
-  const bEndDate = b.period.split('–')[1]?.trim() || b.period;
-  
-  // Handle 'Present' specially
-  if (aEndDate.includes('Present')) return -1;
-  if (bEndDate.includes('Present')) return 1;
-  
-  // Otherwise sort by date (most recent first)
-  return new Date(bEndDate) - new Date(aEndDate);
-});
+  ravencoin,  // Jan 2018 - Present (ongoing)
+  chengda,    // Feb 2023 - Jul 2023
+  cgcOverseas // Mar 2021 - Jul 2022
+];
 
 // Function to get project by slug
 export function getProjectBySlug(slug) {

@@ -35,9 +35,9 @@
   </div>
   
   <div class="bio-content">
-    <p>サラダ is a graduate of English Major at Sichuan International Studies University. was working in oversea projects in Africa and mid-east countries.
+    <p>サラダ is a graduate of English Major at Sichuan International Studies University. He was working in oversea projects in Africa and mid-east countries.
       
-    <p>His current interests and focuses IT development and relevant job opportunities.</p>
+    <p>His current interests and focuses IT development and relevant job opportunities :）</p>
   </div>
 </div>
 
