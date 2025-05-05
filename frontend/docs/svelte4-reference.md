@@ -1,6 +1,6 @@
 # Svelte 4 Documentation Reference
 
-This document provides links to the official Svelte 4 documentation for offline reference.
+This document provides links to the official Svelte 4 documentation and other resources relevant to the SvelteBlog project.
 
 ## Main Resources
 
@@ -74,6 +74,27 @@ This document provides links to the official Svelte 4 documentation for offline 
 - [Middleware](https://github.com/visionmedia/page.js#middleware)
 - [Navigation](https://github.com/visionmedia/page.js#plugins)
 
+## SPA Routing in Production and Development
+
+- [Sirv Documentation](https://github.com/lukeed/sirv/tree/master/packages/sirv-cli) - Used for development server
+- [Sirv CLI Options](https://github.com/lukeed/sirv/tree/master/packages/sirv-cli#cli) - Command line options including --single flag
+- [Vercel SPA Configuration](https://vercel.com/docs/concepts/projects/project-configuration#routes) - For configuring SPA routing in production
+
+## SVG Resources for Avatar Creation
+
+- [MDN SVG Tutorial](https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial)
+- [SVG on CSS-Tricks](https://css-tricks.com/using-svg/)
+- [SVG Styling Properties](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute)
+- [SVG Gradient Tutorial](https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Gradients)
+
+## CSS and Styling Resources
+
+- [CSS Variables (Custom Properties)](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties)
+- [Media Queries](https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries)
+- [Grid Layout](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout)
+- [Flexbox](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Flexible_Box_Layout)
+- [CSS Dark Mode](https://css-tricks.com/a-complete-guide-to-dark-mode-on-the-web/)
+
 ## Additional Resources for Svelte 4
 
 - [Svelte Society - Community Resources](https://sveltesociety.dev/recipes)
@@ -96,4 +117,21 @@ This document provides links to the official Svelte 4 documentation for offline 
 - SvelteKit provides a full-stack framework with server-side rendering
 - Our project handles routing client-side only, while SvelteKit handles both client and server routing
 - SvelteKit provides features like API routes, which we handle differently
-- Our CSS is manually managed, while SvelteKit has more built-in styling options 
+- Our CSS is manually managed, while SvelteKit has more built-in styling options
+
+## Common Challenges and Solutions
+
+### SPA Routing Issues
+When refreshing on non-root routes shows blank pages:
+- Use the `--single` flag with sirv in development
+- Configure Vercel properly for production with proper routes to index.html
+
+### Component Communication
+- Props for parent-to-child communication
+- Events for child-to-parent communication
+- Stores for cross-component communication
+
+### Theme Implementation
+- Use CSS variables for theme colors
+- Store theme preference in localStorage
+- Use `window.matchMedia` for system theme detection 

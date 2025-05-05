@@ -958,3 +958,140 @@ The avatar now presents a peaceful natural landscape instead of a character, pro
 - Read the file before you try to edit it.
 - If there are vulnerabilities that appear in the terminal, run npm audit before proceeding
 - Always ask before using the -force git command 
+
+## Site Comparison and Future Development Plan (2023-11-30)
+
+### Deployed Site vs Target Site Comparison
+
+After reviewing both the current deployed site (https://blog-simplified.vercel.app/) and the target site (https://tailwind-nextjs-starter-blog.vercel.app/), I've identified key areas where our implementation can be enhanced to better match the target site's functionality and design.
+
+#### Current Implementation Strengths
+
+1. **Core Structure**:
+   - Successfully implemented the main blog structure with home, blog list, and post pages
+   - Implemented theme switching functionality
+   - Created proper tag filtering system
+   - Added projects section with grid layout and detail pages
+   - Successfully added About page with custom SVG avatar
+
+2. **Visual Design**:
+   - Clean, minimalist aesthetic consistent with the target site
+   - Good typography and spacing fundamentals
+   - Responsive layout that adapts to different screen sizes
+   - Well-implemented light/dark theme with smooth transitions
+
+3. **Current Features**:
+   - Blog post display with metadata
+   - Tag system with filtering
+   - Project cards and detail views
+   - Author profile on About page
+   - Custom SVG avatars instead of personal photos
+
+#### Target Site Features to Implement
+
+1. **Enhanced Blog Features**:
+   - Newsletter subscription component at the bottom of pages
+   - More prominent "Published on" dates in blog cards
+   - Support for multi-part posts with nested routing
+   - Code block copy functionality for technical posts
+   - Mathematical formula typesetting (KaTeX support)
+   - Reading time indicators for posts
+
+2. **UI Refinements**:
+   - More subtle card styling with less pronounced borders
+   - Refined typography with better vertical rhythm
+   - More sophisticated handling of images in posts
+   - Enhanced hover effects and micro-interactions
+   - Better mobile navigation with hamburger menu
+
+3. **Additional Components**:
+   - Enhanced footer with comprehensive site links
+   - Social sharing buttons for blog posts
+   - Table of contents for long articles
+   - Better pagination for blog listings
+   - Functional search with results display
+
+### Implementation Priority Plan
+
+Based on the comparison, here's a prioritized implementation plan:
+
+#### Phase 1: Core UI Refinements
+1. **Extract Reusable Components**:
+   - Create PostCard component used across HomePage and BlogListPage
+   - Implement TagChip component for consistent tag display
+   - Create Button component for standardized button styling
+   - Implement ContentSection component for consistent content layout
+
+2. **UI Polish**:
+   - Refine card styling to match the target site's subtler approach
+   - Improve typography spacing and vertical rhythm
+   - Enhance hover states and transitions
+   - Standardize spacing across all components
+
+3. **Mobile Experience**:
+   - Implement hamburger menu for mobile navigation
+   - Improve responsive layouts for all pages
+   - Optimize touch targets for mobile users
+
+#### Phase 2: Enhanced Blog Features
+1. **Blog Post Enhancements**:
+   - Add code block copy functionality
+   - Implement reading time estimation
+   - Add social sharing buttons
+   - Create table of contents for long articles
+
+2. **Content Organization**:
+   - Support for multi-part posts with nested routing
+   - Implement better related posts suggestions
+   - Add pagination for blog listings
+
+3. **Interactive Elements**:
+   - Newsletter subscription component
+   - Comment system (optional)
+   - Improved author bio section
+
+#### Phase 3: Advanced Features
+1. **Search Functionality**:
+   - Implement client-side search
+   - Create search results page with filtering options
+   - Add keyboard shortcuts for search
+
+2. **Performance Optimizations**:
+   - Image lazy loading and optimization
+   - Code splitting for better initial load times
+   - Prefetching for smoother navigation
+
+3. **Developer Experience**:
+   - Add automated testing
+   - Improve build process
+   - Enhance documentation
+
+### Technical Challenges and Solutions
+
+1. **SPA Routing Challenges**:
+   - **Issue**: Refreshing on non-root routes shows blank pages in development
+   - **Solution**: Configure the development server with proper SPA routing handling
+   - **Production Solution**: Vercel configuration for proper SPA routing is in place
+
+2. **Component Size Management**:
+   - **Issue**: Some components like BlogPostPage.svelte are too large
+   - **Solution**: Break down into smaller, focused components
+   - **Approach**: Create a set of specialized sub-components
+
+3. **Code Duplication**:
+   - **Issue**: Duplicate code for post cards, date formatting, etc.
+   - **Solution**: Extract to utility functions and shared components
+   - **Implementation**: Create utils/ and lib/ directories
+
+### Upcoming Tasks
+
+- [ ] Extract PostCard component
+- [ ] Create utility functions for date formatting and tag handling
+- [ ] Refine card styling to match target site
+- [ ] Implement mobile-friendly navigation
+- [ ] Add code block copy functionality
+- [ ] Create newsletter subscription component
+- [ ] Implement table of contents for long articles
+- [ ] Add pagination to blog listing
+
+This plan will guide our ongoing development to transform the current site into a more feature-complete and polished implementation that matches or exceeds the target site's functionality. 

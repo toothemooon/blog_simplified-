@@ -1,6 +1,6 @@
-# MyBlog Code Patterns and Examples
+# SvelteBlog Code Patterns and Examples
 
-This document provides common code patterns and examples used throughout the MyBlog project to help maintain consistency when implementing new features.
+This document provides common code patterns and examples used throughout the SvelteBlog project to help maintain consistency when implementing new features.
 
 ## Svelte Component Structure
 
@@ -76,6 +76,28 @@ In `App.svelte`:
 {/if}
 ```
 
+### SPA Routing Configuration
+
+For development, configure the sirv server in `package.json`:
+
+```json
+"scripts": {
+  "dev-single": "sirv public --dev --single --port 8080 & rollup -c -w"
+}
+```
+
+For production (Vercel), use `vercel.json`:
+
+```json
+{
+  "version": 2,
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
+}
+```
+
 ## Data Handling
 
 ### Working with Blog Posts
@@ -106,6 +128,18 @@ function formatDate(dateStr) {
     day: 'numeric'
   });
 }
+```
+
+### Project Data Management
+
+```javascript
+// Find project by ID
+const project = projects.find(p => p.id === id);
+
+// Get next and previous projects for navigation
+const projectIndex = projects.findIndex(p => p.id === id);
+const nextProject = projectIndex < projects.length - 1 ? projects[projectIndex + 1] : null;
+const prevProject = projectIndex > 0 ? projects[projectIndex - 1] : null;
 ```
 
 ### Tag Management
@@ -142,13 +176,76 @@ const sortedTags = Object.entries(tags).sort(([a], [b]) => a.localeCompare(b));
 }
 
 /* Responsive breakpoints */
-@media (max-width: 768px) {
-  /* Styles for tablets and smaller devices */
+@media (min-width: 768px) {
+  /* Styles for tablets and larger devices */
+  .two-column-layout {
+    display: flex;
+  }
+  
+  .sidebar {
+    width: 25%;
+  }
+  
+  .content {
+    width: 75%;
+    padding-left: 2rem;
+  }
 }
 
 @media (max-width: 640px) {
   /* Styles for mobile phones */
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
 }
+```
+
+### Project Card Grid
+
+```css
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .project-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .project-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+```
+
+### Avatar Implementation
+
+```svelte
+<div class="avatar-container">
+  <img class="avatar" src="/images/avatar/scenery-avatar.svg" alt="Scenic landscape avatar with mountains and trees" />
+</div>
+
+<style>
+  .avatar-container {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--color-primary);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+</style>
 ```
 
 ### Theme Variables
@@ -219,6 +316,10 @@ function isActive(link) {
     return link.route === '/tags-list';
   }
   
+  if (currentRoute === '/project-detail') {
+    return link.route === '/projects-list';
+  }
+  
   return currentRoute === link.route;
 }
 ```
@@ -234,6 +335,28 @@ function isActive(link) {
 >
   {link.text}
 </a>
+```
+
+## Social Links Pattern
+
+```svelte
+<script>
+  const socialLinks = [
+    { name: 'Mail', url: 'mailto:hello@example.com', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
+    { name: 'GitHub', url: 'https://github.com', icon: 'M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z' },
+  ];
+</script>
+
+<div class="social-links">
+  {#each socialLinks as link}
+    <a href={link.url} target="_blank" rel="noopener noreferrer" class="social-link" aria-label={link.name}>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="social-icon">
+        <path d={link.icon}></path>
+      </svg>
+      <span class="social-name">{link.name}</span>
+    </a>
+  {/each}
+</div>
 ```
 
 ## CSS Utility Classes
@@ -254,82 +377,103 @@ function isActive(link) {
   justify-content: space-between;
 }
 
-.gap-4 {
-  gap: 1rem;
+/* Text utilities */
+.text-center {
+  text-align: center;
 }
 
-/* Container utility */
-.container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
+.text-lg {
+  font-size: 1.125rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+}
+
+/* Spacing utilities */
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.p-4 {
+  padding: 1rem;
 }
 ```
 
-## Markdown Processing
+## Future Refactoring Patterns
 
-### Simple Markdown to HTML Converter
+### Extracting Reusable PostCard Component
 
-```javascript
-function markdownToHtml(markdown) {
-  if (!markdown) return '';
+```svelte
+<!-- PostCard.svelte -->
+<script>
+  export let post;
+  export let showReadMore = true;
   
-  // Start with a container
-  let html = '<div>';
-  
-  // Split the markdown by lines
-  const lines = markdown.split('\n');
-  let inList = false;
-  
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    
-    if (line.startsWith('# ')) {
-      // h1 heading
-      html += `<h1>${line.substring(2)}</h1>`;
-    } else if (line.startsWith('## ')) {
-      // h2 heading
-      html += `<h2>${line.substring(3)}</h2>`;
-    } else if (line.startsWith('* ')) {
-      // List item
-      if (!inList) {
-        html += '<ul>';
-        inList = true;
-      }
-      html += `<li>${line.substring(2)}</li>`;
-    } else if (line === '' && inList) {
-      // End of list
-      html += '</ul>';
-      inList = false;
-    } else if (line === '') {
-      // Empty line, paragraph break
-      html += '</p><p>';
-    } else if (!inList) {
-      // Regular paragraph text
-      html += line + ' ';
-    }
+  function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
   }
+</script>
+
+<div class="post-card">
+  <div class="post-meta">
+    <span class="post-date">{formatDate(post.date)}</span>
+  </div>
   
-  // Close any open lists
-  if (inList) {
-    html += '</ul>';
-  }
+  <h2 class="post-title">
+    <a href="/blog/{post.slug}">{post.title}</a>
+  </h2>
   
-  // Replace code blocks
-  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+  {#if post.tags && post.tags.length > 0}
+    <div class="post-tags">
+      {#each post.tags as tag}
+        <a href="/tags/{tag}" class="tag">{tag}</a>
+      {/each}
+    </div>
+  {/if}
   
-  // Wrap with final paragraph if needed
-  if (!html.endsWith('</p>') && !html.endsWith('</ul>') && !html.endsWith('</h1>') && !html.endsWith('</h2>')) {
-    html += '</p>';
-  }
+  <p class="post-summary">{post.summary}</p>
   
-  // Close the container
-  html += '</div>';
+  {#if showReadMore}
+    <a href="/blog/{post.slug}" class="read-more">Read more →</a>
+  {/if}
+</div>
+
+<style>
+  /* Component styles */
+</style>
+```
+
+### Example Component Usage
+
+```svelte
+<!-- In HomePage.svelte -->
+<script>
+  import PostCard from '../lib/components/PostCard.svelte';
+  import { posts } from '../data/blog-data.js';
   
-  // Fix any double paragraph tags
-  html = html.replace(/<\/p><p><\/p><p>/g, '</p><p>');
-  html = html.replace(/<p><\/p>/g, '');
+  // Get 5 most recent posts
+  const recentPosts = [...posts]
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 5);
+</script>
+
+<div class="recent-posts">
+  <h1>Latest Posts</h1>
   
-  return html;
-} 
+  {#each recentPosts as post}
+    <PostCard {post} />
+  {/each}
+  
+  <a href="/blog" class="all-posts-link">All Posts →</a>
+</div>
+```
