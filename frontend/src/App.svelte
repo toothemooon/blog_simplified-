@@ -9,7 +9,6 @@
 	import ProjectDetailPage from './components/projects/ProjectDetailPage.svelte';
 	import AboutPage from './components/AboutPage.svelte';
 	import NotFoundPage from './components/error/NotFoundPage.svelte';
-	import NotFoundPageTest from './components/error/NotFoundPageTest.svelte';
 	import './global.css';
 	
 	// Props from router
@@ -39,8 +38,6 @@
 			<AboutPage />
 		{:else if currentRoute === '/not-found'}
 			<NotFoundPage />
-		{:else if currentRoute === '/test-404'}
-			<NotFoundPageTest />
 		{/if}
 	</main>
 
