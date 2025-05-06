@@ -9,6 +9,7 @@
 	import ProjectDetailPage from './components/projects/ProjectDetailPage.svelte';
 	import AboutPage from './components/AboutPage.svelte';
 	import NotFoundPage from './components/error/NotFoundPage.svelte';
+	import Footer from './components/Footer.svelte';
 	import './global.css';
 	
 	// Props from router
@@ -41,12 +42,7 @@
 		{/if}
 	</main>
 
-	<!-- Simple footer - will be implemented properly later -->
-	<footer class="footer">
-		<div class="container">
-			<p>&copy; {new Date().getFullYear()} • Sarada's Blog • Built with Svelte 4</p>
-		</div>
-	</footer>
+	<Footer />
 </div>
 
 <style>
@@ -59,14 +55,5 @@
 	.main-content {
 		flex: 1;
 		padding: 2rem 0;
-	}
-	
-	.footer {
-		padding: 1.5rem 0;
-		text-align: center;
-		border-top: 1px solid var(--color-border);
-		font-size: 0.9rem;
-		color: var(--color-text);
-		opacity: 0.7;
 	}
 </style>
