@@ -8,6 +8,10 @@
   "ui": {
     "language": "Language",
     "search": "Search",
+    "search_placeholder": "Type a command or search...",
+    "no_results": "No results found for \"{{query}}\"",
+    "content_heading": "CONTENT",
+    "start_searching": "Type to start searching...",
     "theme": "Theme",
     "dark": "Dark",
     "light": "Light",

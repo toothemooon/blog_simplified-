@@ -1,5 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte';
+  import { t } from '../../i18n';
   
   // Props
   export let currentRoute = '/';
@@ -7,12 +8,12 @@
   // Event dispatcher
   const dispatch = createEventDispatcher();
   
-  // Navigation items
+  // Navigation items with translation keys
   const navLinks = [
-    { text: 'Blog', href: '/blog', route: '/blog-list' },
-    { text: 'Tags', href: '/tags', route: '/tags-list' },
-    { text: 'Projects', href: '/projects', route: '/projects' },
-    { text: 'About', href: '/about', route: '/about' }
+    { key: 'nav.blog', href: '/blog', route: '/blog-list' },
+    { key: 'nav.tags', href: '/tags', route: '/tags-list' },
+    { key: 'nav.projects', href: '/projects', route: '/projects' },
+    { key: 'nav.about', href: '/about', route: '/about' }
   ];
   
   // Check if a link is active
@@ -49,7 +50,7 @@
           aria-current={isActive(link) ? 'page' : undefined}
           on:click={handleLinkClick}
         >
-          {link.text}
+          {$t(link.key)}
         </a>
       </li>
     {/each}

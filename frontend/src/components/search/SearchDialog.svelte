@@ -3,6 +3,7 @@
   import { posts } from '../../data/blog-data.js';
   import { searchPosts, groupResultsByYear } from '../../utils/search.js';
   import SearchResultGroup from './SearchResultGroup.svelte';
+  import { t } from '../../i18n';
   
   // Create event dispatcher
   const dispatch = createEventDispatcher();
@@ -144,7 +145,7 @@
     on:click={handleClickOutside}
     on:keydown={handleKeydown}
     role="dialog"
-    aria-label="Search dialog"
+    aria-label={$t('ui.search')}
     tabindex="-1"
   >
     <!-- Dialog container -->
@@ -161,7 +162,7 @@
           bind:this={searchInput}
           bind:value={query}
           on:input={handleInput}
-          placeholder="Type a command or search..."
+          placeholder={$t('ui.search_placeholder') || "Type a command or search..."}
           class="search-input"
         />
         
@@ -176,10 +177,10 @@
         {#if query && query.trim() !== ''}
           {#if results.length === 0}
             <div class="no-results">
-              No results found for "{query}"
+              {$t('ui.no_results', { query }) || `No results found for "${query}"`}
             </div>
           {:else}
-            <div class="content-heading">CONTENT</div>
+            <div class="content-heading">{$t('ui.content_heading') || "CONTENT"}</div>
             
             {#each Object.entries(groupedResults).sort((a, b) => b[0] - a[0]) as [year, yearResults]}
               <SearchResultGroup 
@@ -192,7 +193,7 @@
           {/if}
         {:else}
           <div class="empty-state">
-            <p>Type to start searching...</p>
+            <p>{$t('ui.start_searching') || "Type to start searching..."}</p>
           </div>
         {/if}
       </div>

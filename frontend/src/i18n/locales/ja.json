@@ -8,6 +8,10 @@
   "ui": {
     "language": "言語",
     "search": "検索",
+    "search_placeholder": "コマンドまたは検索語を入力...",
+    "no_results": "「{{query}}」の検索結果はありません",
+    "content_heading": "コンテンツ",
+    "start_searching": "検索するには入力してください...",
     "theme": "テーマ",
     "dark": "ダーク",
     "light": "ライト",

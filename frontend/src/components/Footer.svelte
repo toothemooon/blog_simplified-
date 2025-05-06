@@ -1,4 +1,6 @@
 <script>
+  import { t } from '../i18n';
+  
   // Social media icons with expanded set of links
   const socialLinks = [
     { name: 'Mail', url: 'mailto:hsc110110123@gmail.com', icon: 'M0 4v16h24V4H0zm19.4 2L12 10.78 4.6 6h14.8zM2 18V7.48l10 6.25 10-6.25V18H2z' },
@@ -30,11 +32,9 @@
       
       <div class="footer-info">
         <div class="copyright">
-          <span>&copy; {currentYear}</span>
+          <span>{$t('footer.copyright', { year: currentYear })}</span>
           <span class="divider">•</span>
-          <span>Sarada's Blog</span>
-          <span class="divider">•</span>
-          <span>Built with Svelte 4</span>
+          <span>{$t('footer.built_with')}</span>
         </div>
       </div>
     </div>

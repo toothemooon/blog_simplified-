@@ -1,5 +1,6 @@
 <script>
   import { onMount } from 'svelte';
+  import { t } from '../i18n';
   import SearchButton from './search/SearchButton.svelte';
   import SearchDialog from './search/SearchDialog.svelte';
   import Logo from './header/Logo.svelte';
@@ -175,14 +176,14 @@
                   <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
                   <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                 </svg>
-                <span>Light</span>
+                <span>{$t('ui.light')}</span>
               </button>
               
               <button on:click={() => applyTheme('dark')} class="theme-option">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                 </svg>
-                <span>Dark</span>
+                <span>{$t('ui.dark')}</span>
               </button>
               
               <button on:click={() => applyTheme('system')} class="theme-option">
@@ -191,7 +192,7 @@
                   <line x1="8" y1="21" x2="16" y2="21"></line>
                   <line x1="12" y1="17" x2="12" y2="21"></line>
                 </svg>
-                <span>System</span>
+                <span>{$t('ui.system')}</span>
               </button>
             </div>
           {/if}

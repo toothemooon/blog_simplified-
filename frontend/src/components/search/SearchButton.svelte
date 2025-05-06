@@ -1,6 +1,7 @@
 <script>
   // Import event dispatcher
   import { createEventDispatcher } from 'svelte';
+  import { t } from '../../i18n';
   
   // Create event dispatcher
   const dispatch = createEventDispatcher();
@@ -13,9 +14,9 @@
 
 <button 
   class="search-button" 
-  aria-label="Search" 
+  aria-label={$t('ui.search')} 
   on:click={handleClick}
-  title="Search (Press / to search)"
+  title={$t('ui.search') + " (Press / to search)"}
 >
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="11" cy="11" r="8"></circle>

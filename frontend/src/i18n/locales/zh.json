@@ -8,6 +8,10 @@
   "ui": {
     "language": "语言",
     "search": "搜索",
+    "search_placeholder": "输入命令或搜索内容...",
+    "no_results": "没有找到\"{{query}}\"的相关结果",
+    "content_heading": "内容",
+    "start_searching": "输入以开始搜索...",
     "theme": "主题",
     "dark": "深色",
     "light": "浅色",

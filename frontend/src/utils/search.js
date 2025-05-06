@@ -154,8 +154,26 @@ function escapeRegExp(string) {
  */
 export function formatDate(dateStr) {
   if (!dateStr) return '';
+  
+  // Get current language from store
+  let locale = 'en-US'; // Default fallback
+  
+  // Try to get current language from localStorage for SSR-safe approach
+  if (typeof window !== 'undefined' && window.localStorage) {
+    const storedLang = localStorage.getItem('language');
+    if (storedLang) {
+      // Map language codes to locales
+      const localeMap = {
+        'en': 'en-US',
+        'ja': 'ja-JP',
+        'zh': 'zh-CN'
+      };
+      locale = localeMap[storedLang] || 'en-US';
+    }
+  }
+  
   const date = new Date(dateStr);
-  return date.toLocaleDateString('en-US', {
+  return date.toLocaleDateString(locale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
