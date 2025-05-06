@@ -1,5 +1,5 @@
 export default {
-  title: 'Privacy and Future Developments in Ravencoin 進化',
+  title: 'Privacy and Future Developments in Ravencoin',
   date: '2019-05-12',
   summary: 'An exploration of Ravencoin\'s approach to privacy, potential privacy enhancements, and the roadmap for future developments in the Ravencoin ecosystem.',
   slug: 'ravencoin-privacy-future',
