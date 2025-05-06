@@ -18,7 +18,7 @@
     
     <div class="author-info">
       <h2 class="author-name">サラダ</h2>
-      <p class="author-title">Coding Enthusiast</p>
+      <p class="author-title">Programming Enthusiast</p>
       <p class="author-institution">Sichuan International Studies University</p>
       
       <div class="social-links">
