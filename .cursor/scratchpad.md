@@ -742,3 +742,453 @@ The pagination feature will be considered complete when:
 5. ✓ UI is responsive and displays correctly on all screen sizes
 6. ✓ Accessibility requirements are met
 7. ✓ Performance impact is positive (reduced initial page load)
+
+## Language Selector Implementation Plan
+
+After examining the Header component and related files, I'm confident we can implement a language selector that integrates well with the existing UI. Here's a comprehensive plan:
+
+### Translation Infrastructure
+
+I recommend **not using Google Translate API** for several key reasons:
+- It's not accessible in China (a key target audience)
+- Translation quality is inconsistent
+- It adds API costs and dependencies
+- It requires internet connection to function
+
+Instead, I recommend implementing a custom translation system using static JSON files:
+
+#### 1. Directory Structure
+```
+frontend/src/
+└── i18n/
+    ├── index.js           # Main export with store and utility functions
+    ├── store.js           # Svelte store for language state management
+    └── locales/           # Translation JSON files
+        ├── en.json        # English (default)
+        ├── zh.json        # Chinese
+        └── ja.json        # Japanese
+```
+
+#### 2. Translation Store
+```javascript
+// i18n/store.js
+import { writable, derived } from 'svelte/store';
+
+// Initialize with browser language or saved preference
+const getBrowserLanguage = () => {
+  if (typeof window === 'undefined') return 'en';
+  const savedLang = localStorage.getItem('language');
+  if (savedLang) return savedLang;
+  
+  const browserLang = navigator.language.split('-')[0];
+  return ['en', 'zh', 'ja'].includes(browserLang) ? browserLang : 'en';
+};
+
+// Create writable store
+export const language = writable(getBrowserLanguage());
+
+// Save language preference when it changes
+language.subscribe(value => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('language', value);
+  }
+});
+
+// Translations object to hold all loaded translations
+const translations = {
+  en: {},
+  zh: {},
+  ja: {}
+};
+
+// Function to load translations for a specific language
+export async function loadTranslations(lang) {
+  if (!Object.keys(translations[lang]).length) {
+    try {
+      const module = await import(`./locales/${lang}.json`);
+      translations[lang] = module.default;
+    } catch (e) {
+      console.error(`Failed to load ${lang} translations`, e);
+    }
+  }
+  return translations[lang];
+}
+
+// Current translation derived store
+export const t = derived(
+  language,
+  ($language, set) => {
+    loadTranslations($language).then(() => {
+      // Create a translation function
+      const translate = (key, params = {}) => {
+        // Split key by dots to access nested properties
+        const keys = key.split('.');
+        let value = translations[$language];
+        
+        // Try to find translation in current language
+        for (const k of keys) {
+          value = value?.[k];
+          if (!value) break;
+        }
+        
+        // Fallback to English if translation not found
+        if (!value && $language !== 'en') {
+          value = translations.en;
+          for (const k of keys) {
+            value = value?.[k];
+            if (!value) break;
+          }
+        }
+        
+        // Return the key itself if translation not found
+        if (!value) return key;
+        
+        // Replace parameters if any
+        return value.replace(/\{\{(\w+)\}\}/g, (_, paramKey) => 
+          params[paramKey] !== undefined ? params[paramKey] : `{{${paramKey}}}`
+        );
+      };
+      
+      set(translate);
+    });
+  },
+  key => key // Initial value returns the key itself until translations are loaded
+);
+
+// Change the language
+export function setLanguage(lang) {
+  if (['en', 'zh', 'ja'].includes(lang)) {
+    language.set(lang);
+    // Preload the language
+    loadTranslations(lang);
+  }
+}
+```
+
+#### 3. Sample Translation Files
+```json
+// en.json
+{
+  "header": {
+    "blog": "Blog",
+    "tags": "Tags",
+    "projects": "Projects",
+    "about": "About",
+    "search": "Search",
+    "theme": "Theme",
+    "language": "Language"
+  },
+  "footer": {
+    "copyright": "© {{year}} Sarada's Blog",
+    "built_with": "Built with Svelte 4"
+  }
+}
+
+// zh.json
+{
+  "header": {
+    "blog": "博客",
+    "tags": "标签",
+    "projects": "项目",
+    "about": "关于",
+    "search": "搜索",
+    "theme": "主题",
+    "language": "语言"
+  },
+  "footer": {
+    "copyright": "© {{year}} Sarada的博客",
+    "built_with": "使用Svelte 4构建"
+  }
+}
+```
+
+### UI Component Implementation
+
+#### 1. Language Selector Component
+
+```svelte
+<!-- LanguageSelector.svelte -->
+<script>
+  import { language, setLanguage } from '../../i18n/store';
+  
+  // Available languages
+  const languages = [
+    { code: 'en', name: 'English', label: 'EN' },
+    { code: 'zh', name: '中文', label: 'ZH' },
+    { code: 'ja', name: '日本語', label: 'JA' }
+  ];
+  
+  // Dropdown state
+  let isOpen = false;
+  
+  // Current language
+  $: currentLang = languages.find(l => l.code === $language) || languages[0];
+  
+  function toggleDropdown() {
+    isOpen = !isOpen;
+  }
+  
+  function selectLanguage(langCode) {
+    setLanguage(langCode);
+    isOpen = false;
+  }
+  
+  // Close dropdown when clicking outside
+  function handleClickOutside(event) {
+    if (isOpen && !event.target.closest('.language-selector')) {
+      isOpen = false;
+    }
+  }
+</script>
+
+<svelte:window on:click={handleClickOutside} />
+
+<div class="language-selector">
+  <button 
+    id="language-button"
+    class="language-button" 
+    on:click={toggleDropdown}
+    aria-haspopup="true"
+    aria-expanded={isOpen}
+    aria-label="Select language"
+  >
+    <svg class="globe-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="2" y1="12" x2="22" y2="12"></line>
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+    </svg>
+    <span class="current-language">{currentLang.label}</span>
+  </button>
+  
+  {#if isOpen}
+    <div id="language-menu" class="language-menu" role="menu">
+      {#each languages as lang}
+        <button 
+          class="language-option" 
+          class:active={$language === lang.code}
+          on:click={() => selectLanguage(lang.code)}
+          role="menuitem"
+        >
+          {lang.name}
+        </button>
+      {/each}
+    </div>
+  {/if}
+</div>
+
+<style>
+  .language-selector {
+    position: relative;
+  }
+  
+  .language-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text);
+    padding: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .language-button:hover {
+    background-color: var(--color-border);
+  }
+  
+  .globe-icon {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .current-language {
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+  }
+  
+  .language-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0.5rem;
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: var(--z-index-dropdown);
+    min-width: 10rem;
+  }
+  
+  .language-option {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.75rem 0.5rem;
+    min-height: 44px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text);
+    border-radius: 0.25rem;
+    transition: background-color 0.2s ease;
+  }
+  
+  .language-option:hover {
+    background-color: var(--color-border);
+  }
+  
+  .language-option.active {
+    background-color: rgba(var(--color-primary-rgb), 0.15);
+    font-weight: 500;
+  }
+</style>
+```
+
+#### 2. Integration with Header Component
+
+```svelte
+<!-- Header.svelte (excerpt of changes) -->
+<script>
+  // ... existing imports ...
+  import LanguageSelector from './header/LanguageSelector.svelte';
+  import { t } from '../i18n/store';
+  
+  // ... rest of existing script ...
+</script>
+
+<!-- Actions -->
+<div class="header-actions">
+  <!-- Search Button -->
+  <SearchButton on:opensearch={handleOpenSearch} />
+  
+  <!-- Language Selector (NEW) -->
+  <LanguageSelector />
+  
+  <!-- Theme Toggle -->
+  <div class="theme-toggle">
+    <!-- ... existing theme toggle code ... -->
+  </div>
+  
+  <!-- Mobile Menu Button -->
+  <div class="hide-on-desktop">
+    <!-- ... existing mobile menu button code ... -->
+  </div>
+</div>
+```
+
+#### 3. Mobile Menu Integration
+
+We should also add language selection to the mobile menu:
+
+```svelte
+<!-- MobileMenu.svelte (excerpt of changes) -->
+<script>
+  // ... existing imports ...
+  import { language, setLanguage } from '../../i18n/store';
+  
+  // Available languages
+  const languages = [
+    { code: 'en', name: 'English' },
+    { code: 'zh', name: '中文' },
+    { code: 'ja', name: '日本語' }
+  ];
+  
+  function selectLanguage(langCode) {
+    setLanguage(langCode);
+  }
+  
+  // ... rest of existing script ...
+</script>
+
+<!-- After navigation links in mobile menu -->
+<div class="mobile-section">
+  <h3 class="mobile-section-title">Language</h3>
+  <div class="language-options">
+    {#each languages as lang}
+      <button 
+        class="language-option"
+        class:active={$language === lang.code}
+        on:click={() => selectLanguage(lang.code)}
+      >
+        {lang.name}
+      </button>
+    {/each}
+  </div>
+</div>
+
+<style>
+  /* ... existing styles ... */
+  
+  .mobile-section {
+    padding: var(--space-md) 0;
+    border-top: 1px solid var(--color-border);
+  }
+  
+  .mobile-section-title {
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-sm);
+    color: var(--color-text);
+    opacity: 0.7;
+  }
+  
+  .language-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+  
+  .language-option {
+    text-align: left;
+    padding: var(--space-sm);
+    border-radius: 0.25rem;
+    background: none;
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .language-option.active {
+    background-color: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+  }
+</style>
+```
+
+### Implementation Confidence Assessment
+
+To feel 100% confident in implementing this solution, I've addressed these key aspects:
+
+1. ✅ **Translation Infrastructure**: Using static JSON files instead of Google Translate API ensures:
+   - Works in all regions including China
+   - Better translation quality
+   - No API dependencies or costs
+   - Better performance
+
+2. ✅ **UI Component**: The language selector implementation:
+   - Matches the existing header design
+   - Is accessible with proper ARIA attributes
+   - Works on both desktop and mobile
+   - Shows clear visual indication of current language
+
+3. ✅ **Integration**: The component:
+   - Fits well in the Header alongside theme toggle
+   - Uses consistent styling with other header elements
+   - Maintains the same dropdown pattern as theme toggle
+   - Properly integrates with the mobile menu
+
+4. ✅ **Technical Requirements**:
+   - Uses Svelte stores for reactive state management
+   - Stores preference in localStorage
+   - Properly handles language fallbacks
+   - Supports parameter interpolation in translations
+
+With this comprehensive plan, I'm fully confident in implementing a language selector that will work effectively for this project, especially considering the need to support users in China.
