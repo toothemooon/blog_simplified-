@@ -86,8 +86,10 @@
       <path d="M16 15c0.5-0.5 1-1.5 1-2s-0.5-1-1-1.5-1-0.5-1.5 0-0.5 1-0.5 1.5 0.5 1 1 1.5 0.5 1 1 0.5z" fill="var(--color-primary)" />
       <path d="M8 17c0.5-0.5 1-1 1.5-1s1 0.5 1.5 0.5 0.5-0.5 0-1-1-0.5-1.5-0.5-1 0.5-1.5 1-0.5 1 0 1z" fill="var(--color-primary)" />
     </svg>
-    <span class="language-code">{currentLanguage}</span>
-    <span class="dropdown-indicator">▼</span>
+    <span class="language-code-container">
+      <span class="language-code">{currentLanguage}</span>
+      <span class="dropdown-indicator">▼</span>
+    </span>
   </button>
   
   <div 
@@ -140,6 +142,8 @@
     border-radius: 0.25rem;
     transition: all 0.2s ease;
     height: 44px;
+    min-width: 44px; /* Ensure minimum touch target size */
+    justify-content: center; /* Center items horizontally */
   }
   
   .language-button:hover {
@@ -151,11 +155,21 @@
     height: 20px;
     stroke: var(--color-primary);
     fill: none;
+    flex-shrink: 0; /* Prevent icon from shrinking */
+  }
+  
+  .language-code-container {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap; /* Prevent text wrapping */
+    flex-shrink: 0; /* Prevent text from shrinking */
   }
   
   .language-code {
     font-size: var(--font-size-base);
     font-weight: 500;
+    display: inline-block; /* Keep text inline */
+    letter-spacing: 0; /* Tighten letter spacing slightly */
   }
   
   .dropdown-indicator {
@@ -163,6 +177,7 @@
     margin-left: 2px;
     opacity: 0.7;
     color: var(--color-primary);
+    display: inline-block; /* Keep indicator inline */
   }
   
   .language-menu {
@@ -222,14 +237,35 @@
     font-weight: 500;
   }
   
-  /* For mobile, make sure the dropdown is positioned properly */
+  /* Mobile-specific adjustments */
   @media (max-width: 640px) {
+    .language-button {
+      padding: 0.5rem 0.25rem; /* Reduce horizontal padding on mobile */
+      gap: 0.25rem; /* Reduce gap between icon and text */
+    }
+    
     .dropdown-indicator {
       margin-left: 0;
     }
     
     .language-menu {
       min-width: 7rem; /* Even smaller on mobile */
+    }
+    
+    .globe-icon {
+      width: 18px; /* Slightly smaller icon on mobile */
+      height: 18px;
+    }
+    
+    .language-code {
+      font-size: var(--font-size-sm); /* Smaller font on mobile */
+    }
+  }
+  
+  /* For very small screens */
+  @media (max-width: 380px) {
+    .language-button {
+      padding: 0.5rem 0.125rem; /* Minimal padding for tiny screens */
     }
   }
 </style> 

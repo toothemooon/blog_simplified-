@@ -356,10 +356,36 @@
     }
   }
   
-  /* Ensure layout on small screens */
+  /* Mobile optimizations to prevent overflow */
   @media (max-width: 640px) {
     .header-actions {
       margin-left: 0.5rem; /* Less space on mobile */
+      padding: 0.125rem; /* Minimal padding to save space */
+    }
+    
+    .logo-container {
+      flex-shrink: 1; /* Allow logo to shrink slightly if needed */
+      max-width: 40%; /* Limit logo width on small screens */
+    }
+    
+    .nav-actions-container {
+      flex-grow: 1;
+      justify-content: flex-end;
+    }
+    
+    .header-container {
+      padding: 0 0.625rem; /* Smaller padding on small screens */
+    }
+  }
+  
+  /* Very small screen optimizations */
+  @media (max-width: 360px) {
+    .header-actions {
+      gap: 0.125rem; /* Minimal gap for tiny screens */
+    }
+    
+    .header-container {
+      padding: 0 0.375rem; /* Even smaller padding on tiny screens */
     }
   }
 </style> 
