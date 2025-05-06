@@ -57,743 +57,226 @@
 ## Background and Motivation
 The goal is to build a modern blog similar to https://tailwind-nextjs-starter-blog.vercel.app/blog but using Svelte 4 for the framework and vanilla CSS for styling instead of Next.js and Tailwind CSS. This approach will leverage the existing Svelte codebase while still creating a clean, responsive blog with good performance.
 
-## Projects Section Implementation
-
-The Projects section has been successfully implemented with the following components:
-
-### Project Data Structure
-
-The project data follows a modular system similar to our blog posts:
-
-```
-frontend/src/
-└── data/
-    └── projects/
-        ├── index.js             # Central management file for projects
-        ├── projects/            # Project metadata files
-        │   ├── ravencoin.js
-        │   ├── cgc-overseas.js
-        │   └── chengda.js
-        └── content/             # Detailed content files
-            ├── ravencoin.md
-            ├── cgc-overseas.md
-            └── chengda.md
-```
-
-### Components
-
-1. **ProjectsPage.svelte**
-   - List view displaying all projects in predefined order
-   - Each project shows title, role, location, period, summary, and tags
-   - Project items link to their respective detail pages
-
-2. **ProjectDetailPage.svelte**
-   - Detailed view of a single project
-   - Displays comprehensive metadata including project type, field, and team size
-   - Shows achievements as bullet points
-   - Features related projects section based on matching tags
-   - Includes 'Back to projects' navigation
-
-3. **Project Metadata Structure**
-   - Each project has standardized fields (title, role, location, period, slug, etc.)
-   - Tags system allows linking related projects
-   - Content is stored in separate markdown files for better management
-
-### Utility Functions
-
-Project-specific utility functions have been added to `project-utils.js`:
-- `getAllProjects()`: Returns all projects in the configured order
-- `getProject(slug)`: Retrieves a specific project by slug
-- `formatProjectPeriod(period)`: Formats date periods consistently (e.g., "Jan 2018" → "January 2018")
-- `getRelatedProjectsBySlug(slug, limit)`: Finds related projects based on matching tags
-
-### Recent Enhancements
-
-1. **Project Ordering**
-   - Projects are now ordered with most recent/ongoing projects at the top
-   - Order: Ravencoin (ongoing), Chengda, CGC Overseas
-
-2. **Focus Visibility Improvements**
-   - Enhanced focus states for better accessibility
-   - Added `:focus-visible` support for keyboard-only focus indicators
-   - Removed default focus outlines on mouse clicks while preserving them for keyboard navigation
-
-3. **Chinese Character Handling**
-   - Fixed display issues with Chinese characters in project titles
-
-## Language Translation Implementation Plan
-
-After analyzing different approaches, we've determined the best strategy for adding language translation to the blog:
-
-### Recommended Approach: Custom JSON Translation
-
-This approach provides the most reliable solution that works across all browsers, devices, and regions (including China where Google services may be blocked):
-
-1. **Translation Data Structure**
-   ```
-   frontend/src/
-   └── i18n/
-       ├── index.js           # Translation store setup
-       └── locales/           # Translation files by language
-           ├── en.json        # English (default)
-           ├── zh.json        # Chinese
-           └── ja.json        # Japanese
-   ```
-
-2. **Translation Store**
-   - Create a Svelte store that manages the current language
-   - Dynamically load language files as needed
-   - Provide a translation function for easy component usage
-   - Persist language selection in localStorage
-
-3. **Language Selector UI**
-   - Add a language toggle button next to the theme toggle
-   - Show language options with appropriate flags/labels
-   - Indicate the currently selected language
-
-4. **Implementation Strategy**
-   - Start with translating UI elements (navigation, buttons, labels)
-   - Progressively translate content, starting with most important sections
-   - For untranslated content, offer a fallback to English
-
-This approach ensures:
-- Works on all browsers and devices
-- Functions in all regions, including China
-- No dependency on third-party services
-- Complete control over translation quality
-- Best performance without additional scripts
-
-## Comparison with Target Site
-
-After reviewing both the current blog-simplified site at https://blog-simplified.vercel.app/ and our target reference https://tailwind-nextjs-starter-blog.vercel.app/, I've identified the following gaps and opportunities for improvement:
-
-### What We've Accomplished
-- ✅ Basic layout structure mirroring the target site
-- ✅ Responsive design with proper mobile optimization
-- ✅ Blog post detail pages with navigation between posts
-- ✅ Tags system with tag cloud and filtering
-- ✅ Search functionality with keyboard shortcuts
-- ✅ Proper metadata display (dates, reading time, authors)
-- ✅ Fixed accessibility issues in key components
-- ✅ Mobile navigation slide-in menu
-- ✅ Projects section with metadata and related projects
-- ✅ Custom 404 page with proper routing configuration
-- ✅ Footer with social media links matching target site design
-- ✅ Responsive footer with properly displayed icons on all screen sizes
-
-### What's Missing Compared to Target Site
-
-1. **Pagination**:
-   - Target site has pagination for the blog list
-   - Our implementation shows all posts on a single page
-   - This becomes critical as content grows and page load time increases
-
-2. **Newsletter Subscription**:
-   - Target site has a newsletter subscription component in the footer
-   - Our site lacks this engagement feature for building audience
-
-3. **Code Block Styling**:
-   - Target site has syntax highlighting for code blocks with language detection
-   - Our implementation has basic code styling without language-specific highlighting
-   - Target site offers code copying functionality
-
-4. **Series/Collection Display**:
-   - Target site organizes related posts into series with navigation
-   - Our Ravencoin series exists but lacks a dedicated series landing page
-   - Target site has clear navigation between posts in a series
-
-5. **Visual Polish**:
-   - Target site has more refined spacing, typography, and visual hierarchy
-   - Our site has the basics but could use more visual refinement
-   - Animations and transitions are more polished on the target site
-
-6. **Website Metadata**:
-   - Target site has better document head management
-   - Our implementation is missing proper OpenGraph tags and Twitter cards
-   - Target site has better document head management
-
-7. **Author Profiles**:
-   - Target site has more detailed author information with dedicated pages
-   - Our implementation has basic author information without dedicated pages
-
-8. **Performance Optimizations**:
-   - Target site has image optimization and lazy loading
-   - Our implementation loads all images immediately
-   - Target site has better bundle splitting and resource management
-
-9. **Internationalization**:
-   - Target site supports multiple languages
-   - Our site currently only supports English
-
-### Visual Comparison
-
-#### Home Page:
-- Target site has a cleaner hero section with better typography
-- Our site matches the overall structure but needs refinement in spacing
-- Target site has more consistent card designs for featured content
-
-#### Blog Listing:
-- Target site includes pagination and better filtering options
-- Our implementation shows all posts which may impact performance
-- Target site has more refined post previews with consistent image sizing
-
-#### Project Section:
-- Target site has more detailed project cards with consistent imagery
-- Our implementation has the core functionality but with simpler styling
-- Target site has better hover effects and animations
-
-#### Mobile Experience:
-- Both sites have responsive layouts
-- Target site has better touch interactions and mobile-specific optimizations
-- Our hamburger menu works similarly but with less refined animations
-
-#### Dark Mode:
-- Both sites support dark mode
-- Target site has more refined color palette in dark mode
-- Our implementation has functional dark mode but could use color refinement
-
-## Updated Project Status Board
-
-| Task | Status | Priority | Estimated Effort | Notes |
-|------|--------|----------|-----------------|-------|
-| Implement Projects Section | ✅ Completed | High | 8 hours | Created pages, data structure and routing |
-| Fix 404 Pages | ✅ Completed | High | 2 hours | Created custom 404 page with proper SPA routing |
-| Add Basic Footer | ✅ Completed | High | 4 hours | Created component with social links and proper styling |
-| Improve Footer Responsive Design | ✅ Completed | High | 2 hours | Fixed icon wrapping issues on mobile devices |
-| Implement Language Selector | ✅ Completed | High | 6 hours | Created UI component with globe icon and language switching |
-| Set up i18n Infrastructure | 🔄 In Progress | High | 4 hours | Need to revise approach due to issues with dynamic imports |
-| Header Navigation Translation | ⏱️ Planned | High | 2 hours | Will implement after fixing i18n infrastructure |
-| Footer Text Translation | ⏱️ Planned | High | 1 hour | Will implement after fixing i18n infrastructure |
-| Theme Toggle Translation | ⏱️ Planned | High | 1 hour | Will implement after fixing i18n infrastructure |
-| Mobile Menu Translation | ⏱️ Planned | High | 2 hours | Will implement after fixing i18n infrastructure |
-| Page Titles Translation | ⏱️ Planned | High | 2 hours | Will implement after fixing i18n infrastructure |
-| Common UI Elements Translation | ⏱️ Planned | Medium | 4 hours | Translate reusable components and UI patterns |
-| Blog Post Metadata Translation | ⏱️ Planned | Medium | 2 hours | Translate date formats, reading time, author labels |
-| Project Metadata Translation | ⏱️ Planned | Medium | 2 hours | Translate project status, roles, and related section headings |
-| Date Formatting by Locale | ⏱️ Planned | Medium | 3 hours | Create locale-specific date formatting utility |
-| Error Messages Translation | ⏱️ Planned | Medium | 2 hours | Translate error states and notification messages |
-
-## Revised i18n Implementation Plan
-
-### Analysis of Previous Issues
-
-The first attempt at implementing internationalization encountered several issues:
-
-1. **Raw Translation Keys Displayed**: Navigation items showing "nav.blog" instead of translated text
-2. **Translation Dropdown Errors**: Errors when attempting to switch languages
-3. **Translation Keys Showing in Components**: Components displaying raw keys like "pages.tags" 
-4. **UI Styling Issues**: Incorrect blue underline on nav.blog
-5. **Console Errors**: 404 errors when trying to load translation JSON files
-
-These issues were likely caused by several factors:
-
-1. **Dynamic Import Problems**: The async approach to loading translations caused timing issues
-2. **Build Process Issues**: JSON files may not have been properly included in the Rollup build
-3. **Circular Dependencies**: Potential circular references in the i18n modules
-4. **Translation Function Issues**: The reactive `$t` function was not correctly implemented
-
-### Revised Project Status Board
-
-| Task | Status | Priority | Estimated Effort | Notes |
-|------|--------|----------|-----------------|-------|
-| Implement Projects Section | ✅ Completed | High | 8 hours | Created pages, data structure and routing |
-| Fix 404 Pages | ✅ Completed | High | 2 hours | Created custom 404 page with proper SPA routing |
-| Add Basic Footer | ✅ Completed | High | 4 hours | Created component with social links and proper styling |
-| Improve Footer Responsive Design | ✅ Completed | High | 2 hours | Fixed icon wrapping issues on mobile devices |
-| Implement Language Selector | ✅ Completed | High | 6 hours | Created UI component with globe icon and language switching |
-| Set up i18n Infrastructure | 🔄 In Progress | High | 4 hours | Need to revise approach due to issues with dynamic imports |
-| Header Navigation Translation | ⏱️ Planned | High | 2 hours | Will implement after fixing i18n infrastructure |
-| Footer Text Translation | ⏱️ Planned | High | 1 hour | Will implement after fixing i18n infrastructure |
-| Theme Toggle Translation | ⏱️ Planned | High | 1 hour | Will implement after fixing i18n infrastructure |
-| Mobile Menu Translation | ⏱️ Planned | High | 2 hours | Will implement after fixing i18n infrastructure |
-| Page Titles Translation | ⏱️ Planned | High | 2 hours | Will implement after fixing i18n infrastructure |
-| Common UI Elements Translation | ⏱️ Planned | Medium | 4 hours | Translate reusable components and UI patterns |
-| Blog Post Metadata Translation | ⏱️ Planned | Medium | 2 hours | Translate date formats, reading time, author labels |
-| Project Metadata Translation | ⏱️ Planned | Medium | 2 hours | Translate project status, roles, and related section headings |
-| Date Formatting by Locale | ⏱️ Planned | Medium | 3 hours | Create locale-specific date formatting utility |
-| Error Messages Translation | ⏱️ Planned | Medium | 2 hours | Translate error states and notification messages |
-
-## Revised Implementation Strategy
-
-### Phase 1: Simplified i18n Foundation (2-3 hours)
-
-1. **Static Translation Loading**
-   - Replace dynamic imports with direct imports in the store.js file
-   - Pre-load all translations at build time rather than on-demand
-   - Simplify the translation function to avoid async issues
-
-2. **Step-by-Step Implementation**
-   - Create a simplified store.js that imports all translations directly
-   - Create a synchronous translation function that doesn't rely on async loading
-   - Pre-load language from localStorage but without circular dependencies
-   - Add proper error handling for missing translations
-
-3. **Build System Adjustments**
-   - Ensure JSON files are properly included in the build process
-   - Test building with different bundler configurations if needed
-
-### Phase 2: One Component at a Time (1 hour per component)
-
-1. **Start with NavLinks.svelte**
-   - Update only this component to use the new translation function
-   - Add visible indicators to verify translations are working
-   - Test thoroughly with all supported languages
-
-2. **Expand incrementally**
-   - After NavLinks works perfectly, move to Footer component
-   - Then to Header theme toggle
-   - Then to Page titles
-   - Add one component at a time with careful testing
-
-### Phase 3: Comprehensive Testing (2 hours)
-
-1. **Verification Process**
-   - Create a standardized testing checklist for all translated components
-   - Test on various screen sizes and devices
-   - Test with all supported languages
-
-2. **Error Handling Improvements**
-   - Add robust fallbacks for missing translations
-   - Implement proper error reporting for translation issues
-
-## Implementation Details
-
-### 1. Simplified store.js Structure
-
-```javascript
-import { writable, derived } from 'svelte/store';
-import en from './locales/en.json';
-import ja from './locales/ja.json';
-import zh from './locales/zh.json';
-
-// Pre-loaded translations
-const translations = { en, ja, zh };
-
-// Browser language detection
-function getBrowserLanguage() {
-  if (typeof window === 'undefined') return 'en';
-  
-  const savedLang = localStorage.getItem('language');
-  if (savedLang && translations[savedLang]) return savedLang;
-  
-  const browserLang = navigator.language.split('-')[0];
-  return translations[browserLang] ? browserLang : 'en';
-}
-
-// Create language store
-export const language = writable(getBrowserLanguage());
-
-// Save language preference
-language.subscribe(value => {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('language', value);
+## Current State Analysis and Implementation Plan
+
+### Current State Analysis
+
+The blog project has made significant progress with many core features implemented, but faces several challenges with internationalization:
+
+1. **i18n Build Errors**: The current build is failing with "t is not exported" error from i18n/store.js referenced in i18n/index.js.
+2. **Search Functionality Limitations**: Current search implementation strips non-Latin characters, making it ineffective for Japanese and Chinese content.
+3. **Content Translation Gap**: While UI components can be translated, actual content (blog posts, projects) lacks proper translation structure.
+
+### Strategic Approach: Simplified Navigation Path
+
+I've evaluated your suggested implementation order (About -> Projects -> Tags -> Blog -> Homepage -> 404 page) and find it's a strong approach for these reasons:
+
+1. **Complexity Gradient**: Starts with simpler, more static pages before tackling complex content-heavy pages
+2. **Quick Wins**: About page provides a fast implementation victory to validate the i18n approach
+3. **Logical Progression**: Each page builds on patterns established in previous pages
+4. **User Experience**: Core navigation path will be fully translated before tackling specialized features
+
+### Phase 1: Fix Critical i18n Infrastructure (1 day)
+
+**Priority Task: Fix the "t is not exported" build error**
+
+Looking at the code, the issue is likely with how the translation function is exported from store.js. The fix should:
+1. Ensure proper export of the `t` derived store in store.js
+2. Fix the import in index.js 
+3. Update components to correctly import and use the translation function
+
+**Action Items:**
+1. Fix store.js export - ensure `t` derived store is properly exported
+2. Test with a simple component before proceeding with full implementation
+
+**Success Criteria**: Build completes without errors, simple text translations work correctly
+
+### Phase 2: Page-by-Page Implementation
+
+#### 1. About Page (1 day)
+The About page is an ideal starting point as it's relatively static with predictable content.
+
+**Implementation Tasks:**
+- Update page title with translation key
+- Translate biographical content sections
+- Create language-specific versions of professional details
+- Implement translation for social media link labels
+- Test thoroughly with language switching
+
+**Success Criteria**: About page fully translated and functional in all supported languages
+
+#### 2. Projects Section (2 days)
+The Projects section introduces more complexity with content structure but builds on patterns from the About page.
+
+**Implementation Approach:**
+- Create standardized translation template for project metadata
+- Update fields to include language-specific versions:
+  ```javascript
+  {
+    title: "Project Title",
+    title_ja: "プロジェクトタイトル",
+    title_zh: "项目标题",
+    // Additional project fields with language variants
   }
-});
-
-// Simple language setter
-export function setLanguage(lang) {
-  if (translations[lang]) {
-    language.set(lang);
-  }
-}
-
-// Translation function
-export const t = derived(
-  language,
-  ($language) => (key, params = {}) => {
-    // Handle empty keys
-    if (!key) return '';
-    
-    // Navigate through nested keys (e.g., "nav.blog")
-    const keys = key.split('.');
-    let value = translations[$language];
-    
-    // Find translation in current language
-    for (const k of keys) {
-      value = value?.[k];
-      if (!value) break;
-    }
-    
-    // Fallback to English if not found
-    if (!value && $language !== 'en') {
-      value = translations.en;
-      for (const k of keys) {
-        value = value?.[k];
-        if (!value) break;
-      }
-    }
-    
-    // If still no translation, return the key itself
-    if (!value) return key;
-    
-    // Replace parameters
-    return value.replace(/\{\{(\w+)\}\}/g, (_, paramName) => 
-      params[paramName] !== undefined ? params[paramName] : `{{${paramName}}}`
-    );
-  }
-);
-
-// Helper functions
-export const currentLangCode = derived(language, $language => $language);
-
-export function getLanguageName(code) {
-  const languages = {
-    'en': 'English',
-    'ja': '日本語',
-    'zh': '简体中文'
-  };
-  return languages[code] || 'English';
-}
-
-// Export supported languages
-export function getSupportedLanguages() {
-  return [
-    { code: 'en', name: 'English' },
-    { code: 'ja', name: '日本語' },
-    { code: 'zh', name: '简体中文' }
-  ];
-}
-```
-
-### 2. Simplified index.js
-
-```javascript
-// Re-export everything from store.js
-export { 
-  language, 
-  setLanguage, 
-  currentLangCode, 
-  getLanguageName, 
-  t,
-  getSupportedLanguages 
-} from './store.js';
-```
-
-### 3. NavLinks.svelte Test Implementation
-
-```javascript
-<script>
-  import { createEventDispatcher } from 'svelte';
-  import { t, language } from '../../i18n';
-  
-  // Props
-  export let currentRoute = '/';
-  
-  // Event dispatcher
-  const dispatch = createEventDispatcher();
-  
-  // Debug function for testing translations
-  function debugTranslation(key) {
-    const result = $t(key);
-    console.log(`Translation: ${key} => ${result} (lang: ${$language})`);
-    return result;
-  }
-  
-  // Navigation items with translation keys
-  const navLinks = [
-    { key: 'nav.blog', href: '/blog', route: '/blog-list' },
-    { key: 'nav.tags', href: '/tags', route: '/tags-list' },
-    { key: 'nav.projects', href: '/projects', route: '/projects' },
-    { key: 'nav.about', href: '/about', route: '/about' }
-  ];
-  
-  // Check if a link is active
-  function isActive(link) {
-    if (currentRoute === '/') {
-      return link.href === '/';
-    }
-    
-    if (currentRoute === '/blog-post') {
-      return link.route === '/blog-list';
-    }
-    
-    if (currentRoute === '/tag') {
-      return link.route === '/tags-list';
-    }
-    
-    return currentRoute === link.route;
-  }
-  
-  // Handle link click
-  function handleLinkClick() {
-    dispatch('linkClick');
-  }
-</script>
-
-<nav class="nav">
-  <!-- Debug language indicator (temporary) -->
-  <div class="debug-lang" style="font-size: 0.7rem; color: #999; margin-bottom: 0.5rem; display: none;">
-    Current language: {$language}
-  </div>
-  
-  <ul class="nav-list">
-    {#each navLinks as link}
-      <li class="nav-item">
-        <a 
-          href={link.href} 
-          class="nav-link" 
-          class:active={isActive(link)}
-          aria-current={isActive(link) ? 'page' : undefined}
-          on:click={handleLinkClick}
-        >
-          {$t(link.key)}
-        </a>
-      </li>
-    {/each}
-  </ul>
-</nav>
-
-<style>
-  /* Keep existing styles */
-</style>
-```
-
-## Testing Strategy
-
-To ensure the i18n implementation works correctly, we'll follow this testing approach:
-
-### 1. Component-Level Testing
-
-- Test each component individually with the translation function
-- Verify translations appear correctly in all supported languages
-- Add debug output initially to verify translation function works
-- Check for any console errors related to translations
-
-### 2. Integration Testing
-
-- Test language switching across the entire application
-- Verify all components update correctly when language changes
-- Check for any styling issues when text length changes in different languages
-- Test on mobile devices to ensure proper display of translated content
-
-### 3. Regression Testing
-
-- Ensure existing functionality continues to work
-- Verify responsive design still works with translations
-- Check that no new errors appear in the console
-
-## Lessons for Future Implementation
-
-1. **Keep It Simple**: Start with direct, synchronous approaches before adding complexity
-2. **Test Incrementally**: Implement and test one component at a time
-3. **Add Debug Information**: Include temporary debug output to verify translations
-4. **Watch the Build Process**: Ensure JSON files are properly included in the build
-5. **Handle Fallbacks Properly**: Always provide fallbacks for missing translations
-6. **Avoid Circular Dependencies**: Be careful with module imports that might create loops
-
-By following this revised plan, we should be able to implement internationalization without encountering the previous issues. The approach is simpler, more direct, and focuses on incremental implementation with thorough testing at each step.
-
-## Internationalization Implementation
-
-We've successfully implemented internationalization in the blog with support for English, Japanese, and Chinese. The implementation follows a simplified approach that prioritizes reliability and performance:
-
-### Implementation Approach
-
-1. **Direct JSON Import Strategy**
-   - Used direct imports of JSON translation files instead of dynamic imports
-   - Pre-loaded all languages at initialization to avoid async loading issues
-   - Configured Rollup with `@rollup/plugin-json` to properly process JSON files
-
-2. **Translation Store Architecture**
-   - Created a central Svelte store to manage the current language state
-   - Implemented a synchronous translation function that supports:
-     - Nested translation keys (e.g., "nav.blog")
-     - Parameter substitution (e.g., "{{year}}")
-     - Automatic fallbacks to English for missing translations
-     - Graceful handling of missing keys
-
-3. **Components Implementation**
-   - Updated key components with translation support:
-     - Navigation links (header and mobile menu)
-     - Footer copyright and attribution text
-     - Theme toggle options (Light/Dark/System)
-     - Search dialog and button labels
-     - Date formatting based on current language
-
-4. **User Preferences**
-   - Stored language preference in localStorage
-   - Added auto-detection of browser language on first visit
-   - Implemented language selector UI with proper accessibility support
-
-### JSON Translation Structure
-
-Each language file follows the same structure with nested keys:
-
-```json
-{
-  "nav": {
-    "blog": "Blog",
-    "tags": "Tags", 
-    "projects": "Projects",
-    "about": "About"
-  },
-  "ui": {
-    "language": "Language",
-    "search": "Search",
-    "search_placeholder": "Type a command or search...",
-    "no_results": "No results found for \"{{query}}\"",
-    "content_heading": "CONTENT",
-    "start_searching": "Type to start searching...",
-    "theme": "Theme",
-    "dark": "Dark",
-    "light": "Light",
-    "system": "System"
-  },
-  "footer": {
-    "copyright": "© {{year}} Sarada's Blog",
-    "built_with": "Built with Svelte 4"
-  }
-}
-```
-
-### Lessons Learned
-
-1. **JSON Processing in Rollup**
-   - Rollup requires the `@rollup/plugin-json` to properly handle JSON imports
-   - JSON files should be placed in the correct import order in the config file
-
-2. **Circular Dependencies**
-   - Avoid circular dependencies in i18n modules to prevent build issues
-   - The export of `getSupportedLanguages()` was duplicated in both store.js and index.js
-
-3. **Synchronous vs. Asynchronous Loading**
-   - For smaller applications, preloading all translations synchronously offers better reliability
-   - Async loading may be more appropriate for applications with many languages or large translation files
-
-4. **Testing Strategy**
-   - Test one component at a time when adding translation support
-   - Verify all supported languages show correct translations
-   - Watch for UI layout shifts when text length changes between languages
-
-### Next Steps
-
-1. **Expand Translation Coverage**
-   - Continue translating more UI elements and content sections
-   - Implement translations for blog post metadata
-   - Add translations for project details pages
-
-2. **Improve User Experience**
-   - Add visual indicators for the current language selection
-   - Ensure graceful handling of right-to-left languages if added in future
-   - Consider adding language-specific URLs (e.g., /zh/blog) for better SEO
-
-## Internationalization Progress and Path Forward
-
-We've made significant progress with the UI internationalization but encountered an issue with the search functionality. The current search implementation doesn't properly support non-Latin characters like Japanese and Chinese. After evaluation, we decided to take a content-first approach instead of implementing multi-language search immediately.
-
-### Current Implementation Status
-
-1. **UI Translation Layer**
-   - ✅ Successfully implemented i18n infrastructure with JSON-based translations
-   - ✅ Added language selector with proper persistence
-   - ✅ Translated navigation, footer, theme toggles, and search UI elements
-   - ✅ Fixed date formatting to support multiple locales
-   - ❌ Search functionality limited to Latin characters only
-
-2. **Found Issues**
-   - **Search Character Support**: The text normalization function in search strips non-Latin characters
-   - **Language-specific Content**: No proper language tagging on content to filter by language
-   - **Build Process Errors**: Some ongoing issues with the JSON imports in the build process
-   - **Untranslated Content**: Primary blog content is still English-only
-
-### Revised Implementation Strategy
-
-After careful consideration, we're shifting to a **content-first approach**:
-
-1. **Focus on translating content first** before enhancing the search functionality
-2. **Implement language-specific content structure** with proper metadata
-3. **Language-specific search** that only searches content in the current language
-4. **Progressive enhancement** of the internationalization feature set
-
-This approach aligns better with user expectations (users expect search to only return results in their selected language) and simplifies implementation.
-
-## Content Translation Strategy
-
-To implement a comprehensive content translation system, we'll follow these steps:
-
-### 1. Content Structure Updates
-
-For each piece of content (blog posts, project pages), we'll implement consistent language-specific fields:
-
-```javascript
-// Example blog post
-export default {
-  title: 'Privacy and Future Developments in Ravencoin',
-  title_ja: 'Ravencoinにおけるプライバシーと将来の開発',
-  title_zh: 'Ravencoin中的隐私和未来发展',
-  summary: 'An exploration of Ravencoin's approach to privacy...',
-  summary_ja: 'Ravencoinのプライバシーへのアプローチについての...',
-  summary_zh: '探索Ravencoin的隐私方法...',
-  language: 'en', // Primary content language
-  translations: ['ja', 'zh'], // Available translations
-  // Language-specific content
-  content: '...',
-  content_ja: '...',
-  content_zh: '...'
-}
-```
-
-### 2. Language-Aware Components
-
-Update key components to respect the current language preference:
-
-- BlogPostPage: Show content in the selected language or fallback to English
-- ProjectDetailPage: Show translated project details when available
-- Search: Filter results to only include content in the current language
-
-### 3. Translation Process
-
-1. **Template Creation**: Create templates for each content type with all required language fields
-2. **Translation Order**: Prioritize high-traffic content first (Home page, Popular posts)
-3. **Quality Assurance**: Establish review process for translated content
-4. **Automated Testing**: Add tests to ensure all required language fields are present
-
-### 4. User Experience
-
-- Add clear language indicators in UI
-- Provide feedback when content isn't available in the selected language
-- Consider implementing language-specific routing (e.g., /ja/blog/post-slug)
-
-## Revised Project Status Board
-
-| Task | Status | Priority | Estimated Effort | Notes |
-|------|--------|----------|-----------------|-------|
-| Fix i18n Build Issues | 🔄 In Progress | High | 2 hours | Fix "t is not exported" build error |
-| Create Content Translation Templates | ⏱️ Planned | High | 4 hours | Standard templates for blog posts and projects |
-| Translate Homepage Content | ⏱️ Planned | High | 6 hours | All static text on the homepage |
-| Translate Top 3 Blog Posts | ⏱️ Planned | High | 12 hours | Full translation of most popular content |
-| Update Blog Components for i18n | ⏱️ Planned | High | 6 hours | Make components language-aware |
-| Language-Specific URLs | ⏱️ Planned | Medium | 8 hours | Implement /lang/path routing structure |
-| Language-Filtered Search | ⏱️ Planned | Medium | 4 hours | Filter search to current language only |
-| Content Translation Progress UI | ⏱️ Planned | Medium | 3 hours | Show which content is available in each language |
-| Language Detection Improvements | ⏱️ Planned | Low | 2 hours | Better browser language detection with regional variants |
-| RTL Language Support Foundation | ⏱️ Planned | Low | 8 hours | Prepare for potential right-to-left language support |
-
-## Implementation Timeline
-
-### Phase 1: Foundation and Critical Fixes (1 week)
-- Fix build issues with i18n implementation
-- Create content translation templates
-- Update components to be language-aware
-
-### Phase 2: Core Content Translation (2-3 weeks)
-- Translate homepage and primary navigation
-- Translate top blog posts and projects
-- Implement language-specific routes
-
-### Phase 3: Search and User Experience (1-2 weeks)
-- Implement language-filtered search
-- Add content translation progress indicators
-- Improve language switching experience
-
-### Phase 4: Advanced Features (Future)
-- RTL language support
-- Automatic translation suggestions
-- Translation management system
+  ```
+- Make components language-aware to pick correct version based on user selection
+- Implement fallback to English for missing translations
+
+**Success Criteria**: Projects display correctly in all languages with proper metadata
+
+#### 3. Tags Page (1 day)
+The Tags page introduces challenges with dynamic content filtering.
+
+**Implementation Tasks:**
+- Create translations for page title and UI elements
+- Implement tag translation system with language-specific names
+- Update tag filtering to respect current language
+- Ensure tag cloud visualization works with translated tags
+
+**Success Criteria**: Tags display correctly in all languages with proper filtering
+
+#### 4. Blog Section (3 days)
+The Blog section is more complex with rich content and multiple components.
+
+**Implementation Approach:**
+- Update blog post data structure with language-specific fields
+- Implement language-aware content rendering
+- Create translations for metadata (date formats, reading time, etc.)
+- Add language-specific routing for blog posts
+- Implement content availability indicators
+
+**Success Criteria**: Blog posts display correctly in selected language
+
+#### 5. Homepage (2 days)
+The Homepage combines multiple components already translated.
+
+**Implementation Tasks:**
+- Translate static welcome text and section headings
+- Ensure recent posts section displays language-appropriate content
+- Implement language-specific featured content
+- Harmonize all translated components
+
+**Success Criteria**: Homepage provides cohesive experience in all languages
+
+#### 6. 404 and Error Pages (1 day)
+Error pages complete the core navigation experience.
+
+**Implementation Tasks:**
+- Translate error messages and suggestions
+- Make error handling language-aware
+- Test boundary conditions in all languages
+
+**Success Criteria**: Error pages properly guide users in their selected language
+
+### Phase 3: Search Enhancement (2 days)
+
+After completing the core navigation, we'll tackle search functionality:
+
+**Implementation Approach:**
+1. Fix text normalization to preserve non-Latin characters
+2. Implement language-filtered search to only return results in current language
+3. Test with various languages and queries
+
+### Phase 4: Polish and Optimization (ongoing)
+
+Final phase for refining the implementation:
+
+1. **Visual consistency**: Ensure consistent styling across languages
+2. **Performance optimization**: Implement efficient handling of language assets
+3. **Layout testing**: Verify proper display with varying text lengths
+4. **Accessibility**: Ensure proper a11y support across languages
+
+## Immediate Next Steps
+
+1. **Fix the "t" export issue in i18n/store.js**:
+   - Review the implementation to ensure proper export
+   - Test with a simple component to verify translations work
+
+2. **Create standardized translation template**:
+   - Define required fields for each content type
+   - Document the approach for content translation
+
+3. **Begin About page implementation**:
+   - Update with translation function
+   - Create translations for all text content
+
+## Test Plan
+
+For each page, test:
+1. Language switching works correctly
+2. All text elements appear in the correct language
+3. Layout handles variable text length appropriately
+4. Fallbacks work for any missing translations
+5. Performance is acceptable during language switches
+
+This phased approach will allow incremental progress while maintaining a functional site throughout the internationalization process.
+
+## Project Status Board (Updated)
+
+| Task | Status | Priority | Est. Effort | Notes |
+|------|--------|----------|-------------|-------|
+| Fix i18n Build Error | 🔄 In Progress | High | 4 hours | Fix "t is not exported" error in build process |
+| Fix Search for Non-Latin Characters | ⏱️ Planned | Medium | 8 hours | Update normalization to support all languages |
+| About Page i18n | ⏱️ Planned | High | 8 hours | First page in the new implementation order |
+| Projects Pages i18n | ⏱️ Planned | High | 16 hours | Second priority in implementation order |
+| Tags Page i18n | ⏱️ Planned | High | 8 hours | Third priority in implementation order |
+| Blog Pages i18n | ⏱️ Planned | High | 24 hours | Fourth priority in implementation order |
+| Homepage i18n | ⏱️ Planned | High | 16 hours | Fifth priority in implementation order |
+| 404 Page i18n | ⏱️ Planned | Medium | 4 hours | Final page in implementation order |
+| Language-Filtered Search | ⏱️ Planned | Medium | 8 hours | Implement after fixing basic search |
+| Pagination Implementation | ⏱️ Planned | Medium | 16 hours | Add to blog list and tag pages |
+| Visual Refinements | ⏱️ Planned | Low | 16 hours | Polish after core functionality works |
+| Performance Optimization | ⏱️ Planned | Low | 16 hours | Final phase of implementation |
 
 ## Next Immediate Steps
 
-1. Fix the build error with the translation function export
-2. Create standardized translation templates for blog posts
-3. Implement language field filtering in content components
-4. Translate the homepage content as first priority
+1. **Fix the i18n Build Error**:
+   - Review the implementation of the translation function in store.js
+   - Verify the export statement in index.js
+   - Test with a simple component to validate the fix
+
+2. **Start with About Page i18n**:
+   - Update the About component to use translation function for all text
+   - Create translations for About page content in all supported languages
+   - Test thoroughly with language switching
+
+3. **Create Content Translation Templates**:
+   - Standardize the approach for content translation
+   - Define required fields for each content type
+   - Create documentation for translation process
+
+## Development Approach
+
+For each page in our implementation order, we'll follow this process:
+
+1. **Prepare Translations**:
+   - Identify all static text that needs translation
+   - Create entries in language JSON files
+   - Prepare language-specific content where needed
+
+2. **Component Updates**:
+   - Refactor components to use translation function
+   - Implement language-aware rendering logic
+   - Add fallbacks for missing translations
+
+3. **Testing**:
+   - Test in all supported languages
+   - Verify responsive design across languages
+   - Check for layout issues with variable text length
+
+4. **Review & Refinement**:
+   - Address any issues found during testing
+   - Improve error handling for missing translations
+   - Optimize performance of language switching
+
+This page-by-page approach from simpler to more complex components will allow for incremental progress while maintaining a functional site throughout the process.
+
+## Lessons
+
+1. **Direct Import Strategy**: Use direct imports for translations rather than dynamic imports
+2. **JSON Configuration**: Ensure Rollup is properly configured to handle JSON files
+3. **Simple First**: Start with simple, synchronous approaches before adding complexity
+4. **Test Incrementally**: Implement and test one component at a time
+5. **Debug Output**: Include temporary debug output during development
+6. **Translation Structure**: Maintain consistent structure across all language files
+7. **Content-First Approach**: Focus on translating content before enhancing search
