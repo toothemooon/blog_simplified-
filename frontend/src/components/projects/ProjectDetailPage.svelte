@@ -1,5 +1,6 @@
 <script>
-  import { getProject, formatProjectPeriod, getRelatedProjectsBySlug } from '../../utils/project-utils.js';
+  import { getProject, formatProjectPeriod, getRelatedProjectsBySlug, getLocalizedField } from '../../utils/project-utils.js';
+  import { t, language } from '../../i18n';
   
   export let slug = '';
   
@@ -22,7 +23,7 @@
       const projectData = await getProject(projectSlug);
       
       if (!projectData) {
-        error = 'Project not found';
+        error = $t('pages.projects.not_found');
         project = null;
       } else {
         project = projectData;
@@ -30,23 +31,35 @@
       }
     } catch (err) {
       console.error('Error loading project:', err);
-      error = 'Failed to load project';
+      error = $t('pages.projects.error');
     } finally {
       loading = false;
     }
+  }
+  
+  // Helper function to get localized metadata field
+  function getLocalizedMetadataField(metadata, key) {
+    if (!metadata || !key) return '';
+    
+    const localizedKey = `${key}_${$language}`;
+    if (metadata[localizedKey]) {
+      return metadata[localizedKey];
+    }
+    
+    return metadata[key] || '';
   }
 </script>
 
 <div class="project-detail-page container-narrow">
   {#if loading}
     <div class="loading-indicator">
-      <p>Loading project...</p>
+      <p>{$t('pages.projects.loading')}</p>
     </div>
   {:else if error}
     <div class="error-message">
-      <h2>Error</h2>
+      <h2>{$t('pages.projects.error')}</h2>
       <p>{error}</p>
-      <a href="/projects">Return to projects list</a>
+      <a href="/projects">{$t('pages.projects.return_to_list')}</a>
     </div>
   {:else if project}
     <article class="project-detail">
@@ -56,14 +69,14 @@
       </div>
       
       <!-- Title -->
-      <h1 class="project-title">{project.title}</h1>
+      <h1 class="project-title">{getLocalizedField(project, 'title', $language)}</h1>
       
       <!-- Role and Location -->
       <div class="project-role-location">
-        <span class="project-role">{project.role}</span>
+        <span class="project-role">{getLocalizedField(project, 'role', $language)}</span>
         {#if project.location}
           <span class="location-separator"> | </span>
-          <span class="project-location">{project.location}</span>
+          <span class="project-location">{getLocalizedField(project, 'location', $language)}</span>
         {/if}
       </div>
       
@@ -71,10 +84,12 @@
       <div class="project-metadata">
         {#if project.metadata}
           {#each Object.entries(project.metadata) as [key, value]}
-            <div class="metadata-group">
-              <span class="metadata-label">{key.charAt(0).toUpperCase() + key.slice(1)}:</span>
-              <span class="metadata-value">{value}</span>
-            </div>
+            {#if !key.includes('_ja') && !key.includes('_zh')}
+              <div class="metadata-group">
+                <span class="metadata-label">{key.charAt(0).toUpperCase() + key.slice(1)}:</span>
+                <span class="metadata-value">{getLocalizedMetadataField(project.metadata, key)}</span>
+              </div>
+            {/if}
           {/each}
         {/if}
       </div>
@@ -82,7 +97,7 @@
       <!-- Project Details -->
       {#if project.projects && project.projects.length > 0}
         <div class="project-subprojects">
-          <h2>Project Details</h2>
+          <h2>{$t('pages.projects.project_details')}</h2>
           <ul class="subprojects-list">
             {#each project.projects as subproject}
               <li class="subproject-item">
@@ -99,15 +114,15 @@
       <!-- Summary -->
       <div class="project-summary">
         <h2>Overview</h2>
-        <p>{project.summary}</p>
+        <p>{getLocalizedField(project, 'summary', $language)}</p>
       </div>
       
       <!-- Achievements -->
       {#if project.achievements && project.achievements.length > 0}
         <div class="project-achievements">
-          <h2>Key Achievements</h2>
+          <h2>{$t('pages.projects.key_achievements')}</h2>
           <ul class="achievements-list">
-            {#each project.achievements as achievement}
+            {#each (project[`achievements_${$language}`] || project.achievements) as achievement}
               <li>{achievement}</li>
             {/each}
           </ul>
@@ -118,7 +133,7 @@
       {#if project.tags && project.tags.length > 0}
         <div class="project-tags">
           {#each project.tags as tag}
-            <span class="tag">{tag}</span>
+            <span class="tag">{$t(`tags.${tag}`)}</span>
           {/each}
         </div>
       {/if}
@@ -126,30 +141,34 @@
       <!-- Related Projects -->
       {#if relatedProjects.length > 0}
         <div class="related-projects">
-          <h2>Related Projects</h2>
+          <h2>{$t('pages.projects.related_projects')}</h2>
           <div class="related-projects-list">
             {#each relatedProjects as relatedProject}
               <div class="related-project-item">
                 <a href="/projects/{relatedProject.slug}" class="related-project-link">
-                  <span class="related-project-title">{relatedProject.title}</span>
+                  <span class="related-project-title">{getLocalizedField(relatedProject, 'title', $language)}</span>
                   <span class="related-project-period">{formatProjectPeriod(relatedProject.period)}</span>
                 </a>
               </div>
             {/each}
           </div>
         </div>
+      {:else}
+        <div class="no-related-projects">
+          <p>{$t('pages.projects.no_related_projects')}</p>
+        </div>
       {/if}
       
       <!-- Back to Projects -->
       <div class="back-to-projects">
-        <a href="/projects">← Back to all projects</a>
+        <a href="/projects">← {$t('pages.projects.return_to_list')}</a>
       </div>
     </article>
   {:else}
     <div class="not-found">
-      <h2>Project Not Found</h2>
+      <h2>{$t('pages.projects.not_found')}</h2>
       <p>The project you're looking for doesn't exist or has been removed.</p>
-      <a href="/projects">Return to projects list</a>
+      <a href="/projects">{$t('pages.projects.return_to_list')}</a>
     </div>
   {/if}
 </div>

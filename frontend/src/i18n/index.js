@@ -5,5 +5,6 @@ export {
   currentLangCode, 
   getLanguageName, 
   t,
+  translate,
   getSupportedLanguages
 } from './store.js'; 

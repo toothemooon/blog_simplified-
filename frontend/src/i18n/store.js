@@ -107,6 +107,16 @@ export const t = derived(
   $language => createTranslationFunction($language)
 );
 
+// Export a non-store version of the translation function for use in non-reactive contexts
+export function translate(key, params = {}) {
+  let currentLang;
+  language.subscribe(value => {
+    currentLang = value;
+  })();
+  
+  return createTranslationFunction(currentLang)(key, params);
+}
+
 // Export supported languages
 export function getSupportedLanguages() {
   return [

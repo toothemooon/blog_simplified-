@@ -1,5 +1,6 @@
 <script>
-  import { getAllProjects, formatProjectPeriod } from '../../utils/project-utils.js';
+  import { getAllProjects, formatProjectPeriod, getLocalizedField, getLocalizedTagName } from '../../utils/project-utils.js';
+  import { t, language } from '../../i18n';
   
   // Get all projects
   const projects = getAllProjects();
@@ -7,8 +8,8 @@
 
 <div class="projects-page">
   <div class="page-header">
-    <h1 class="page-title">Projects</h1>
-    <p class="page-subtitle">A showcase of my professional experience and achievements</p>
+    <h1 class="page-title">{$t('pages.projects.title')}</h1>
+    <p class="page-subtitle">{$t('pages.projects.subtitle')}</p>
   </div>
   
   <div class="projects-list">
@@ -19,29 +20,29 @@
         </div>
         
         <h2 class="project-title">
-          <a href="/projects/{project.slug}">{project.title}</a>
+          <a href="/projects/{project.slug}">{getLocalizedField(project, 'title', $language)}</a>
         </h2>
         
         <div class="project-role-location">
-          <span class="project-role">{project.role}</span>
+          <span class="project-role">{getLocalizedField(project, 'role', $language)}</span>
           {#if project.location}
             <span class="location-separator"> | </span>
-            <span class="project-location">{project.location}</span>
+            <span class="project-location">{getLocalizedField(project, 'location', $language)}</span>
           {/if}
         </div>
         
-        <p class="project-summary">{project.summary}</p>
+        <p class="project-summary">{getLocalizedField(project, 'summary', $language)}</p>
         
         {#if project.tags && project.tags.length > 0}
           <div class="project-tags">
             {#each project.tags as tag}
-              <span class="tag">{tag}</span>
+              <span class="tag">{$t(`tags.${tag}`)}</span>
             {/each}
           </div>
         {/if}
         
         <div class="read-more">
-          <a href="/projects/{project.slug}" class="read-more-link">View details →</a>
+          <a href="/projects/{project.slug}" class="read-more-link">{$t('pages.projects.view_details')}</a>
         </div>
       </article>
     {/each}

@@ -1,4 +1,5 @@
 import { projects, getProjectBySlug, getProjectContent, getRelatedProjects } from '../data/projects';
+import { language, t } from '../i18n';
 
 /**
  * Get all projects
@@ -58,4 +59,73 @@ export function getRelatedProjectsBySlug(slug, limit = 2) {
   if (!project) return [];
   
   return getRelatedProjects(project, limit);
+}
+
+/**
+ * Get localized field value based on current language
+ * @param {Object} item - The object containing the field
+ * @param {String} fieldName - The base field name
+ * @param {String} lang - The language code (en, ja, zh)
+ * @returns {String} - The localized field value or the default value
+ */
+export function getLocalizedField(item, fieldName, lang) {
+  if (!item || !fieldName) return '';
+  
+  // Try to get language-specific field (e.g., title_ja, summary_zh)
+  const localizedKey = `${fieldName}_${lang}`;
+  if (item[localizedKey]) {
+    return item[localizedKey];
+  }
+  
+  // Fall back to default field
+  return item[fieldName] || '';
+}
+
+/**
+ * Get localized field with reactive language support
+ * Creates a derived store that updates when language changes
+ * @param {Object} item - The object containing the field
+ * @param {String} fieldName - The base field name
+ * @returns {Function} - Function that returns the localized value
+ */
+export function getLocalizedFieldReactive(item, fieldName) {
+  let currentLang = 'en';
+  
+  // Get current language
+  language.subscribe(value => {
+    currentLang = value;
+  })();
+  
+  return getLocalizedField(item, fieldName, currentLang);
+}
+
+/**
+ * Get localized tag name
+ * @param {String} tag - The original tag name
+ * @param {String} lang - The language code (en, ja, zh)
+ * @returns {String} - The localized tag name
+ */
+export function getLocalizedTagName(tag, lang) {
+  if (!tag) return '';
+  
+  // Create tag translation key
+  const tagKey = `tags.${tag}`;
+  
+  // Try to get translation using t function
+  try {
+    // Use the t function with the constructed key
+    // The $ prefix won't work here because we're outside a component
+    // So we use the translation function directly
+    const translated = t(tagKey);
+    
+    // If the translation key is returned unchanged, it means no translation was found
+    if (translated === tagKey) {
+      return tag; // Fallback to original tag
+    }
+    
+    return translated;
+  } catch (e) {
+    // If any error occurs, return the original tag
+    return tag;
+  }
 } 

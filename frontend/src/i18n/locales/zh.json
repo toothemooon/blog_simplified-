@@ -21,6 +21,19 @@
     "copyright": "© {{year}} Sarada的博客",
     "built_with": "使用Svelte 4构建"
   },
+  "tags": {
+    "blockchain": "区块链",
+    "community": "社区",
+    "volunteer": "志愿",
+    "translation": "翻译",
+    "international": "国际",
+    "construction": "建筑",
+    "finance": "金融",
+    "project-management": "项目管理",
+    "safety": "安全",
+    "engineering": "工程", 
+    "energy": "能源"
+  },
   "pages": {
     "about": {
       "title": "关于",
@@ -29,6 +42,19 @@
       "author_institution": "四川外国语大学",
       "bio_part1": "沙拉达是四川外国语大学英语专业毕业生。他曾在非洲和中东国家的海外项目工作。",
       "bio_part2": "他目前的兴趣集中在IT开发、区块链技术和项目创建上 :）"
+    },
+    "projects": {
+      "title": "项目",
+      "subtitle": "展示我的专业经验和成就",
+      "view_details": "查看详情 →",
+      "project_details": "项目详情",
+      "loading": "加载项目中...",
+      "error": "错误",
+      "not_found": "未找到项目",
+      "return_to_list": "返回项目列表",
+      "related_projects": "相关项目",
+      "key_achievements": "主要成就",
+      "no_related_projects": "未找到相关项目"
     }
   }
 } 

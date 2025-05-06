@@ -21,6 +21,19 @@
     "copyright": "© {{year}} サラダのブログ",
     "built_with": "Svelte 4で構築"
   },
+  "tags": {
+    "blockchain": "ブロックチェーン",
+    "community": "コミュニティ",
+    "volunteer": "ボランティア",
+    "translation": "翻訳",
+    "international": "国際",
+    "construction": "建設",
+    "finance": "財務",
+    "project-management": "プロジェクト管理",
+    "safety": "安全",
+    "engineering": "エンジニアリング", 
+    "energy": "エネルギー"
+  },
   "pages": {
     "about": {
       "title": "プロフィール",
@@ -29,6 +42,19 @@
       "author_institution": "四川外国語大学",
       "bio_part1": "サラダは四川外国語大学の英語学部の卒業生です。アフリカと中東諸国の海外プロジェクトに携わっていました。",
       "bio_part2": "現在の興味は、IT開発、ブロックチェーン技術、プロジェクト作成に焦点を当てています :）"
+    },
+    "projects": {
+      "title": "プロジェクト",
+      "subtitle": "私の専門的な経験と実績のショーケース",
+      "view_details": "詳細を見る →",
+      "project_details": "プロジェクト詳細",
+      "loading": "プロジェクトを読み込み中...",
+      "error": "エラー",
+      "not_found": "プロジェクトが見つかりません",
+      "return_to_list": "プロジェクト一覧に戻る",
+      "related_projects": "関連プロジェクト",
+      "key_achievements": "主な実績",
+      "no_related_projects": "関連プロジェクトが見つかりません"
     }
   }
 } 
