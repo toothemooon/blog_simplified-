@@ -20,5 +20,15 @@
   "footer": {
     "copyright": "© {{year}} Sarada的博客",
     "built_with": "使用Svelte 4构建"
+  },
+  "pages": {
+    "about": {
+      "title": "关于",
+      "author_name": "沙拉达",
+      "author_title": "编程爱好者",
+      "author_institution": "四川外国语大学",
+      "bio_part1": "沙拉达是四川外国语大学英语专业毕业生。他曾在非洲和中东国家的海外项目工作。",
+      "bio_part2": "他目前的兴趣集中在IT开发、区块链技术和项目创建上 :）"
+    }
   }
 } 

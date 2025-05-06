@@ -57,7 +57,10 @@ export function getLanguageName(code) {
   return languages[code] || 'English';
 }
 
-// Create translation function (writable export)
+/**
+ * Translation function factory
+ * Creates a function that translates keys based on the provided language
+ */
 function createTranslationFunction(lang) {
   // Handle empty keys
   if (!lang) return key => key;
@@ -95,7 +98,10 @@ function createTranslationFunction(lang) {
   };
 }
 
-// Export translation function as a derived store
+/**
+ * Translation function - exported as a derived store for reactivity
+ * This allows components to use $t syntax for automatic reactivity
+ */
 export const t = derived(
   language,
   $language => createTranslationFunction($language)

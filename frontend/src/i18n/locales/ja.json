@@ -20,5 +20,15 @@
   "footer": {
     "copyright": "© {{year}} サラダのブログ",
     "built_with": "Svelte 4で構築"
+  },
+  "pages": {
+    "about": {
+      "title": "プロフィール",
+      "author_name": "サラダ",
+      "author_title": "プログラミング愛好家",
+      "author_institution": "四川外国語大学",
+      "bio_part1": "サラダは四川外国語大学の英語学部の卒業生です。アフリカと中東諸国の海外プロジェクトに携わっていました。",
+      "bio_part2": "現在の興味は、IT開発、ブロックチェーン技術、プロジェクト作成に焦点を当てています :）"
+    }
   }
 } 

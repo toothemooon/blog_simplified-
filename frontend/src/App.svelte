@@ -9,6 +9,7 @@
 	import ProjectDetailPage from './components/projects/ProjectDetailPage.svelte';
 	import AboutPage from './components/AboutPage.svelte';
 	import NotFoundPage from './components/error/NotFoundPage.svelte';
+	import TestTranslation from './components/TestTranslation.svelte';
 	import Footer from './components/Footer.svelte';
 	import './global.css';
 	
@@ -37,6 +38,8 @@
 			<ProjectDetailPage slug={params.id} />
 		{:else if currentRoute === '/about'}
 			<AboutPage />
+		{:else if currentRoute === '/test-translation'}
+			<TestTranslation />
 		{:else if currentRoute === '/not-found'}
 			<NotFoundPage />
 		{/if}

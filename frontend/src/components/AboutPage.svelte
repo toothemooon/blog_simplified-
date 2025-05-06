@@ -1,4 +1,6 @@
 <script>
+  import { t } from '../i18n';
+  
   // Social media icons
   const socialLinks = [
     { name: 'Mail', url: 'mailto:hsc110110123@gmail.com', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
@@ -9,7 +11,7 @@
 </script>
 
 <div class="about-page">
-  <h1 class="page-title">About</h1>
+  <h1 class="page-title">{$t('pages.about.title')}</h1>
   
   <div class="author-profile">
     <div class="avatar-container">
@@ -17,9 +19,9 @@
     </div>
     
     <div class="author-info">
-      <h2 class="author-name">Sarada</h2>
-      <p class="author-title">Programming Enthusiast</p>
-      <p class="author-institution">Sichuan International Studies University</p>
+      <h2 class="author-name">{$t('pages.about.author_name')}</h2>
+      <p class="author-title">{$t('pages.about.author_title')}</p>
+      <p class="author-institution">{$t('pages.about.author_institution')}</p>
       
       <div class="social-links">
         {#each socialLinks as link}
@@ -35,9 +37,8 @@
   </div>
   
   <div class="bio-content">
-    <p>サラダ is a graduate of English Major at Sichuan International Studies University. He was working in oversea projects in Africa and mid-east countries.
-      
-    <p>His current interests focus on IT development, blockchain technology, and project creation:）</p>
+    <p>{$t('pages.about.bio_part1')}</p>
+    <p>{$t('pages.about.bio_part2')}</p>
   </div>
 </div>
 

@@ -20,5 +20,15 @@
   "footer": {
     "copyright": "© {{year}} Sarada's Blog",
     "built_with": "Built with Svelte 4"
+  },
+  "pages": {
+    "about": {
+      "title": "About",
+      "author_name": "Sarada",
+      "author_title": "Programming Enthusiast",
+      "author_institution": "Sichuan International Studies University",
+      "bio_part1": "Sarada is a graduate of English Major at Sichuan International Studies University. He was working in oversea projects in Africa and mid-east countries.",
+      "bio_part2": "His current interests focus on IT development, blockchain technology, and project creation:）"
+    }
   }
 } 
