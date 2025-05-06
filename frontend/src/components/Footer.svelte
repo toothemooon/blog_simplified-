@@ -68,8 +68,11 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 1.25rem;
-    max-width: 70%;
+    /* Reduced gap for mobile screens */
+    gap: 0.75rem;
+    /* Full width on mobile for better distribution */
+    width: 100%;
+    max-width: 300px;
     margin: 0 auto;
   }
   
@@ -79,8 +82,9 @@
     justify-content: center;
     color: var(--color-text);
     transition: color 0.2s ease;
-    width: 24px;
-    height: 24px;
+    /* Fixed width and height to ensure consistent sizing */
+    width: 32px;
+    height: 32px;
     opacity: 0.7;
   }
   
@@ -115,8 +119,23 @@
     opacity: 0.5;
   }
   
+  /* Progressive enhancement with multiple breakpoints */
+  @media (min-width: 375px) {
+    .social-links {
+      gap: 0.875rem;
+    }
+  }
+  
+  @media (min-width: 480px) {
+    .social-links {
+      gap: 1rem;
+      max-width: 350px;
+    }
+  }
+  
   @media (min-width: 640px) {
     .social-links {
+      gap: 1.25rem;
       max-width: 450px;
     }
   }
