@@ -62,13 +62,23 @@
     list-style: none;
     margin: 0;
     padding: 0;
-    gap: 2rem;
+    gap: 1.5rem; /* Reduced default gap */
   }
   
-  @media (max-width: 768px) {
+  @media (min-width: 768px) {
     .nav-list {
-      gap: 1.5rem;
+      gap: 1.75rem; /* Slightly more space on medium screens */
     }
+  }
+  
+  @media (min-width: 1024px) {
+    .nav-list {
+      gap: 2rem; /* Maximum gap on large screens */
+    }
+  }
+  
+  .nav-item {
+    white-space: nowrap; /* Prevent text wrapping */
   }
   
   .nav-link {
@@ -78,7 +88,13 @@
     transition: color 0.2s ease;
     padding-bottom: 0.25rem;
     position: relative;
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-sm); /* Slightly smaller font */
+  }
+  
+  @media (min-width: 768px) {
+    .nav-link {
+      font-size: var(--font-size-base); /* Normal font on larger screens */
+    }
   }
   
   .nav-link:hover {

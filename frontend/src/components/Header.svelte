@@ -127,11 +127,11 @@
       
       <!-- Actions -->
       <div class="header-actions">
-        <!-- Language Selector (NEW) -->
-        <LanguageSelector />
-        
         <!-- Search Button -->
         <SearchButton on:opensearch={handleOpenSearch} />
+        
+        <!-- Language Selector -->
+        <LanguageSelector />
         
         <!-- Theme Toggle -->
         <div class="theme-toggle">
@@ -262,7 +262,6 @@
   .nav-actions-container {
     display: flex;
     align-items: center;
-    gap: 2rem; /* Increased gap between nav items and actions */
   }
   
   .desktop-nav {
@@ -273,12 +272,19 @@
   .header-actions {
     display: flex;
     align-items: center;
-    gap: 0.75rem; /* Slightly increased gap between action items */
+    gap: 0.25rem; /* Reduced gap between utility buttons for better grouping */
+    margin-left: 1rem; /* Add some space between nav links and utility buttons */
+    background-color: var(--color-bg);
+    padding: 0.25rem;
+    border-radius: 0.5rem;
   }
   
   @media (min-width: 640px) {
     .header-actions {
-      gap: 1rem;
+      gap: 0.5rem; /* Slightly larger gap on desktop */
+      border: 1px solid var(--color-border);
+      padding: 0.25rem 0.5rem;
+      border-radius: 2rem; /* Rounded pill shape for the button group */
     }
   }
   
@@ -347,6 +353,13 @@
     
     .hide-on-desktop {
       display: block;
+    }
+  }
+  
+  /* Ensure layout on small screens */
+  @media (max-width: 640px) {
+    .header-actions {
+      margin-left: 0.5rem; /* Less space on mobile */
     }
   }
 </style> 
