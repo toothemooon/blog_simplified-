@@ -41,8 +41,32 @@ export default {
 		chunkFileNames: '[name]-[hash].js'
 	},
 	plugins: [
-		// Handle JSON files first
-		json(),
+		// IMPORTANT: Process JSON files first with enhanced configuration
+		json({
+			// Make JSON imports work
+			preferConst: true,
+			// Generate a named export for every property
+			namedExports: true,
+			// Include compact output in production
+			compact: production,
+			// Explicitly include JSON files from the i18n directory
+			include: ['src/i18n/locales/**/*.json'],
+		}),
+		
+		// Plugin to handle markdown files as strings
+		string({
+			include: ['**/*.md']
+		}),
+		
+		// Node resolution and CommonJS conversion need to happen BEFORE Svelte
+		resolve({
+			browser: true,
+			dedupe: ['svelte'],
+			// Ensure node_modules and JSON files are processed
+			extensions: ['.mjs', '.js', '.json', '.svelte']
+		}),
+		
+		commonjs(),
 		
 		svelte({
 			compilerOptions: {
@@ -50,25 +74,9 @@ export default {
 				dev: !production
 			}
 		}),
-		// we'll extract any component CSS out into
-		// a separate file - better for performance
+		
+		// Extract component CSS
 		css({ output: 'bundle.css' }),
-
-		// Plugin to handle markdown files as strings
-		string({
-			include: ['**/*.md']
-		}),
-
-		// If you have external dependencies installed from
-		// npm, you'll most likely need these plugins. In
-		// some cases you'll need additional configuration -
-		// consult the documentation for details:
-		// https://github.com/rollup/plugins/tree/master/packages/commonjs
-		resolve({
-			browser: true,
-			dedupe: ['svelte']
-		}),
-		commonjs(),
 
 		// In dev mode, call `npm run start` once
 		// the bundle has been generated
@@ -78,8 +86,7 @@ export default {
 		// browser on changes when not in production
 		!production && livereload('public'),
 
-		// If we're building for production (npm run build
-		// instead of npm run dev), minify
+		// If we're building for production, minify
 		production && terser()
 	],
 	watch: {

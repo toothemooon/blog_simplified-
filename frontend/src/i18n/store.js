@@ -1,4 +1,4 @@
-import { writable, derived } from 'svelte/store';
+import { writable, derived, get } from 'svelte/store';
 
 // Direct imports instead of dynamic loading
 import en from './locales/en.json';
@@ -57,49 +57,42 @@ export function getLanguageName(code) {
   return languages[code] || 'English';
 }
 
-// Create translation function (writable export)
-function createTranslationFunction(lang) {
-  // Handle empty keys
-  if (!lang) return key => key;
+// FIXING EXPORT: Direct export with non-reactive function
+// Instead of derived store, export a plain function that gets current language from store
+export function t(key, params = {}) {
+  // Get current language synchronously
+  const lang = get(language);
   
-  return (key, params = {}) => {
-    // Handle empty keys
-    if (!key) return '';
-    
-    // Navigate through nested keys (e.g., "nav.blog")
-    const keys = key.split('.');
-    let value = translations[lang];
-    
-    // Find translation in current language
+  // Handle empty keys
+  if (!key) return '';
+  
+  // Navigate through nested keys (e.g., "nav.blog")
+  const keys = key.split('.');
+  let value = translations[lang];
+  
+  // Find translation in current language
+  for (const k of keys) {
+    value = value?.[k];
+    if (!value) break;
+  }
+  
+  // Fallback to English if not found
+  if (!value && lang !== 'en') {
+    value = translations.en;
     for (const k of keys) {
       value = value?.[k];
       if (!value) break;
     }
-    
-    // Fallback to English if not found
-    if (!value && lang !== 'en') {
-      value = translations.en;
-      for (const k of keys) {
-        value = value?.[k];
-        if (!value) break;
-      }
-    }
-    
-    // If still no translation, return the key itself
-    if (!value) return key;
-    
-    // Replace parameters
-    return value.replace(/\{\{(\w+)\}\}/g, (_, paramName) => 
-      params[paramName] !== undefined ? params[paramName] : `{{${paramName}}}`
-    );
-  };
+  }
+  
+  // If still no translation, return the key itself
+  if (!value) return key;
+  
+  // Replace parameters
+  return value.replace(/\{\{(\w+)\}\}/g, (_, paramName) => 
+    params[paramName] !== undefined ? params[paramName] : `{{${paramName}}}`
+  );
 }
-
-// Export translation function as a derived store
-export const t = derived(
-  language,
-  $language => createTranslationFunction($language)
-);
 
 // Export supported languages
 export function getSupportedLanguages() {
