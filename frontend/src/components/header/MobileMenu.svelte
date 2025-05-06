@@ -2,6 +2,14 @@
   import { createEventDispatcher, onMount } from 'svelte';
   import { fade, fly } from 'svelte/transition';
   import Logo from './Logo.svelte';
+  import { language, setLanguage, getSupportedLanguages } from '../../i18n';
+  
+  // Get language options from shared function
+  const languages = getSupportedLanguages();
+  
+  function selectLanguage(code) {
+    setLanguage(code);
+  }
   
   // Props
   export let currentRoute = '/';
@@ -94,6 +102,22 @@
           {link.text}
         </a>
       {/each}
+      
+      <!-- Language Section (NEW) -->
+      <div class="mobile-section">
+        <h3 class="mobile-section-title">Language</h3>
+        <div class="language-options">
+          {#each languages as lang}
+            <button 
+              class="language-option"
+              class:active={$language === lang.code}
+              on:click={() => selectLanguage(lang.code)}
+            >
+              {lang.name}
+            </button>
+          {/each}
+        </div>
+      </div>
     </nav>
   </div>
 {/if}
@@ -178,5 +202,43 @@
   .mobile-nav-link.active {
     color: var(--color-primary);
     font-weight: 600;
+  }
+  
+  .mobile-section {
+    padding: var(--space-md) 0;
+    border-top: 1px solid var(--color-border);
+    margin-top: var(--space-md);
+  }
+  
+  .mobile-section-title {
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-sm);
+    color: var(--color-text);
+    opacity: 0.7;
+    font-weight: 500;
+  }
+  
+  .language-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+  
+  .language-option {
+    text-align: left;
+    padding: var(--space-sm);
+    border-radius: 0.25rem;
+    background: none;
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: var(--font-size-base);
+  }
+  
+  .language-option.active {
+    background-color: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
   }
 </style> 

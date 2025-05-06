@@ -1,0 +1,20 @@
+{
+  "nav": {
+    "blog": "Blog",
+    "tags": "Tags", 
+    "projects": "Projects",
+    "about": "About"
+  },
+  "ui": {
+    "language": "Language",
+    "search": "Search",
+    "theme": "Theme",
+    "dark": "Dark",
+    "light": "Light",
+    "system": "System"
+  },
+  "footer": {
+    "copyright": "© {{year}} Sarada's Blog",
+    "built_with": "Built with Svelte 4"
+  }
+} 

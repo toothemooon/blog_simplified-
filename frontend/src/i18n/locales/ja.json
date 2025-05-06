@@ -1,0 +1,20 @@
+{
+  "nav": {
+    "blog": "ブログ",
+    "tags": "タグ",
+    "projects": "プロジェクト",
+    "about": "について"
+  },
+  "ui": {
+    "language": "言語",
+    "search": "検索",
+    "theme": "テーマ",
+    "dark": "ダーク",
+    "light": "ライト",
+    "system": "システム"
+  },
+  "footer": {
+    "copyright": "© {{year}} サラダのブログ",
+    "built_with": "Svelte 4で構築"
+  }
+} 

@@ -1,0 +1,20 @@
+{
+  "nav": {
+    "blog": "博客",
+    "tags": "标签",
+    "projects": "项目",
+    "about": "关于"
+  },
+  "ui": {
+    "language": "语言",
+    "search": "搜索",
+    "theme": "主题",
+    "dark": "深色",
+    "light": "浅色",
+    "system": "系统"
+  },
+  "footer": {
+    "copyright": "© {{year}} Sarada的博客",
+    "built_with": "使用Svelte 4构建"
+  }
+} 

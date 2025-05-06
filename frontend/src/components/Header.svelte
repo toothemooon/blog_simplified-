@@ -6,6 +6,7 @@
   import NavLinks from './header/NavLinks.svelte';
   import MobileMenu from './header/MobileMenu.svelte';
   import MobileMenuButton from './header/MobileMenuButton.svelte';
+  import LanguageSelector from './header/LanguageSelector.svelte';
   
   // Props: accept currentRoute from App.svelte
   export let currentRoute = '/';
@@ -126,6 +127,9 @@
       
       <!-- Actions -->
       <div class="header-actions">
+        <!-- Language Selector (NEW) -->
+        <LanguageSelector />
+        
         <!-- Search Button -->
         <SearchButton on:opensearch={handleOpenSearch} />
         
