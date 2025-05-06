@@ -55,9 +55,14 @@ page('/about', () => {
 	setRoute('/about');
 });
 
+// Test route for NotFoundPage
+page('/test-404', () => {
+	setRoute('/test-404');
+});
+
 // Add a catch-all route for 404s
 page('*', () => {
-	setRoute('/');
+	setRoute('/not-found');
 });
 
 // Start the router
