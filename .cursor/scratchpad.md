@@ -208,7 +208,7 @@ After reviewing both the current blog-simplified site at https://blog-simplified
    - Animations and transitions are more polished on the target site
 
 6. **Website Metadata**:
-   - Target site has proper SEO metadata, favicons, and social sharing images
+   - Target site has better document head management
    - Our implementation is missing proper OpenGraph tags and Twitter cards
    - Target site has better document head management
 
@@ -262,8 +262,17 @@ After reviewing both the current blog-simplified site at https://blog-simplified
 | Improve Footer Responsive Design | ✅ Completed | High | 2 hours | Fixed icon wrapping issues on mobile devices |
 | Implement Language Selector | ✅ Completed | High | 6 hours | Created UI component with globe icon and language switching |
 | Set up i18n Infrastructure | ✅ Completed | High | 4 hours | Created language stores and JSON translation structure |
+| Header Navigation Translation | 🔄 In Progress | High | 2 hours | Replace hardcoded nav text with translation keys |
+| Footer Text Translation | 🔄 In Progress | High | 1 hour | Update copyright and footer text with translations |
+| Theme Toggle Translation | 🔄 In Progress | High | 1 hour | Update theme labels (Light/Dark/System) with translations |
+| Mobile Menu Translation | 🔄 In Progress | High | 2 hours | Apply translations to mobile navigation and sections |
+| Page Titles Translation | ⏱️ Planned | High | 2 hours | Update all page titles with consistent translation pattern |
+| Common UI Elements Translation | ⏱️ Planned | Medium | 4 hours | Translate reusable components and UI patterns |
+| Blog Post Metadata Translation | ⏱️ Planned | Medium | 2 hours | Translate date formats, reading time, author labels |
+| Project Metadata Translation | ⏱️ Planned | Medium | 2 hours | Translate project status, roles, and related section headings |
+| Date Formatting by Locale | ⏱️ Planned | Medium | 3 hours | Create locale-specific date formatting utility |
+| Error Messages Translation | ⏱️ Planned | Medium | 2 hours | Translate error states and notification messages |
 | Add Pagination | 🔄 Planned | High | 4 hours | For blog listing with URL parameter support - highest priority due to impact on performance as content grows |
-| Complete Translation Integration | 🔄 In Progress | High | 6 hours | Connect UI text to translation system throughout the app |
 | Implement Newsletter Signup | 🔄 Planned | Medium | 5 hours | Form component with validation and mock API integration |
 | Add Code Syntax Highlighting | 🔄 Planned | Medium | 6 hours | Language detection, styling, and copy functionality |
 | Create Series Pages | 🔄 Planned | Medium | 6 hours | Metadata, navigation, and dedicated landing pages for series |
@@ -273,6 +282,657 @@ After reviewing both the current blog-simplified site at https://blog-simplified
 | Add Animations | 🔄 Planned | Low | 5 hours | Page transitions and micro-interactions |
 | Optimize Performance | 🔄 Planned | Medium-High | 6 hours | Lazy loading, image optimization, prefetching, bundle optimization |
 | Enhance Dark Mode | 🔄 Planned | Low | 4 hours | Refined palette and smooth transitions |
+
+## Internationalization Implementation - Next Steps
+
+Based on our analysis of the existing i18n infrastructure, we've identified the following immediate tasks:
+
+### 0. Implement Translation Function (Priority: Critical)
+
+While the basic i18n infrastructure exists with language selection and storage, the actual translation function (`t`) referenced in the documentation is not yet implemented. We need to add this critical functionality before we can proceed with any component translations.
+
+Current implementation in `store.js` lacks the translation function:
+```javascript
+// Current store.js exports language and utility functions, but no translation function
+export const language = writable(getBrowserLanguage());
+export function setLanguage(lang) {...}
+export const currentLangCode = derived(language, $language => $language);
+export function getLanguageName(code) {...}
+```
+
+Required changes:
+1. Add translation loading functionality:
+```javascript
+// Add to store.js
+// Cache for loaded translations
+const translations = {
+  en: {},
+  ja: {},
+  zh: {}
+};
+
+// Function to load translations for a specific language
+export async function loadTranslations(lang) {
+  if (!Object.keys(translations[lang]).length) {
+    try {
+      const module = await import(`./locales/${lang}.json`);
+      translations[lang] = module.default;
+    } catch (e) {
+      console.error(`Failed to load ${lang} translations`, e);
+    }
+  }
+  return translations[lang];
+}
+```
+
+2. Add the translation function as a derived store:
+```javascript
+// Add to store.js
+// Translation function as derived store
+export const t = derived(
+  language,
+  ($language, set) => {
+    // Initial value returns the key itself
+    set(key => key);
+    
+    // Load translations and update function
+    loadTranslations($language).then(() => {
+      const translate = (key, params = {}) => {
+        // Navigate through nested keys (e.g., "nav.blog")
+        const keys = key.split('.');
+        let value = translations[$language];
+        
+        // Find translation in current language
+        for (const k of keys) {
+          value = value?.[k];
+          if (!value) break;
+        }
+        
+        // Fallback to English if not found and current language isn't English
+        if (!value && $language !== 'en') {
+          value = translations.en;
+          for (const k of keys) {
+            value = value?.[k];
+            if (!value) break;
+          }
+        }
+        
+        // If still no translation, return the key itself
+        if (!value) return key;
+        
+        // Replace parameters (e.g., {{year}})
+        return value.replace(/\{\{(\w+)\}\}/g, (_, paramName) => 
+          params[paramName] !== undefined ? params[paramName] : `{{${paramName}}}`
+        );
+      };
+      
+      set(translate);
+    });
+  },
+  key => key // Initial value returns the key itself
+);
+```
+
+3. Update `index.js` to export the translation function:
+```javascript
+// Re-export everything from store.js
+export { language, setLanguage, currentLangCode, getLanguageName, t } from './store.js';
+```
+
+4. Preload the default language:
+```javascript
+// Add to index.js after exports
+// Preload the default language
+import { loadTranslations, language } from './store.js';
+if (typeof window !== 'undefined') {
+  const currentLang = localStorage.getItem('language') || 'en';
+  loadTranslations(currentLang);
+}
+```
+
+### 1. Header Navigation Component Translation (Priority: High)
+
+Current implementation in `NavLinks.svelte` uses hardcoded text:
+```javascript
+const navLinks = [
+  { text: 'Blog', href: '/blog', route: '/blog-list' },
+  { text: 'Tags', href: '/tags', route: '/tags-list' },
+  { text: 'Projects', href: '/projects', route: '/projects' },
+  { text: 'About', href: '/about', route: '/about' }
+];
+```
+
+Required changes:
+- Import translation function: `import { language } from '../../i18n';`
+- Replace hardcoded text with translation keys:
+```javascript
+// Add $: reactive statement to update links when language changes
+$: navLinks = [
+  { text: $t('nav.blog'), href: '/blog', route: '/blog-list' },
+  { text: $t('nav.tags'), href: '/tags', route: '/tags-list' },
+  { text: $t('nav.projects'), href: '/projects', route: '/projects' },
+  { text: $t('nav.about'), href: '/about', route: '/about' }
+];
+```
+
+### 2. Footer Text Translation (Priority: High)
+
+Current implementation in `Footer.svelte` uses hardcoded text:
+```html
+<div class="copyright">
+  <span>&copy; {currentYear}</span>
+  <span class="divider">•</span>
+  <span>Sarada's Blog</span>
+  <span class="divider">•</span>
+  <span>Built with Svelte 4</span>
+</div>
+```
+
+Required changes:
+- Import translation function: `import { language } from '../i18n';`
+- Replace hardcoded text with translation keys:
+```html
+<div class="copyright">
+  <span>{$t('footer.copyright', { year: currentYear })}</span>
+  <span class="divider">•</span>
+  <span>{$t('footer.built_with')}</span>
+</div>
+```
+
+### 3. Theme Toggle Translation (Priority: High)
+
+Current implementation in `Header.svelte` uses hardcoded text:
+```html
+<button on:click={() => applyTheme('light')} class="theme-option">
+  <svg ...></svg>
+  <span>Light</span>
+</button>
+```
+
+Required changes:
+- Import translation function: `import { language } from '../i18n';`
+- Replace hardcoded text with translation keys:
+```html
+<button on:click={() => applyTheme('light')} class="theme-option">
+  <svg ...></svg>
+  <span>{$t('ui.light')}</span>
+</button>
+```
+
+### 4. Mobile Menu Translation (Priority: High)
+
+The `MobileMenu.svelte` component needs similar updates to the navigation links and any section headers.
+
+### Implementation Approach
+
+1. Work through these components one by one, implementing translations through the existing i18n system
+2. Test each component thoroughly after implementation, particularly checking:
+   - Text display on different screen sizes
+   - Proper handling of longer text in other languages
+   - Fallback to English when translations are missing
+
+3. Add appropriate translation tests to verify:
+   - Language switching works correctly
+   - All UI text is properly translated
+   - No untranslated strings appear in the interface
+
+When implementing these changes, we should strictly follow these guidelines:
+- Keep translation keys organized by component/feature
+- Use consistent naming patterns for all keys
+- Document any special considerations for specific languages
+- Test on the smallest supported screen sizes to ensure text fits properly
+
+## Implementation Steps for the Executor
+
+Follow these steps precisely to implement the internationalization features:
+
+### Step 1: Implement Translation Function in store.js
+
+Edit `frontend/src/i18n/store.js` to add the translation functionality:
+
+```javascript
+import { writable, derived } from 'svelte/store';
+
+// Initialize with browser language or saved preference
+const getBrowserLanguage = () => {
+  if (typeof window === 'undefined') return 'en';
+  
+  const savedLang = localStorage.getItem('language');
+  if (savedLang) return savedLang;
+  
+  const browserLang = navigator.language.split('-')[0];
+  return ['en', 'ja', 'zh'].includes(browserLang) ? browserLang : 'en';
+};
+
+// Create writable store
+export const language = writable(getBrowserLanguage());
+
+// Save language preference when it changes
+language.subscribe(value => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('language', value);
+  }
+});
+
+// Cache for loaded translations
+const translations = {
+  en: {},
+  ja: {},
+  zh: {}
+};
+
+// Function to load translations for a specific language
+export async function loadTranslations(lang) {
+  if (!Object.keys(translations[lang]).length) {
+    try {
+      const module = await import(`./locales/${lang}.json`);
+      translations[lang] = module.default;
+    } catch (e) {
+      console.error(`Failed to load ${lang} translations`, e);
+    }
+  }
+  return translations[lang];
+}
+
+// Function to change language
+export function setLanguage(lang) {
+  if (['en', 'ja', 'zh'].includes(lang)) {
+    language.set(lang);
+    // Preload the language
+    loadTranslations(lang);
+    console.log(`Language changed to: ${lang} (store.js)`);
+  }
+}
+
+// Get current language code as a derived store
+export const currentLangCode = derived(
+  language,
+  $language => $language
+);
+
+// Get language name from code
+export function getLanguageName(code) {
+  const languages = {
+    'en': 'English',
+    'ja': '日本語',
+    'zh': '简体中文'
+  };
+  return languages[code] || 'English';
+}
+
+// Translation function as derived store
+export const t = derived(
+  language,
+  ($language, set) => {
+    // Initial value returns the key itself
+    set(key => key);
+    
+    // Load translations and update function
+    loadTranslations($language).then(() => {
+      const translate = (key, params = {}) => {
+        // Handle empty keys
+        if (!key) return '';
+        
+        // Navigate through nested keys (e.g., "nav.blog")
+        const keys = key.split('.');
+        let value = translations[$language];
+        
+        // Find translation in current language
+        for (const k of keys) {
+          value = value?.[k];
+          if (!value) break;
+        }
+        
+        // Fallback to English if not found and current language isn't English
+        if (!value && $language !== 'en') {
+          value = translations.en;
+          for (const k of keys) {
+            value = value?.[k];
+            if (!value) break;
+          }
+        }
+        
+        // If still no translation, return the key itself
+        if (!value) return key;
+        
+        // Replace parameters (e.g., {{year}})
+        return value.replace(/\{\{(\w+)\}\}/g, (_, paramName) => 
+          params[paramName] !== undefined ? params[paramName] : `{{${paramName}}}`
+        );
+      };
+      
+      set(translate);
+    });
+  },
+  key => key // Initial value returns the key itself
+);
+```
+
+### Step 2: Update index.js to Export Translation Function
+
+Edit `frontend/src/i18n/index.js` to export the translation function:
+
+```javascript
+// Re-export everything from store.js
+export { language, setLanguage, currentLangCode, getLanguageName, t, loadTranslations } from './store.js';
+
+// Export convenience function to get information about supported languages
+export function getSupportedLanguages() {
+  return [
+    { code: 'en', name: 'English' },
+    { code: 'ja', name: '日本語' },
+    { code: 'zh', name: '简体中文' }
+  ];
+}
+
+// Preload the default language
+if (typeof window !== 'undefined') {
+  const currentLang = localStorage.getItem('language') || 'en';
+  loadTranslations(currentLang);
+}
+```
+
+### Step 3: Update NavLinks.svelte with Translation Support
+
+Edit `frontend/src/components/header/NavLinks.svelte` to use translations:
+
+```javascript
+<script>
+  import { createEventDispatcher } from 'svelte';
+  import { t } from '../../i18n';
+  
+  // Props
+  export let currentRoute = '/';
+  
+  // Event dispatcher
+  const dispatch = createEventDispatcher();
+  
+  // Navigation items with translation keys
+  $: navLinks = [
+    { text: $t('nav.blog'), href: '/blog', route: '/blog-list' },
+    { text: $t('nav.tags'), href: '/tags', route: '/tags-list' },
+    { text: $t('nav.projects'), href: '/projects', route: '/projects' },
+    { text: $t('nav.about'), href: '/about', route: '/about' }
+  ];
+  
+  // Check if a link is active
+  function isActive(link) {
+    if (currentRoute === '/') {
+      return link.href === '/';
+    }
+    
+    if (currentRoute === '/blog-post') {
+      return link.route === '/blog-list';
+    }
+    
+    if (currentRoute === '/tag') {
+      return link.route === '/tags-list';
+    }
+    
+    return currentRoute === link.route;
+  }
+  
+  // Handle link click
+  function handleLinkClick() {
+    dispatch('linkClick');
+  }
+</script>
+
+<nav class="nav">
+  <ul class="nav-list">
+    {#each navLinks as link}
+      <li class="nav-item">
+        <a 
+          href={link.href} 
+          class="nav-link" 
+          class:active={isActive(link)}
+          aria-current={isActive(link) ? 'page' : undefined}
+          on:click={handleLinkClick}
+        >
+          {link.text}
+        </a>
+      </li>
+    {/each}
+  </ul>
+</nav>
+
+<!-- Existing styles remain unchanged -->
+```
+
+### Step 4: Update Footer.svelte with Translations
+
+Edit `frontend/src/components/Footer.svelte` to use translations for the copyright text:
+
+```javascript
+<script>
+  import { t } from '../i18n';
+  
+  // Social media icons with expanded set of links
+  const socialLinks = [
+    { name: 'Mail', url: 'mailto:hsc110110123@gmail.com', icon: 'M0 4v16h24V4H0zm19.4 2L12 10.78 4.6 6h14.8zM2 18V7.48l10 6.25 10-6.25V18H2z' },
+    { name: 'GitHub', url: 'https://github.com/toothemooon', icon: 'M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.743.084-.729.084-.729 1.205.085 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.4 3-.405 1.02.005 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12' },
+    { name: 'Medium', url: 'https://medium.com/@abc510433622', icon: 'M2.846 6.887c.03-.295-.083-.586-.303-.784l-2.24-2.7v-.403h6.958l5.378 11.795 4.728-11.795h6.633v.403l-1.916 1.837c-.165.126-.247.333-.213.538v13.498c-.034.204.048.411.213.537l1.871 1.837v.403h-9.412v-.403l1.939-1.882c.19-.19.19-.246.19-.537v-10.91l-5.389 13.688h-.728l-6.275-13.688v9.174c-.052.385.076.774.347 1.052l2.521 3.058v.404h-7.148v-.404l2.521-3.058c.27-.279.39-.67.325-1.052v-10.608z' },
+    { name: 'LinkedIn', url: 'https://www.linkedin.com/in/sarada03', icon: 'M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z' },
+    { name: 'YouTube', url: 'https://www.youtube.com/@afewthoughts7755', icon: 'M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z' },
+    { name: 'X', url: 'https://x.com/Developer036', icon: 'M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z' }
+  ];
+
+  // Current year for copyright
+  const currentYear = new Date().getFullYear();
+</script>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="social-links-container">
+        <div class="social-links">
+          {#each socialLinks as link}
+            <a href={link.url} target="_blank" rel="noopener noreferrer" class="social-link" aria-label={link.name}>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="social-icon">
+                <path d={link.icon}></path>
+              </svg>
+            </a>
+          {/each}
+        </div>
+      </div>
+      
+      <div class="footer-info">
+        <div class="copyright">
+          <span>{$t('footer.copyright', { year: currentYear })}</span>
+          <span class="divider">•</span>
+          <span>{$t('footer.built_with')}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Existing styles remain unchanged -->
+```
+
+### Step 5: Update Header.svelte Theme Toggle with Translations
+
+Edit `frontend/src/components/Header.svelte` to translate the theme toggle options:
+
+```javascript
+<script>
+  import { onMount } from 'svelte';
+  import SearchButton from './search/SearchButton.svelte';
+  import SearchDialog from './search/SearchDialog.svelte';
+  import Logo from './header/Logo.svelte';
+  import NavLinks from './header/NavLinks.svelte';
+  import MobileMenu from './header/MobileMenu.svelte';
+  import MobileMenuButton from './header/MobileMenuButton.svelte';
+  import LanguageSelector from './header/LanguageSelector.svelte';
+  import { t } from '../i18n';
+  
+  // Rest of script remains unchanged
+</script>
+
+{#if showThemeMenu}
+  <div id="theme-menu" class="theme-menu">
+    <button on:click={() => applyTheme('light')} class="theme-option">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line>
+        <line x1="21" y1="12" x2="23" y2="12"></line>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+      </svg>
+      <span>{$t('ui.light')}</span>
+    </button>
+    
+    <button on:click={() => applyTheme('dark')} class="theme-option">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </svg>
+      <span>{$t('ui.dark')}</span>
+    </button>
+    
+    <button on:click={() => applyTheme('system')} class="theme-option">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+        <line x1="8" y1="21" x2="16" y2="21"></line>
+        <line x1="12" y1="17" x2="12" y2="21"></line>
+      </svg>
+      <span>{$t('ui.system')}</span>
+    </button>
+  </div>
+{/if}
+
+<!-- Rest of template remains unchanged -->
+```
+
+### Step 6: Update MobileMenu.svelte with Translations
+
+Edit `frontend/src/components/header/MobileMenu.svelte` to use translations for navigation items and section titles:
+
+```javascript
+<script>
+  import { createEventDispatcher } from 'svelte';
+  import NavLinks from './NavLinks.svelte';
+  import { language, setLanguage, getSupportedLanguages, getLanguageName, t } from '../../i18n';
+  
+  // Props
+  export let isOpen = false;
+  export let currentRoute = '/';
+  
+  // Event dispatcher for closing menu
+  const dispatch = createEventDispatcher();
+  
+  // Available languages
+  const languages = getSupportedLanguages();
+  
+  function selectLanguage(langCode) {
+    setLanguage(langCode);
+  }
+  
+  function handleLinkClick() {
+    dispatch('linkClick');
+  }
+  
+  function handleClose() {
+    dispatch('close');
+  }
+</script>
+
+<div class="mobile-menu-container" class:open={isOpen}>
+  <div class="mobile-menu">
+    <div class="mobile-menu-header">
+      <button class="close-button" on:click={handleClose} aria-label="Close menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    
+    <div class="mobile-navigation">
+      <NavLinks 
+        {currentRoute}
+        on:linkClick={handleLinkClick}
+      />
+    </div>
+    
+    <div class="mobile-section">
+      <h3 class="mobile-section-title">{$t('ui.language')}</h3>
+      <div class="language-options">
+        {#each languages as lang}
+          <button 
+            class="language-option"
+            class:active={$language === lang.code}
+            on:click={() => selectLanguage(lang.code)}
+          >
+            {lang.name}
+          </button>
+        {/each}
+      </div>
+    </div>
+    
+    <div class="mobile-section">
+      <h3 class="mobile-section-title">{$t('ui.theme')}</h3>
+      <div class="theme-options">
+        <button class="theme-option" on:click={() => document.body.classList.remove('dark-theme')}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <span>{$t('ui.light')}</span>
+        </button>
+        
+        <button class="theme-option" on:click={() => document.body.classList.add('dark-theme')}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <span>{$t('ui.dark')}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Existing styles remain unchanged -->
+```
+
+### Step 7: Testing Workflow
+
+After implementing each component:
+
+1. **Visual Testing**:
+   - Switch between all supported languages (EN, JA, ZH)
+   - Verify text displays correctly in each language
+   - Check for any layout issues, especially with longer text
+   - Test on mobile viewport sizes (320px minimum)
+
+2. **Functional Testing**:
+   - Verify language selection works correctly
+   - Ensure preference is saved between page reloads
+   - Test for fallbacks with missing translations
+
+3. **Edge Cases**:
+   - Test with browser language detection
+   - Ensure initial page load works correctly
+   - Verify translation parameters work correctly (e.g., year in footer)
+
+### Step 8: Next Phase Planning
+
+After completing these initial components, prepare for the next phase:
+
+1. Create a list of all page title components that need translation
+2. Identify common UI patterns used across multiple components
+3. Plan for translation of dynamic content (blog posts, project cards)
+4. Document any issues encountered during implementation
 
 ## Implementation Priorities
 
@@ -297,547 +957,61 @@ Based on the comparison with the target site, we should implement features in th
 10. **Animations and Transitions** - Improved interactions
 11. **Dark Mode Enhancement** - Better color palette
 
-## Component Review Guidelines
+# Blog Simplified - Internationalization Implementation
 
-When implementing new components or features, follow these review steps:
+## Current Project Status
+- ✅ Basic functionality implemented (blog posts, navigation, search)
+- ✅ Responsive design with proper mobile optimization
+- ✅ Projects section with metadata and related projects
+- ✅ Footer with social media links matching target site design
+- ✅ Language selector UI implemented with globe icon and dropdown
+- ✅ Basic i18n infrastructure established (store.js, language switching)
+- 🔄 Translation functionality integration in progress
 
-1. **Directory Structure Analysis** - Understand how components are organized
-2. **Component Implementation Patterns** - Follow established patterns for script, markup, and styles
-3. **Dependency Analysis** - Check for shared utilities and avoid circular dependencies
-4. **CSS Methodology** - Use project's CSS variables and follow naming conventions
-5. **Responsive Design Approach** - Use established breakpoints (375px, 480px, 640px, 1024px)
+## Internationalization Implementation Plan
 
-For styling components, use the project's standard breakpoint pattern:
-```css
-/* Mobile first base styles */
-.component { ... }
+### Phase 1: Infrastructure and Core Components (Current Focus)
 
-/* Tablet (640px+) */
-@media (min-width: 640px) {
-  .component { ... }
-}
+#### Step 0: Complete Translation Function (Critical)
+- Implement the translation function in store.js
+- Add proper loading and caching of translations
+- Connect translation store to component system
 
-/* Desktop (1024px+) */
-@media (min-width: 1024px) {
-  .component { ... }
-}
-```
+#### Step 1: Core Navigation and Common UI 
+- Update Header navigation with translations
+- Add translations to Footer text
+- Implement theme toggle translations
+- Update mobile menu with translations
 
-## Lessons Learned
-- Vanilla CSS requires more planning for maintainability than utility-first frameworks
-- Component-scoped CSS in Svelte helps maintain style isolation
-- Custom CSS properties (variables) are essential for building a themeable site
-- Media queries require careful planning for responsive breakpoints
-- When using Svelte 4, be careful not to use Svelte 5 or SvelteKit features
-- Component implementation best practices:
-  - Start extremely simple and add complexity gradually
-  - Test components in isolation before integration
-  - Avoid circular dependencies between components
-  - Mock data locally before using complex stores
-  - When a component doesn't work, revert to simplest possible version
-- Page structure lessons:
-  - Keep separate pages as separate components
-  - Don't mix homepage and blog page content/layouts
-  - Study the reference site carefully to understand the distinct layout needs of each page
-- Development workflow:
-  - Include info useful for debugging in program output
-  - Read files before attempting to edit them
-  - Run npm audit when vulnerabilities appear in the terminal
-  - Always ask before using -force git commands
-- Data management lessons:
-  - Store large content outside of JavaScript files when possible
-  - Split related data into logical chunks
-  - Implement lazy loading for content that isn't needed immediately
-  - Consider dynamic imports for better performance
-- CSS warnings about unused selectors in BlogPostPage are expected and can be ignored
-  - These selectors target dynamically loaded Markdown content
-  - Document this in the code to avoid future confusion
-- A11y warnings should be addressed promptly
-  - Elements with event handlers should be interactive elements or have proper ARIA roles
-  - Use proper semantic HTML elements whenever possible
-- Having a reference site is extremely valuable for design implementation
-  - Study both desktop and mobile layouts separately
-  - Pay attention to subtle details like spacing and typography
-  - Use browser dev tools to inspect the reference implementation
-- Focus management lessons:
-  - Use `:focus-visible` for keyboard-only focus indicators
-  - Ensure clickable elements have proper hover states even without focus outlines
-  - Target specific elements rather than making global focus changes
-- Content optimization:
-  - Ensure consistent data patterns across similar content (projects, blog posts)
-  - Format dates and other metadata consistently
-  - Create utility functions for common formatting tasks
-- Translation considerations:
-  - Google Translate is not accessible in China (a key audience for Chinese translation)
-  - Custom JSON translations provide better quality and reliability
-  - Start with UI elements, then progressively translate content
-  - Consider region-specific needs when implementing features
-- SPA routing configuration:
-  - Client-side routing requires proper server configuration
-  - The sirv server needs the `--single` flag to handle SPA routing correctly
-  - For production deployments, modify vercel.json to ensure proper SPA routing
-  - Testing routes that don't exist is crucial for verifying 404 handling
-- SVG icon considerations:
-  - For solid icons, use `fill="currentColor"` instead of `stroke="currentColor"`
-  - Provide clear accessibility attributes (aria-label) for icon-only links
-  - Optimize icon paths for cleaner rendering
-  - Consider icon size and spacing for proper visual balance
-- Social media link implementation:
-  - Always use `rel="noopener noreferrer"` with `target="_blank"` for security
-  - Test links with actual accounts to ensure they work properly
-  - Maintain consistent visual style across different platform icons
-  - Group similar links together for better organization
-- Responsive design for icon layout:
-  - Decrease spacing (gap) on smaller screens to prevent awkward wrapping
-  - Use fixed sizing for clickable elements to maintain proper touch targets
-  - Implement multiple breakpoints for progressive enhancement
-  - Test on a variety of small screen sizes, not just common breakpoints
-- **Mobile-specific text rendering considerations**:
-  - Always wrap text in container elements with `white-space: nowrap` to prevent unexpected wrapping
-  - Use `flex-shrink: 0` on text elements to prevent compression in flex layouts
-  - Test on the smallest supported viewport width (320px for most devices)
-  - Be aware of text stacking issues in small UI elements (like buttons)
-- **Responsive design patterns**:
-  - Use a consistent approach to breakpoints (smallest to largest)
-  - Create specialized styles for very small screens (under 360px)
-  - Consider touch targets (minimum 44px) for all interactive elements
-  - Use flexible layouts that adapt to available space rather than fixed dimensions
-- **Component grouping techniques**:
-  - Visual grouping through borders and background colors enhances UI organization
-  - Consistent spacing between related elements improves visual hierarchy
-  - Pill-shaped containers work well for grouping utility functions
-  - Ensure proper spacing between groups for clear visual separation
-- **SVG icon implementation**:
-  - Custom SVG icons with meaningful shapes improve recognition (globe vs generic circle)
-  - Use appropriate stroke and fill attributes for better visibility
-  - Make sure icons scale properly at different sizes
-  - Consider accessibility by adding proper aria attributes for screen readers
-- **Internationalization best practices**:
-  - Avoid Google Translate API as it's inaccessible in China
-  - Use static JSON files for better translation quality and performance
-  - Store language preference in localStorage to maintain user settings
-  - Consider text expansion in different languages when designing UI
-  - Always include fallbacks to handle missing translations
-  - Keep keys organized in a logical hierarchy
+#### Step 2: Page Structure and Metadata Components
+- Translate page titles (Blog, Tags, Projects, About)
+- Update common UI patterns (search, pagination, post metadata)
+- Translate error and notification messages
 
-## Executor's Feedback or Assistance Requests
-*This section will be populated when the Executor needs feedback or help*
+#### Step 3: Dynamic Content Components
+- Blog post preview elements ("Read more", metadata)
+- Project cards and details (status labels, sections)
+- Date and time formatting by locale
 
-## Next Implementation: Pagination for Blog List
+#### Step 4: Content Translation (Future)
+- Implement selective content translation approach
+- Create language-specific content directory structure
+- Add fallback mechanism for untranslated content
 
-Based on our current progress and comparison with the target site, implementing pagination for the blog listing is the highest priority task. As content grows, displaying all blog posts on a single page will lead to performance issues and poor user experience.
+## Technical Implementation Details
 
-### Requirements Analysis
+### Translation Function Implementation
 
-1. **Core Functionality**:
-   - Display a limited number of blog posts per page (e.g., 10 posts)
-   - Provide navigation controls to move between pages
-   - Show current page number and total pages
-   - Support direct URL access to specific pages (e.g., `/blog-list?page=2`)
-
-2. **UI Components Needed**:
-   - Pagination controls component
-   - Updated BlogListPage to support pagination
-   - "Previous" and "Next" buttons
-   - Page number indicators
-
-3. **Data Handling**:
-   - Slice the blog posts array based on current page
-   - Calculate total number of pages
-   - Handle edge cases (first page, last page)
-   - Maintain current query parameters when changing pages
-
-### Technical Design
-
-#### 1. Data Structure and Utilities
-
-Add pagination utilities to `blog-utils.js`:
-
+Required changes to `store.js`:
 ```javascript
-/**
- * Get paginated blog posts
- * @param {Array} posts - Array of blog posts
- * @param {Number} page - Current page number (1-based)
- * @param {Number} postsPerPage - Number of posts per page
- * @returns {Object} - Object containing paginated posts and pagination metadata
- */
-export function getPaginatedPosts(posts, page = 1, postsPerPage = 10) {
-  const totalPosts = posts.length;
-  const totalPages = Math.ceil(totalPosts / postsPerPage);
-  
-  // Ensure page is within valid range
-  const currentPage = Math.max(1, Math.min(page, totalPages || 1));
-  
-  // Calculate start and end indices
-  const startIndex = (currentPage - 1) * postsPerPage;
-  const endIndex = Math.min(startIndex + postsPerPage, totalPosts);
-  
-  // Slice the posts array
-  const paginatedPosts = posts.slice(startIndex, endIndex);
-  
-  return {
-    posts: paginatedPosts,
-    pagination: {
-      currentPage,
-      totalPages,
-      postsPerPage,
-      hasPrevPage: currentPage > 1,
-      hasNextPage: currentPage < totalPages,
-    }
-  };
-}
-```
-
-#### 2. Component Updates
-
-1. **Create Pagination Component**:
-
-Create a new component `frontend/src/components/blog/Pagination.svelte`:
-
-```svelte
-<script>
-  // Props
-  export let currentPage = 1;
-  export let totalPages = 1;
-  export let baseUrl = '/blog-list';
-  export let queryParams = {};
-  
-  // Generate an array of page numbers to display
-  $: pageNumbers = generatePageNumbers(currentPage, totalPages);
-  
-  function generatePageNumbers(current, total) {
-    if (total <= 7) {
-      // Show all pages if total is small
-      return Array.from({ length: total }, (_, i) => i + 1);
-    }
-    
-    const pages = [];
-    
-    // Always show first page
-    pages.push(1);
-    
-    // Show current page and neighbors
-    const startPage = Math.max(2, current - 1);
-    const endPage = Math.min(total - 1, current + 1);
-    
-    // Add ellipsis after first page if needed
-    if (startPage > 2) {
-      pages.push('...');
-    }
-    
-    // Add pages around current page
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(i);
-    }
-    
-    // Add ellipsis before last page if needed
-    if (endPage < total - 1) {
-      pages.push('...');
-    }
-    
-    // Always show last page
-    if (total > 1) {
-      pages.push(total);
-    }
-    
-    return pages;
-  }
-  
-  // Generate URL for a specific page
-  function getPageUrl(page) {
-    const params = new URLSearchParams(queryParams);
-    params.set('page', page);
-    return `${baseUrl}?${params.toString()}`;
-  }
-</script>
-
-<nav class="pagination" aria-label="Blog pagination">
-  <ul class="pagination-list">
-    <!-- Previous Button -->
-    <li class="pagination-item">
-      <a 
-        href={getPageUrl(currentPage - 1)} 
-        class="pagination-link" 
-        class:disabled={currentPage === 1}
-        aria-label="Go to previous page"
-      >
-        <span aria-hidden="true">←</span> Prev
-      </a>
-    </li>
-    
-    <!-- Page Numbers -->
-    {#each pageNumbers as pageNum}
-      <li class="pagination-item">
-        {#if pageNum === '...'}
-          <span class="pagination-ellipsis">…</span>
-        {:else}
-          <a 
-            href={getPageUrl(pageNum)} 
-            class="pagination-link" 
-            class:active={pageNum === currentPage}
-            aria-label={pageNum === currentPage ? `Current page, page ${pageNum}` : `Go to page ${pageNum}`}
-            aria-current={pageNum === currentPage ? 'page' : undefined}
-          >
-            {pageNum}
-          </a>
-        {/if}
-      </li>
-    {/each}
-    
-    <!-- Next Button -->
-    <li class="pagination-item">
-      <a 
-        href={getPageUrl(currentPage + 1)} 
-        class="pagination-link" 
-        class:disabled={currentPage === totalPages}
-        aria-label="Go to next page"
-      >
-        Next <span aria-hidden="true">→</span>
-      </a>
-    </li>
-  </ul>
-</nav>
-
-<style>
-  .pagination {
-    margin: 2rem 0;
-    width: 100%;
-  }
-  
-  .pagination-list {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  
-  .pagination-item {
-    margin: 0 0.25rem;
-  }
-  
-  .pagination-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 2.5rem;
-    height: 2.5rem;
-    padding: 0 0.75rem;
-    border-radius: 0.25rem;
-    text-decoration: none;
-    font-size: 0.875rem;
-    color: var(--color-text);
-    border: 1px solid var(--color-border);
-    transition: all 0.2s ease;
-  }
-  
-  .pagination-link:hover:not(.disabled):not(.active) {
-    background-color: rgba(var(--color-primary-rgb), 0.1);
-    color: var(--color-primary);
-  }
-  
-  .pagination-link.active {
-    background-color: var(--color-primary);
-    color: white;
-    border-color: var(--color-primary);
-  }
-  
-  .pagination-link.disabled {
-    opacity: 0.5;
-    pointer-events: none;
-  }
-  
-  .pagination-ellipsis {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 2.5rem;
-    height: 2.5rem;
-    color: var(--color-text);
-    opacity: 0.7;
-  }
-  
-  @media (min-width: 640px) {
-    .pagination-list {
-      gap: 0.75rem;
-    }
-  }
-</style>
-```
-
-2. **Update BlogListPage.svelte**:
-
-Modify `frontend/src/components/blog/BlogListPage.svelte` to support pagination:
-
-```svelte
-<script>
-  import { onMount } from 'svelte';
-  import { getAllBlogPosts, getPaginatedPosts } from '../../utils/blog-utils.js';
-  import Pagination from './Pagination.svelte';
-  
-  let allPosts = [];
-  let paginatedData = { posts: [], pagination: { currentPage: 1, totalPages: 1 } };
-  let isLoading = true;
-  let postsPerPage = 10;
-  let currentPage = 1;
-  
-  onMount(() => {
-    // Get current page from URL
-    const params = new URLSearchParams(window.location.search);
-    currentPage = parseInt(params.get('page') || '1', 10);
-    
-    // Load blog posts
-    allPosts = getAllBlogPosts();
-    updatePagination();
-    isLoading = false;
-    
-    // Listen for URL changes (browser back/forward)
-    window.addEventListener('popstate', handlePopState);
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  });
-  
-  function handlePopState() {
-    const params = new URLSearchParams(window.location.search);
-    currentPage = parseInt(params.get('page') || '1', 10);
-    updatePagination();
-  }
-  
-  function updatePagination() {
-    paginatedData = getPaginatedPosts(allPosts, currentPage, postsPerPage);
-  }
-</script>
-
-<div class="blog-list-page">
-  <h1 class="page-title">All Blog Posts</h1>
-  
-  {#if isLoading}
-    <div class="loading">Loading posts...</div>
-  {:else}
-    <div class="blog-list">
-      {#each paginatedData.posts as post}
-        <!-- Existing post rendering code -->
-      {/each}
-    </div>
-    
-    <Pagination 
-      currentPage={paginatedData.pagination.currentPage} 
-      totalPages={paginatedData.pagination.totalPages}
-      baseUrl="/blog-list"
-    />
-  {/if}
-</div>
-```
-
-#### 3. URL Parameter Handling
-
-To ensure proper URL parameter support, the server and router must be configured:
-
-1. Update `main.js` to handle URL parameters in client-side routing
-2. Ensure `vercel.json` has the appropriate rewrites for SPA routing
-
-### Implementation Steps
-
-1. **Research and Planning** (1 hour)
-   - ✅ Study the target site's pagination implementation
-   - ✅ Plan the component structure
-   - ✅ Design the pagination utility functions
-
-2. **Pagination Utility Functions** (1 hour)
-   - Add `getPaginatedPosts` function to `blog-utils.js`
-   - Write tests to ensure function works correctly
-   - Handle edge cases properly
-
-3. **Pagination Component Creation** (1 hour)
-   - Create the `Pagination.svelte` component
-   - Style it to match the target site design
-   - Make it responsive for all screen sizes
-
-4. **Integration with BlogListPage** (1 hour)
-   - Update BlogListPage to use the new pagination functions
-   - Add state management for current page
-   - Ensure URL parameters are properly handled
-
-5. **Testing and Refinement** (1 hour)
-   - Test pagination on different screen sizes
-   - Verify that URL parameters work correctly
-   - Ensure no regression in existing functionality
-
-### Success Criteria
-
-The pagination feature will be considered complete when:
-
-1. ✓ Blog posts are displayed in paginated form (10 posts per page)
-2. ✓ Pagination controls appear and function correctly
-3. ✓ Direct access to specific pages via URL works (e.g., `/blog-list?page=2`)
-4. ✓ Navigation between pages is smooth and maintains state
-5. ✓ UI is responsive and displays correctly on all screen sizes
-6. ✓ Accessibility requirements are met
-7. ✓ Performance impact is positive (reduced initial page load)
-
-## Language Selector Implementation Plan
-
-After examining the Header component and related files, I'm confident we can implement a language selector that integrates well with the existing UI. Here's a comprehensive plan:
-
-### Translation Infrastructure
-
-I recommend **not using Google Translate API** for several key reasons:
-- It's not accessible in China (a key target audience)
-- Translation quality is inconsistent
-- It adds API costs and dependencies
-- It requires internet connection to function
-
-Instead, I recommend implementing a custom translation system using static JSON files:
-
-#### 1. Directory Structure
-```
-frontend/src/
-└── i18n/
-    ├── index.js           # Main export with store and utility functions
-    ├── store.js           # Svelte store for language state management
-    └── locales/           # Translation JSON files
-        ├── en.json        # English (default)
-        ├── zh.json        # Chinese
-        └── ja.json        # Japanese
-```
-
-#### 2. Translation Store
-```javascript
-// i18n/store.js
-import { writable, derived } from 'svelte/store';
-
-// Initialize with browser language or saved preference
-const getBrowserLanguage = () => {
-  if (typeof window === 'undefined') return 'en';
-  const savedLang = localStorage.getItem('language');
-  if (savedLang) return savedLang;
-  
-  const browserLang = navigator.language.split('-')[0];
-  return ['en', 'zh', 'ja'].includes(browserLang) ? browserLang : 'en';
-};
-
-// Create writable store
-export const language = writable(getBrowserLanguage());
-
-// Save language preference when it changes
-language.subscribe(value => {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('language', value);
-  }
-});
-
-// Translations object to hold all loaded translations
+// Add translation cache
 const translations = {
   en: {},
-  zh: {},
-  ja: {}
+  ja: {},
+  zh: {}
 };
 
-// Function to load translations for a specific language
+// Add translation loading function
 export async function loadTranslations(lang) {
   if (!Object.keys(translations[lang]).length) {
     try {
@@ -850,24 +1024,30 @@ export async function loadTranslations(lang) {
   return translations[lang];
 }
 
-// Current translation derived store
+// Add translation function as derived store
 export const t = derived(
   language,
   ($language, set) => {
+    // Initial value returns the key itself
+    set(key => key);
+    
+    // Load translations and update function
     loadTranslations($language).then(() => {
-      // Create a translation function
       const translate = (key, params = {}) => {
-        // Split key by dots to access nested properties
+        // Handle empty keys
+        if (!key) return '';
+        
+        // Navigate through nested keys (e.g., "nav.blog")
         const keys = key.split('.');
         let value = translations[$language];
         
-        // Try to find translation in current language
+        // Find translation in current language
         for (const k of keys) {
           value = value?.[k];
           if (!value) break;
         }
         
-        // Fallback to English if translation not found
+        // Fallback to English if not found and current language isn't English
         if (!value && $language !== 'en') {
           value = translations.en;
           for (const k of keys) {
@@ -876,355 +1056,192 @@ export const t = derived(
           }
         }
         
-        // Return the key itself if translation not found
+        // If still no translation, return the key itself
         if (!value) return key;
         
-        // Replace parameters if any
-        return value.replace(/\{\{(\w+)\}\}/g, (_, paramKey) => 
-          params[paramKey] !== undefined ? params[paramKey] : `{{${paramKey}}}`
+        // Replace parameters (e.g., {{year}})
+        return value.replace(/\{\{(\w+)\}\}/g, (_, paramName) => 
+          params[paramName] !== undefined ? params[paramName] : `{{${paramName}}}`
         );
       };
       
       set(translate);
     });
   },
-  key => key // Initial value returns the key itself until translations are loaded
+  key => key // Initial value returns the key itself
 );
-
-// Change the language
-export function setLanguage(lang) {
-  if (['en', 'zh', 'ja'].includes(lang)) {
-    language.set(lang);
-    // Preload the language
-    loadTranslations(lang);
-  }
-}
 ```
 
-#### 3. Sample Translation Files
-```json
-// en.json
-{
-  "header": {
-    "blog": "Blog",
-    "tags": "Tags",
-    "projects": "Projects",
-    "about": "About",
-    "search": "Search",
-    "theme": "Theme",
-    "language": "Language"
-  },
-  "footer": {
-    "copyright": "© {{year}} Sarada's Blog",
-    "built_with": "Built with Svelte 4"
-  }
-}
+Update to `index.js`:
+```javascript
+// Re-export everything from store.js
+export { language, setLanguage, currentLangCode, getLanguageName, t, loadTranslations } from './store.js';
 
-// zh.json
-{
-  "header": {
-    "blog": "博客",
-    "tags": "标签",
-    "projects": "项目",
-    "about": "关于",
-    "search": "搜索",
-    "theme": "主题",
-    "language": "语言"
-  },
-  "footer": {
-    "copyright": "© {{year}} Sarada的博客",
-    "built_with": "使用Svelte 4构建"
-  }
-}
-```
-
-### UI Component Implementation
-
-#### 1. Language Selector Component
-
-```svelte
-<!-- LanguageSelector.svelte -->
-<script>
-  import { language, setLanguage } from '../../i18n/store';
-  
-  // Available languages
-  const languages = [
-    { code: 'en', name: 'English', label: 'EN' },
-    { code: 'zh', name: '中文', label: 'ZH' },
-    { code: 'ja', name: '日本語', label: 'JA' }
-  ];
-  
-  // Dropdown state
-  let isOpen = false;
-  
-  // Current language
-  $: currentLang = languages.find(l => l.code === $language) || languages[0];
-  
-  function toggleDropdown() {
-    isOpen = !isOpen;
-  }
-  
-  function selectLanguage(langCode) {
-    setLanguage(langCode);
-    isOpen = false;
-  }
-  
-  // Close dropdown when clicking outside
-  function handleClickOutside(event) {
-    if (isOpen && !event.target.closest('.language-selector')) {
-      isOpen = false;
-    }
-  }
-</script>
-
-<svelte:window on:click={handleClickOutside} />
-
-<div class="language-selector">
-  <button 
-    id="language-button"
-    class="language-button" 
-    on:click={toggleDropdown}
-    aria-haspopup="true"
-    aria-expanded={isOpen}
-    aria-label="Select language"
-  >
-    <svg class="globe-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="10"></circle>
-      <line x1="2" y1="12" x2="22" y2="12"></line>
-      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-    </svg>
-    <span class="current-language">{currentLang.label}</span>
-  </button>
-  
-  {#if isOpen}
-    <div id="language-menu" class="language-menu" role="menu">
-      {#each languages as lang}
-        <button 
-          class="language-option" 
-          class:active={$language === lang.code}
-          on:click={() => selectLanguage(lang.code)}
-          role="menuitem"
-        >
-          {lang.name}
-        </button>
-      {/each}
-    </div>
-  {/if}
-</div>
-
-<style>
-  .language-selector {
-    position: relative;
-  }
-  
-  .language-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.25rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--color-text);
-    padding: 0;
-    width: 44px;
-    height: 44px;
-    border-radius: 4px;
-    transition: background-color 0.2s ease;
-    -webkit-tap-highlight-color: transparent;
-  }
-  
-  .language-button:hover {
-    background-color: var(--color-border);
-  }
-  
-  .globe-icon {
-    width: 20px;
-    height: 20px;
-  }
-  
-  .current-language {
-    font-size: var(--font-size-xs);
-    font-weight: 500;
-  }
-  
-  .language-menu {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    margin-top: 0.5rem;
-    background-color: var(--color-bg);
-    border: 1px solid var(--color-border);
-    border-radius: 0.5rem;
-    padding: 0.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: var(--z-index-dropdown);
-    min-width: 10rem;
-  }
-  
-  .language-option {
-    display: block;
-    width: 100%;
-    text-align: left;
-    padding: 0.75rem 0.5rem;
-    min-height: 44px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--color-text);
-    border-radius: 0.25rem;
-    transition: background-color 0.2s ease;
-  }
-  
-  .language-option:hover {
-    background-color: var(--color-border);
-  }
-  
-  .language-option.active {
-    background-color: rgba(var(--color-primary-rgb), 0.15);
-    font-weight: 500;
-  }
-</style>
-```
-
-#### 2. Integration with Header Component
-
-```svelte
-<!-- Header.svelte (excerpt of changes) -->
-<script>
-  // ... existing imports ...
-  import LanguageSelector from './header/LanguageSelector.svelte';
-  import { t } from '../i18n/store';
-  
-  // ... rest of existing script ...
-</script>
-
-<!-- Actions -->
-<div class="header-actions">
-  <!-- Search Button -->
-  <SearchButton on:opensearch={handleOpenSearch} />
-  
-  <!-- Language Selector (NEW) -->
-  <LanguageSelector />
-  
-  <!-- Theme Toggle -->
-  <div class="theme-toggle">
-    <!-- ... existing theme toggle code ... -->
-  </div>
-  
-  <!-- Mobile Menu Button -->
-  <div class="hide-on-desktop">
-    <!-- ... existing mobile menu button code ... -->
-  </div>
-</div>
-```
-
-#### 3. Mobile Menu Integration
-
-We should also add language selection to the mobile menu:
-
-```svelte
-<!-- MobileMenu.svelte (excerpt of changes) -->
-<script>
-  // ... existing imports ...
-  import { language, setLanguage } from '../../i18n/store';
-  
-  // Available languages
-  const languages = [
+// Export convenience function to get information about supported languages
+export function getSupportedLanguages() {
+  return [
     { code: 'en', name: 'English' },
-    { code: 'zh', name: '中文' },
-    { code: 'ja', name: '日本語' }
+    { code: 'ja', name: '日本語' },
+    { code: 'zh', name: '简体中文' }
   ];
-  
-  function selectLanguage(langCode) {
-    setLanguage(langCode);
-  }
-  
-  // ... rest of existing script ...
-</script>
+}
 
-<!-- After navigation links in mobile menu -->
-<div class="mobile-section">
-  <h3 class="mobile-section-title">Language</h3>
-  <div class="language-options">
-    {#each languages as lang}
-      <button 
-        class="language-option"
-        class:active={$language === lang.code}
-        on:click={() => selectLanguage(lang.code)}
-      >
-        {lang.name}
+// Preload the default language
+if (typeof window !== 'undefined') {
+  const currentLang = localStorage.getItem('language') || 'en';
+  loadTranslations(currentLang);
+}
+```
+
+### Component Updates
+
+#### NavLinks.svelte
+```javascript
+import { t } from '../../i18n';
+
+// Navigation items with translation keys
+$: navLinks = [
+  { text: $t('nav.blog'), href: '/blog', route: '/blog-list' },
+  { text: $t('nav.tags'), href: '/tags', route: '/tags-list' },
+  { text: $t('nav.projects'), href: '/projects', route: '/projects' },
+  { text: $t('nav.about'), href: '/about', route: '/about' }
+];
+```
+
+#### Footer.svelte
+```javascript
+import { t } from '../i18n';
+
+// In the template:
+<div class="copyright">
+  <span>{$t('footer.copyright', { year: currentYear })}</span>
+  <span class="divider">•</span>
+  <span>{$t('footer.built_with')}</span>
+</div>
+```
+
+#### Theme Toggle in Header.svelte
+```javascript
+import { t } from '../i18n';
+
+// In the template:
+<button on:click={() => applyTheme('light')} class="theme-option">
+  <svg>...</svg>
+  <span>{$t('ui.light')}</span>
+</button>
+```
+
+#### MobileMenu.svelte
+```javascript
+import { t } from '../i18n';
+
+// In the template:
+<div class="mobile-menu-container" class:open={isOpen}>
+  <div class="mobile-menu">
+    <div class="mobile-menu-header">
+      <button class="close-button" on:click={handleClose} aria-label="Close menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
       </button>
-    {/each}
+    </div>
+    
+    <div class="mobile-navigation">
+      <NavLinks 
+        {currentRoute}
+        on:linkClick={handleLinkClick}
+      />
+    </div>
+    
+    <div class="mobile-section">
+      <h3 class="mobile-section-title">{$t('ui.language')}</h3>
+      <div class="language-options">
+        {#each languages as lang}
+          <button 
+            class="language-option"
+            class:active={$language === lang.code}
+            on:click={() => selectLanguage(lang.code)}
+          >
+            {lang.name}
+          </button>
+        {/each}
+      </div>
+    </div>
+    
+    <div class="mobile-section">
+      <h3 class="mobile-section-title">{$t('ui.theme')}</h3>
+      <div class="theme-options">
+        <button class="theme-option" on:click={() => document.body.classList.remove('dark-theme')}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <span>{$t('ui.light')}</span>
+        </button>
+        
+        <button class="theme-option" on:click={() => document.body.classList.add('dark-theme')}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <span>{$t('ui.dark')}</span>
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
-<style>
-  /* ... existing styles ... */
-  
-  .mobile-section {
-    padding: var(--space-md) 0;
-    border-top: 1px solid var(--color-border);
-  }
-  
-  .mobile-section-title {
-    font-size: var(--font-size-sm);
-    margin-bottom: var(--space-sm);
-    color: var(--color-text);
-    opacity: 0.7;
-  }
-  
-  .language-options {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xs);
-  }
-  
-  .language-option {
-    text-align: left;
-    padding: var(--space-sm);
-    border-radius: 0.25rem;
-    background: none;
-    border: 1px solid var(--color-border);
-    color: var(--color-text);
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  
-  .language-option.active {
-    background-color: var(--color-primary);
-    color: white;
-    border-color: var(--color-primary);
-  }
-</style>
+<!-- Existing styles remain unchanged -->
 ```
 
-### Implementation Confidence Assessment
+## Implementation Steps for the Executor
 
-To feel 100% confident in implementing this solution, I've addressed these key aspects:
+1. **Implement Translation Function**
+   - Update store.js with the translation function code
+   - Update index.js to export the new function
 
-1. ✅ **Translation Infrastructure**: Using static JSON files instead of Google Translate API ensures:
-   - Works in all regions including China
-   - Better translation quality
-   - No API dependencies or costs
-   - Better performance
+2. **Update NavLinks Component**
+   - Import the translation function
+   - Convert hardcoded navigation text to translation keys
 
-2. ✅ **UI Component**: The language selector implementation:
-   - Matches the existing header design
-   - Is accessible with proper ARIA attributes
-   - Works on both desktop and mobile
-   - Shows clear visual indication of current language
+3. **Update Footer Component**
+   - Import the translation function
+   - Convert copyright and "built with" text to translation keys
 
-3. ✅ **Integration**: The component:
-   - Fits well in the Header alongside theme toggle
-   - Uses consistent styling with other header elements
-   - Maintains the same dropdown pattern as theme toggle
-   - Properly integrates with the mobile menu
+4. **Update Header Component**
+   - Import the translation function
+   - Convert theme toggle text to translation keys
 
-4. ✅ **Technical Requirements**:
-   - Uses Svelte stores for reactive state management
-   - Stores preference in localStorage
-   - Properly handles language fallbacks
-   - Supports parameter interpolation in translations
+5. **Test Implementation**
+   - Check functionality across all supported languages
+   - Verify translations display correctly on all screen sizes
+   - Test fallback to English for missing translations
 
-With this comprehensive plan, I'm fully confident in implementing a language selector that will work effectively for this project, especially considering the need to support users in China.
+## Future Optimizations
+
+- **Performance**: 
+  - Implement lazy loading of translation files
+  - Add memoization for frequently accessed translations
+  - Monitor translation file sizes for potential code splitting
+
+- **Key Structure**:
+  - Refine translation key naming for better semantic meaning
+  - Consider shared namespaces for common UI elements
+  - Create translation key documentation for future maintenance
+
+## Lessons for Internationalization
+
+- Static JSON files provide better control and performance than API-based translation
+- Consider text expansion in different languages when designing UI
+- Maintain proper fallbacks for missing translations
+- Use descriptive, consistent key naming patterns
+- Test on small screen sizes to ensure proper text display
+- Avoid Google Translate API as it's inaccessible in China
+- Store language preference in localStorage for persistence
