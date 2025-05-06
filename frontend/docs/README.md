@@ -14,6 +14,7 @@ Welcome to the documentation for the Blog Simplified project. This folder contai
 
 ### Implementation Guides
 - [Responsive Design](./responsive-design.md) - How the site adapts to different screen sizes
+- [Internationalization](./internationalization.md) - Multi-language support implementation
 - [Implementation Roadmap](./implementation-roadmap.md) - Project development plan
 - [Code Patterns](./code-patterns.md) - Common patterns and best practices used in the codebase
 
@@ -31,6 +32,7 @@ The Blog Simplified project includes:
 4. **Search Functionality** - Client-side search with keyboard shortcuts
 5. **Theme Support** - Light and dark mode with system preference detection
 6. **Tag-based Organization** - Content categorization with tag filtering
+7. **Internationalization** - Multi-language support with English, Japanese, and Chinese
 
 ## Project Overview
 

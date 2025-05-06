@@ -24,11 +24,14 @@ Visit the live site at [https://blog-simplified.vercel.app/](https://blog-simpli
 - ✅ Enhanced focus states with keyboard-only focus indicators
 - ✅ Ravencoin blog series (7 posts)
 - ✅ Improved content organization with separate data files
+- ✅ Footer component with social links
+- ✅ Language selector with support for English, Japanese, and Chinese
+- ✅ Internationalization infrastructure with JSON-based translations
 
 ### In Progress
-- 🟡 Footer component with social links
 - 🟡 UI refinements to match target site styling
 - 🟡 Custom 404 page implementation
+- 🟡 Translation content expansion
 
 ### Planned
 - 📝 Newsletter subscription component
@@ -38,7 +41,6 @@ Visit the live site at [https://blog-simplified.vercel.app/](https://blog-simpli
 - 📝 SEO metadata improvements
 - 📝 Page transitions and animations
 - 📝 Performance optimizations
-- 📝 Language translation support
 
 ## Getting Started
 
@@ -168,105 +170,4 @@ The application uses [page.js](https://github.com/visionmedia/page.js) for clien
 
 The app supports light, dark, and system themes:
 
-- Theme variables are defined in `src/global.css`
-- Theme toggling is implemented in `Header.svelte`
-- Theme preference is stored in localStorage
-
-### Data Management
-
-The project uses a modular approach to data management:
-
-- Blog posts are organized in separate files under `src/data/blog/`
-- Projects data is structured in `src/data/projects/`
-- Utility functions in the `utils/` directory handle data retrieval and manipulation
-
-### Component Design
-
-Components follow a Svelte pattern with:
-- Script section for JavaScript logic
-- HTML template
-- Scoped CSS styles that leverage global variables
-
-## Development Guidelines
-
-### Component Development Approach
-
-When creating or modifying components:
-
-1. Start with a simple implementation
-2. Test in isolation before integration
-3. Use component-scoped CSS
-4. Leverage global CSS variables for consistency
-5. Follow existing code patterns and naming conventions
-
-### Common Tasks
-
-#### Adding a New Blog Post
-
-1. Create a new metadata file in `src/data/blog/posts/`
-2. Create a new content file in `src/data/blog/content/`
-3. Add necessary fields following the existing pattern:
-   - `title`: Post title
-   - `date`: Publication date string
-   - `slug`: URL-friendly identifier
-   - `summary`: Brief description
-   - `tags`: Array of tag strings
-   - `content`: Reference to content file
-   - `author`: Author information
-
-#### Adding a New Project
-
-1. Create a new metadata file in `src/data/projects/projects/`
-2. Create a new content file in `src/data/projects/content/`
-3. Add the project to the array in `src/data/projects/index.js`
-
-#### Adding a New Route
-
-1. Add a new route handler in `src/main.js`
-2. Create the corresponding component in `src/components/`
-3. Add conditional rendering in `App.svelte`
-4. Update navigation in `Header.svelte` if needed
-
-## Troubleshooting
-
-### SPA Routing Issues
-
-If refreshing on non-root routes shows a blank page in development:
-
-1. Use `npm run dev-single` instead of `npm run dev`
-2. Ensure the Vercel configuration includes SPA routing settings
-
-### CSS Styling Issues
-
-If styles aren't applying correctly:
-
-1. Check if styles are properly scoped in the component
-2. Verify CSS variable names match those in `global.css`
-3. Inspect DOM to ensure styles aren't being overridden
-
-### Focus Visibility Issues
-
-If focus outlines are not displaying correctly:
-
-1. Check the `:focus` and `:focus-visible` selectors in `global.css`
-2. Ensure proper contrast between focused elements and backgrounds
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- Inspired by [Tailwind Nextjs Starter Blog](https://tailwind-nextjs-starter-blog.vercel.app/)
-- Built with [Svelte](https://svelte.dev/)
-- Routing powered by [page.js](https://github.com/visionmedia/page.js)
+- Theme variables are defined in `
