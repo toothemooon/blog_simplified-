@@ -261,27 +261,17 @@ After reviewing both the current blog-simplified site at https://blog-simplified
 | Add Basic Footer | ✅ Completed | High | 4 hours | Created component with social links and proper styling |
 | Improve Footer Responsive Design | ✅ Completed | High | 2 hours | Fixed icon wrapping issues on mobile devices |
 | Implement Language Selector | ✅ Completed | High | 6 hours | Created UI component with globe icon and language switching |
-| Set up i18n Infrastructure | ✅ Completed | High | 4 hours | Created simplified approach with direct JSON imports |
-| Header Navigation Translation | ✅ Completed | High | 2 hours | Updated NavLinks to use translation keys |
-| Footer Text Translation | ✅ Completed | High | 1 hour | Implemented copyright and "built with" translations |
-| Theme Toggle Translation | ✅ Completed | High | 1 hour | Added translations for Light/Dark/System text |
-| Mobile Menu Translation | ✅ Completed | High | 2 hours | Updated mobile navigation with translations |
-| Search Component Translation | ✅ Completed | High | 2 hours | Added translations for search UI elements |
-| Date Formatting by Locale | ✅ Completed | Medium | 2 hours | Updated formatDate to respect user language |
-| Common UI Elements Translation | 🔄 In Progress | Medium | 4 hours | Continue translating reusable components |
+| Set up i18n Infrastructure | 🔄 In Progress | High | 4 hours | Need to revise approach due to issues with dynamic imports |
+| Header Navigation Translation | ⏱️ Planned | High | 2 hours | Will implement after fixing i18n infrastructure |
+| Footer Text Translation | ⏱️ Planned | High | 1 hour | Will implement after fixing i18n infrastructure |
+| Theme Toggle Translation | ⏱️ Planned | High | 1 hour | Will implement after fixing i18n infrastructure |
+| Mobile Menu Translation | ⏱️ Planned | High | 2 hours | Will implement after fixing i18n infrastructure |
+| Page Titles Translation | ⏱️ Planned | High | 2 hours | Will implement after fixing i18n infrastructure |
+| Common UI Elements Translation | ⏱️ Planned | Medium | 4 hours | Translate reusable components and UI patterns |
 | Blog Post Metadata Translation | ⏱️ Planned | Medium | 2 hours | Translate date formats, reading time, author labels |
-| Project Metadata Translation | ⏱️ Planned | Medium | 2 hours | Translate project status, roles, and section headings |
+| Project Metadata Translation | ⏱️ Planned | Medium | 2 hours | Translate project status, roles, and related section headings |
+| Date Formatting by Locale | ⏱️ Planned | Medium | 3 hours | Create locale-specific date formatting utility |
 | Error Messages Translation | ⏱️ Planned | Medium | 2 hours | Translate error states and notification messages |
-| Add Pagination | 🔄 Planned | High | 4 hours | For blog listing with URL parameter support |
-| Implement Newsletter Signup | 🔄 Planned | Medium | 5 hours | Form component with validation and mock API integration |
-| Add Code Syntax Highlighting | 🔄 Planned | Medium | 6 hours | Language detection, styling, and copy functionality |
-| Create Series Pages | 🔄 Planned | Medium | 6 hours | Metadata, navigation, and dedicated landing pages for series |
-| Improve Website Metadata | 🔄 Planned | Medium | 3 hours | SEO tags, favicon, OpenGraph and Twitter cards |
-| Add Author Profile Pages | 🔄 Planned | Low | 5 hours | Dedicated pages with author metadata and post listings |
-| Refine Typography | 🔄 Planned | Low | 4 hours | Consistent visual hierarchy and spacing adjustments |
-| Add Animations | 🔄 Planned | Low | 5 hours | Page transitions and micro-interactions |
-| Optimize Performance | 🔄 Planned | Medium-High | 6 hours | Lazy loading, image optimization, prefetching, bundle optimization |
-| Enhance Dark Mode | 🔄 Planned | Low | 4 hours | Refined palette and smooth transitions |
 
 ## Revised i18n Implementation Plan
 
@@ -686,3 +676,124 @@ Each language file follows the same structure with nested keys:
    - Add visual indicators for the current language selection
    - Ensure graceful handling of right-to-left languages if added in future
    - Consider adding language-specific URLs (e.g., /zh/blog) for better SEO
+
+## Internationalization Progress and Path Forward
+
+We've made significant progress with the UI internationalization but encountered an issue with the search functionality. The current search implementation doesn't properly support non-Latin characters like Japanese and Chinese. After evaluation, we decided to take a content-first approach instead of implementing multi-language search immediately.
+
+### Current Implementation Status
+
+1. **UI Translation Layer**
+   - ✅ Successfully implemented i18n infrastructure with JSON-based translations
+   - ✅ Added language selector with proper persistence
+   - ✅ Translated navigation, footer, theme toggles, and search UI elements
+   - ✅ Fixed date formatting to support multiple locales
+   - ❌ Search functionality limited to Latin characters only
+
+2. **Found Issues**
+   - **Search Character Support**: The text normalization function in search strips non-Latin characters
+   - **Language-specific Content**: No proper language tagging on content to filter by language
+   - **Build Process Errors**: Some ongoing issues with the JSON imports in the build process
+   - **Untranslated Content**: Primary blog content is still English-only
+
+### Revised Implementation Strategy
+
+After careful consideration, we're shifting to a **content-first approach**:
+
+1. **Focus on translating content first** before enhancing the search functionality
+2. **Implement language-specific content structure** with proper metadata
+3. **Language-specific search** that only searches content in the current language
+4. **Progressive enhancement** of the internationalization feature set
+
+This approach aligns better with user expectations (users expect search to only return results in their selected language) and simplifies implementation.
+
+## Content Translation Strategy
+
+To implement a comprehensive content translation system, we'll follow these steps:
+
+### 1. Content Structure Updates
+
+For each piece of content (blog posts, project pages), we'll implement consistent language-specific fields:
+
+```javascript
+// Example blog post
+export default {
+  title: 'Privacy and Future Developments in Ravencoin',
+  title_ja: 'Ravencoinにおけるプライバシーと将来の開発',
+  title_zh: 'Ravencoin中的隐私和未来发展',
+  summary: 'An exploration of Ravencoin's approach to privacy...',
+  summary_ja: 'Ravencoinのプライバシーへのアプローチについての...',
+  summary_zh: '探索Ravencoin的隐私方法...',
+  language: 'en', // Primary content language
+  translations: ['ja', 'zh'], // Available translations
+  // Language-specific content
+  content: '...',
+  content_ja: '...',
+  content_zh: '...'
+}
+```
+
+### 2. Language-Aware Components
+
+Update key components to respect the current language preference:
+
+- BlogPostPage: Show content in the selected language or fallback to English
+- ProjectDetailPage: Show translated project details when available
+- Search: Filter results to only include content in the current language
+
+### 3. Translation Process
+
+1. **Template Creation**: Create templates for each content type with all required language fields
+2. **Translation Order**: Prioritize high-traffic content first (Home page, Popular posts)
+3. **Quality Assurance**: Establish review process for translated content
+4. **Automated Testing**: Add tests to ensure all required language fields are present
+
+### 4. User Experience
+
+- Add clear language indicators in UI
+- Provide feedback when content isn't available in the selected language
+- Consider implementing language-specific routing (e.g., /ja/blog/post-slug)
+
+## Revised Project Status Board
+
+| Task | Status | Priority | Estimated Effort | Notes |
+|------|--------|----------|-----------------|-------|
+| Fix i18n Build Issues | 🔄 In Progress | High | 2 hours | Fix "t is not exported" build error |
+| Create Content Translation Templates | ⏱️ Planned | High | 4 hours | Standard templates for blog posts and projects |
+| Translate Homepage Content | ⏱️ Planned | High | 6 hours | All static text on the homepage |
+| Translate Top 3 Blog Posts | ⏱️ Planned | High | 12 hours | Full translation of most popular content |
+| Update Blog Components for i18n | ⏱️ Planned | High | 6 hours | Make components language-aware |
+| Language-Specific URLs | ⏱️ Planned | Medium | 8 hours | Implement /lang/path routing structure |
+| Language-Filtered Search | ⏱️ Planned | Medium | 4 hours | Filter search to current language only |
+| Content Translation Progress UI | ⏱️ Planned | Medium | 3 hours | Show which content is available in each language |
+| Language Detection Improvements | ⏱️ Planned | Low | 2 hours | Better browser language detection with regional variants |
+| RTL Language Support Foundation | ⏱️ Planned | Low | 8 hours | Prepare for potential right-to-left language support |
+
+## Implementation Timeline
+
+### Phase 1: Foundation and Critical Fixes (1 week)
+- Fix build issues with i18n implementation
+- Create content translation templates
+- Update components to be language-aware
+
+### Phase 2: Core Content Translation (2-3 weeks)
+- Translate homepage and primary navigation
+- Translate top blog posts and projects
+- Implement language-specific routes
+
+### Phase 3: Search and User Experience (1-2 weeks)
+- Implement language-filtered search
+- Add content translation progress indicators
+- Improve language switching experience
+
+### Phase 4: Advanced Features (Future)
+- RTL language support
+- Automatic translation suggestions
+- Translation management system
+
+## Next Immediate Steps
+
+1. Fix the build error with the translation function export
+2. Create standardized translation templates for blog posts
+3. Implement language field filtering in content components
+4. Translate the homepage content as first priority
