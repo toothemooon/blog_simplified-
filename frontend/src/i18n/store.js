@@ -57,16 +57,18 @@ export function getLanguageName(code) {
   return languages[code] || 'English';
 }
 
-// Translation function (syncronous, no dynamic imports)
-export const t = derived(
-  language,
-  $language => (key, params = {}) => {
+// Create translation function (writable export)
+function createTranslationFunction(lang) {
+  // Handle empty keys
+  if (!lang) return key => key;
+  
+  return (key, params = {}) => {
     // Handle empty keys
     if (!key) return '';
     
     // Navigate through nested keys (e.g., "nav.blog")
     const keys = key.split('.');
-    let value = translations[$language];
+    let value = translations[lang];
     
     // Find translation in current language
     for (const k of keys) {
@@ -75,7 +77,7 @@ export const t = derived(
     }
     
     // Fallback to English if not found
-    if (!value && $language !== 'en') {
+    if (!value && lang !== 'en') {
       value = translations.en;
       for (const k of keys) {
         value = value?.[k];
@@ -90,7 +92,13 @@ export const t = derived(
     return value.replace(/\{\{(\w+)\}\}/g, (_, paramName) => 
       params[paramName] !== undefined ? params[paramName] : `{{${paramName}}}`
     );
-  }
+  };
+}
+
+// Export translation function as a derived store
+export const t = derived(
+  language,
+  $language => createTranslationFunction($language)
 );
 
 // Export supported languages

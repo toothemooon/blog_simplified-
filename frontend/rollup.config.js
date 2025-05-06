@@ -41,6 +41,9 @@ export default {
 		chunkFileNames: '[name]-[hash].js'
 	},
 	plugins: [
+		// Handle JSON files first
+		json(),
+		
 		svelte({
 			compilerOptions: {
 				// enable run-time checks when not in production
@@ -77,10 +80,7 @@ export default {
 
 		// If we're building for production (npm run build
 		// instead of npm run dev), minify
-		production && terser(),
-
-		// Add json plugin
-		json()
+		production && terser()
 	],
 	watch: {
 		clearScreen: false
