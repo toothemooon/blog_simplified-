@@ -30,6 +30,7 @@
 - ✅ Enhanced focus visibility with keyboard-only focus indicators
 - ✅ Fixed Chinese character display in project titles
 - ✅ Removed outdated sample data from project-data.js
+- ✅ Updated README.md with current project structure and features
 
 ## Current Progress on Ravencoin Blog Series
 1. ✅ **Introduction to Ravencoin** - Completed and implemented
@@ -106,6 +107,48 @@ Project-specific utility functions have been added to `project-utils.js`:
 
 3. **Chinese Character Handling**
    - Fixed display issues with Chinese characters in project titles
+
+## Language Translation Implementation Plan
+
+After analyzing different approaches, we've determined the best strategy for adding language translation to the blog:
+
+### Recommended Approach: Custom JSON Translation
+
+This approach provides the most reliable solution that works across all browsers, devices, and regions (including China where Google services may be blocked):
+
+1. **Translation Data Structure**
+   ```
+   frontend/src/
+   └── i18n/
+       ├── index.js           # Translation store setup
+       └── locales/           # Translation files by language
+           ├── en.json        # English (default)
+           ├── zh.json        # Chinese
+           └── ja.json        # Japanese
+   ```
+
+2. **Translation Store**
+   - Create a Svelte store that manages the current language
+   - Dynamically load language files as needed
+   - Provide a translation function for easy component usage
+   - Persist language selection in localStorage
+
+3. **Language Selector UI**
+   - Add a language toggle button next to the theme toggle
+   - Show language options with appropriate flags/labels
+   - Indicate the currently selected language
+
+4. **Implementation Strategy**
+   - Start with translating UI elements (navigation, buttons, labels)
+   - Progressively translate content, starting with most important sections
+   - For untranslated content, offer a fallback to English
+
+This approach ensures:
+- Works on all browsers and devices
+- Functions in all regions, including China
+- No dependency on third-party services
+- Complete control over translation quality
+- Best performance without additional scripts
 
 ## Comparison with Target Site
 
@@ -195,24 +238,30 @@ Based on the comparison, here is a prioritized plan to bring our implementation 
    - Create and add favicon and social sharing images
    - Implement OpenGraph and Twitter card metadata
 
+8. **Implement Language Translation**:
+   - Create translation infrastructure with JSON files
+   - Develop language selector UI next to theme toggle
+   - Start with translating UI elements, then content
+   - Add Chinese and Japanese as initial languages
+
 ### Phase 3: Visual Refinement and Polish (Lower Priority)
 
-8. **Refine Typography and Spacing**:
+9. **Refine Typography and Spacing**:
    - Audit and refine typography across all components
    - Ensure consistent spacing and visual hierarchy
    - Improve contrast and readability
 
-9. **Add Animations and Transitions**:
-   - Implement subtle page transitions
-   - Add micro-interactions for improved UX
-   - Ensure animations are accessible (respecting reduced motion preferences)
+10. **Add Animations and Transitions**:
+    - Implement subtle page transitions
+    - Add micro-interactions for improved UX
+    - Ensure animations are accessible (respecting reduced motion preferences)
 
-10. **Optimize Performance**:
+11. **Optimize Performance**:
     - Implement lazy loading for images
     - Add prefetching for linked pages
     - Optimize bundle size and loading performance
 
-11. **Enhance Dark Mode**:
+12. **Enhance Dark Mode**:
     - Refine dark mode color palette
     - Ensure all components handle theme switching properly
     - Add smooth transition between themes
@@ -229,6 +278,7 @@ Based on the comparison, here is a prioritized plan to bring our implementation 
 | Add Code Syntax Highlighting | 🔄 Planned | Medium | 6 hours | Language detection and styling |
 | Create Series Pages | 🔄 Planned | Medium | 6 hours | Metadata, navigation, and dedicated pages |
 | Improve Website Metadata | 🔄 Planned | Medium | 3 hours | SEO tags, favicon, sharing images |
+| Implement Language Translation | 🔄 Planned | Medium | 8 hours | Chinese and Japanese initial support |
 | Refine Typography | 🔄 Planned | Low | 4 hours | Consistent visual hierarchy |
 | Add Animations | 🔄 Planned | Low | 5 hours | Page transitions and micro-interactions |
 | Optimize Performance | 🔄 Planned | Low | 6 hours | Lazy loading, prefetching, bundle optimization |
@@ -278,6 +328,11 @@ Based on the comparison, here is a prioritized plan to bring our implementation 
   - Ensure consistent data patterns across similar content (projects, blog posts)
   - Format dates and other metadata consistently
   - Create utility functions for common formatting tasks
+- Translation considerations:
+  - Google Translate is not accessible in China (a key audience for Chinese translation)
+  - Custom JSON translations provide better quality and reliability
+  - Start with UI elements, then progressively translate content
+  - Consider region-specific needs when implementing features
 
 ## Executor's Feedback or Assistance Requests
 *This section will be populated when the Executor needs feedback or help*

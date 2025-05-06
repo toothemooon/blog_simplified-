@@ -13,28 +13,32 @@ Visit the live site at [https://blog-simplified.vercel.app/](https://blog-simpli
 - ✅ Light/dark/system theme toggle
 - ✅ Blog post listing page with tag filtering
 - ✅ Individual post pages with metadata
-- ✅ Tags system with dedicated tag pages
-- ✅ Projects section with card layout
-- ✅ Individual project detail pages
+- ✅ Tags system with dedicated tag pages and variable font sizing
+- ✅ Projects section with card layout and related projects
+- ✅ Individual project detail pages with metadata display
 - ✅ About page with custom SVG avatar
 - ✅ Responsive design with vanilla CSS
 - ✅ Theme variables for consistent styling
+- ✅ Search functionality with keyboard shortcuts
+- ✅ Mobile navigation with slide-in drawer
+- ✅ Enhanced focus states with keyboard-only focus indicators
+- ✅ Ravencoin blog series (7 posts)
+- ✅ Improved content organization with separate data files
 
 ### In Progress
-- 🟡 Mobile navigation improvement
-- 🟡 Extracting reusable components
+- 🟡 Footer component with social links
 - 🟡 UI refinements to match target site styling
+- 🟡 Custom 404 page implementation
 
 ### Planned
 - 📝 Newsletter subscription component
-- 📝 Code block copy functionality
-- 📝 Table of contents for long articles
-- 📝 Social sharing buttons for posts
-- 📝 Reading time estimation
-- 📝 Search functionality
-- 📝 Multi-part posts with nested routing
-- 📝 Math typesetting (KaTeX) support
+- 📝 Code block syntax highlighting
 - 📝 Pagination for blog listings
+- 📝 Series/collection landing pages
+- 📝 SEO metadata improvements
+- 📝 Page transitions and animations
+- 📝 Performance optimizations
+- 📝 Language translation support
 
 ## Getting Started
 
@@ -124,13 +128,24 @@ frontend/
 │   │   │   ├── BlogPostPage.svelte
 │   │   │   ├── TagsPage.svelte
 │   │   │   └── TagPage.svelte
-│   │   └── projects/       # Project-specific components
-│   │       ├── ProjectsPage.svelte
-│   │       ├── ProjectCard.svelte
-│   │       └── ProjectDetailPage.svelte
+│   │   ├── projects/       # Project-specific components
+│   │   │   ├── ProjectsPage.svelte
+│   │   │   ├── ProjectCard.svelte
+│   │   │   └── ProjectDetailPage.svelte
+│   │   └── search/         # Search components
+│   │       ├── SearchButton.svelte
+│   │       └── SearchDialog.svelte
 │   ├── data/               # Data files
-│   │   ├── blog-data.js    # Blog post data
-│   │   └── project-data.js # Projects data
+│   │   ├── blog/           # Blog post content and metadata 
+│   │   │   ├── posts/      # Individual post metadata
+│   │   │   └── content/    # Post content files
+│   │   └── projects/       # Projects data and content
+│   │       ├── projects/   # Project metadata files
+│   │       └── content/    # Project content files
+│   ├── utils/              # Utility functions
+│   │   ├── blog-utils.js   # Blog data handling
+│   │   ├── project-utils.js# Project data handling
+│   │   └── search.js       # Search functionality
 │   ├── App.svelte          # Main app shell
 │   ├── main.js             # App entry point with routing
 │   └── global.css          # Global CSS variables and styles
@@ -159,8 +174,11 @@ The app supports light, dark, and system themes:
 
 ### Data Management
 
-- Blog posts data is stored in `src/data/blog-data.js`
-- Projects data is stored in `src/data/project-data.js`
+The project uses a modular approach to data management:
+
+- Blog posts are organized in separate files under `src/data/blog/`
+- Projects data is structured in `src/data/projects/`
+- Utility functions in the `utils/` directory handle data retrieval and manipulation
 
 ### Component Design
 
@@ -185,16 +203,22 @@ When creating or modifying components:
 
 #### Adding a New Blog Post
 
-Currently, blog posts are defined in `src/data/blog-data.js`:
-
-1. Add a new object to the `posts` array with:
+1. Create a new metadata file in `src/data/blog/posts/`
+2. Create a new content file in `src/data/blog/content/`
+3. Add necessary fields following the existing pattern:
    - `title`: Post title
    - `date`: Publication date string
    - `slug`: URL-friendly identifier
    - `summary`: Brief description
    - `tags`: Array of tag strings
-   - `content`: HTML content of the post
+   - `content`: Reference to content file
    - `author`: Author information
+
+#### Adding a New Project
+
+1. Create a new metadata file in `src/data/projects/projects/`
+2. Create a new content file in `src/data/projects/content/`
+3. Add the project to the array in `src/data/projects/index.js`
 
 #### Adding a New Route
 
@@ -219,6 +243,13 @@ If styles aren't applying correctly:
 1. Check if styles are properly scoped in the component
 2. Verify CSS variable names match those in `global.css`
 3. Inspect DOM to ensure styles aren't being overridden
+
+### Focus Visibility Issues
+
+If focus outlines are not displaying correctly:
+
+1. Check the `:focus` and `:focus-visible` selectors in `global.css`
+2. Ensure proper contrast between focused elements and backgrounds
 
 ## Contributing
 
