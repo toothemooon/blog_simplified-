@@ -2,7 +2,7 @@
   import { createEventDispatcher, onMount } from 'svelte';
   import { fade, fly } from 'svelte/transition';
   import Logo from './Logo.svelte';
-  import { language, setLanguage, getSupportedLanguages } from '../../i18n';
+  import { language, setLanguage, getSupportedLanguages, getLanguageName } from '../../i18n';
   
   // Get language options from shared function
   const languages = getSupportedLanguages();
@@ -10,6 +10,10 @@
   function selectLanguage(code) {
     setLanguage(code);
   }
+  
+  // Current language info
+  $: currentLanguageCode = $language.toUpperCase();
+  $: sectionTitle = `Language (Current: ${currentLanguageCode})`;
   
   // Props
   export let currentRoute = '/';
@@ -103,9 +107,9 @@
         </a>
       {/each}
       
-      <!-- Language Section (NEW) -->
+      <!-- Language Section (UPDATED) -->
       <div class="mobile-section">
-        <h3 class="mobile-section-title">Language</h3>
+        <h3 class="mobile-section-title">{sectionTitle}</h3>
         <div class="language-options">
           {#each languages as lang}
             <button 
