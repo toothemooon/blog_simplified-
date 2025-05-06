@@ -1,5 +1,6 @@
 <script>
-  import { getAllPosts, formatPostDate } from '../../utils/blog-utils.js';
+  import { getAllPosts, formatPostDate, getLocalizedTagName } from '../../utils/blog-utils.js';
+  import { language, t } from '../../i18n';
   
   // Tag parameter from URL
   export let tag = '';
@@ -9,17 +10,20 @@
   
   // Filter posts by tag
   $: filteredPosts = allPosts.filter(post => post.tags && post.tags.includes(tag));
+  
+  // Get localized tag name for display
+  $: localizedTag = getLocalizedTagName(tag);
 </script>
 
 <div class="tag-page">
-  <h1 class="page-title">{tag}</h1>
+  <h1 class="page-title">{localizedTag}</h1>
   
   <div class="posts-list">
     {#if filteredPosts.length > 0}
       {#each filteredPosts as post}
         <div class="post-item">
           <div class="post-date">
-            <span>Published on {formatPostDate(post.date)}</span>
+            <span>{$t('pages.tags.published_on')} {formatPostDate(post.date)}</span>
           </div>
           
           <h2 class="post-title">
@@ -29,7 +33,7 @@
           {#if post.tags && post.tags.length > 0}
             <div class="post-tags">
               {#each post.tags as postTag}
-                <a href="/tags/{postTag}" class="tag" class:active={postTag === tag}>{postTag}</a>
+                <a href="/tags/{postTag}" class="tag" class:active={postTag === tag}>{getLocalizedTagName(postTag)}</a>
               {/each}
             </div>
           {/if}
@@ -37,19 +41,19 @@
           <p class="post-summary">{post.summary}</p>
           
           <div class="read-more">
-            <a href="/blog/{post.slug}" class="read-more-link">Read more →</a>
+            <a href="/blog/{post.slug}" class="read-more-link">{$t('pages.tags.read_more')}</a>
           </div>
         </div>
       {/each}
     {:else}
       <div class="no-posts">
-        <p>No posts found with the tag "{tag}"</p>
+        <p>{$t('pages.tags.no_posts', { tag: localizedTag })}</p>
       </div>
     {/if}
   </div>
   
   <div class="back-link-container">
-    <a href="/tags" class="back-link">← Back to all tags</a>
+    <a href="/tags" class="back-link">{$t('pages.tags.back_to_all_tags')}</a>
   </div>
 </div>
 

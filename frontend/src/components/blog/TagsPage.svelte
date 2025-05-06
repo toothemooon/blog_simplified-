@@ -1,5 +1,7 @@
 <script>
   import { getAllPosts } from '../../utils/blog-utils.js';
+  import { getLocalizedTagName } from '../../utils/blog-utils.js';
+  import { language, t } from '../../i18n';
   
   // Get all posts
   const allPosts = getAllPosts();
@@ -34,7 +36,7 @@
 
 <div class="tags-page">
   <div class="tags-header">
-    <h1 class="page-title">Tags</h1>
+    <h1 class="page-title">{$t('pages.tags.title')}</h1>
   </div>
   
   <div class="tags-container">
@@ -45,7 +47,7 @@
           class="tag-link" 
           style="font-size: {getFontSize(count)}"
         >
-          {tag} <span class="tag-count">({count})</span>
+          {getLocalizedTagName(tag)} <span class="tag-count">({count})</span>
         </a>
       </div>
     {/each}

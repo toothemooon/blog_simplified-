@@ -1,5 +1,6 @@
 <script>
-  import { getAllPosts, formatPostDate } from '../../utils/blog-utils.js';
+  import { getAllPosts, formatPostDate, getLocalizedTagName } from '../../utils/blog-utils.js';
+  import { language, t } from '../../i18n';
   
   // Get 5 most recent posts
   const recentPosts = getAllPosts().slice(0, 5);
@@ -7,15 +8,15 @@
 
 <div class="home-page">
   <div class="page-header">
-    <h1 class="page-title">Latest</h1>
-    <p class="page-subtitle">A blog created with Svelte 4 and vanilla CSS</p>
+    <h1 class="page-title">{$t('pages.home.latest')}</h1>
+    <p class="page-subtitle">{$t('pages.home.subtitle')}</p>
   </div>
   
   <div class="posts-list">
     {#each recentPosts as post}
       <article class="post-item">
         <div class="post-date">
-          <span>Published on {formatPostDate(post.date)}</span>
+          <span>{$t('pages.tags.published_on')} {formatPostDate(post.date)}</span>
         </div>
         
         <h2 class="post-title">
@@ -25,7 +26,7 @@
         {#if post.tags && post.tags.length > 0}
           <div class="post-tags">
             {#each post.tags as tag}
-              <a href="/tags/{tag}" class="tag">{tag}</a>
+              <a href="/tags/{tag}" class="tag">{getLocalizedTagName(tag)}</a>
             {/each}
           </div>
         {/if}
@@ -33,13 +34,13 @@
         <p class="post-summary">{post.summary}</p>
         
         <div class="read-more">
-          <a href="/blog/{post.slug}" class="read-more-link">Read more →</a>
+          <a href="/blog/{post.slug}" class="read-more-link">{$t('pages.tags.read_more')}</a>
         </div>
       </article>
     {/each}
     
     <div class="all-posts-link">
-      <a href="/blog">All Posts →</a>
+      <a href="/blog">{$t('pages.home.all_posts')}</a>
     </div>
   </div>
 </div>

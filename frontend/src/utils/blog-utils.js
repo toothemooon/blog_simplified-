@@ -2,6 +2,7 @@
 
 import { posts, getPostContent, getPostBySlug, getRelatedPosts, getNextPost, getPreviousPost } from '../data/blog';
 import { posts as legacyPosts } from '../data/blog-data';
+import { language, t } from '../i18n';
 
 /**
  * Get posts from both new and legacy sources
@@ -107,4 +108,31 @@ export function getReadingTime(content) {
   const readingTime = Math.ceil(wordCount / wordsPerMinute);
   
   return readingTime <= 1 ? '1 min read' : `${readingTime} min read`;
+}
+
+/**
+ * Get localized tag name using the i18n system
+ * @param {String} tag - The original tag name
+ * @returns {String} - The localized tag name
+ */
+export function getLocalizedTagName(tag) {
+  if (!tag) return '';
+  
+  // Create tag translation key
+  const tagKey = `tags.${tag}`;
+  
+  // Try to get translation using t function
+  try {
+    const translated = t(tagKey);
+    
+    // If the translation key is returned unchanged, it means no translation was found
+    if (translated === tagKey) {
+      return tag; // Fallback to original tag
+    }
+    
+    return translated;
+  } catch (e) {
+    // If any error occurs, return the original tag
+    return tag;
+  }
 } 

@@ -43,6 +43,25 @@
       "bio_part1": "沙拉达是四川外国语大学英语专业毕业生。他曾在非洲和中东国家的海外项目工作。",
       "bio_part2": "他目前的兴趣集中在IT开发、区块链技术和项目创建上 :）"
     },
+    "blog": {
+      "all_posts": "所有文章",
+      "loading": "加载文章中...",
+      "no_posts": "未找到文章。",
+      "show_tags": "显示标签",
+      "hide_tags": "隐藏标签"
+    },
+    "home": {
+      "latest": "最新文章",
+      "subtitle": "使用Svelte 4和原生CSS创建的博客",
+      "all_posts": "所有文章 →"
+    },
+    "tags": {
+      "title": "标签",
+      "published_on": "发布于",
+      "read_more": "阅读更多 →",
+      "no_posts": "未找到标签为\"{{tag}}\"的文章",
+      "back_to_all_tags": "← 返回所有标签"
+    },
     "projects": {
       "title": "项目",
       "subtitle": "展示我的专业经验和成就",

@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
-  import { getAllPosts, formatPostDate, getReadingTime } from '../../utils/blog-utils.js';
+  import { getAllPosts, formatPostDate, getReadingTime, getLocalizedTagName } from '../../utils/blog-utils.js';
+  import { language, t } from '../../i18n';
   
   // State
   let posts = [];
@@ -37,30 +38,30 @@
 
 <div class="blog-list-page container">
   <div class="blog-list-header">
-    <h1 class="page-title">All Posts</h1>
+    <h1 class="page-title">{$t('pages.blog.all_posts')}</h1>
   </div>
   
   {#if loading}
     <div class="loading-indicator">
-      <p>Loading posts...</p>
+      <p>{$t('pages.blog.loading')}</p>
     </div>
   {:else}
     <!-- Mobile Tags Toggle Button -->
     <button class="mobile-tags-toggle hide-on-desktop touch-target" on:click={toggleMobileTags}>
-      {showMobileTags ? 'Hide Tags' : 'Show Tags'} 
+      {showMobileTags ? $t('pages.blog.hide_tags') : $t('pages.blog.show_tags')}
       <span class="toggle-icon">{showMobileTags ? '−' : '+'}</span>
     </button>
     
     <div class="blog-list-content">
       <!-- Tags sidebar -->
       <aside class="tags-sidebar" class:mobile-visible={showMobileTags}>
-        <div class="tags-header">All Posts</div>
+        <div class="tags-header">{$t('pages.blog.all_posts')}</div>
         
         <ul class="tags-list">
           {#each Object.entries(tags) as [tag, count]}
             <li class="tag-item">
               <a href="/tags/{tag}" class="tag-link touch-target">
-                <span class="tag-name">{tag}</span>
+                <span class="tag-name">{getLocalizedTagName(tag)}</span>
                 <span class="tag-count">({count})</span>
               </a>
             </li>
@@ -72,13 +73,13 @@
       <div class="posts-container">
         {#if posts.length === 0}
           <div class="no-posts">
-            <p>No posts found.</p>
+            <p>{$t('pages.blog.no_posts')}</p>
           </div>
         {:else}
           {#each posts as post}
             <article class="post-item">
               <div class="post-date">
-                <span>Published on {formatPostDate(post.date)}</span>
+                <span>{$t('pages.tags.published_on')} {formatPostDate(post.date)}</span>
               </div>
               
               <h2 class="post-title">
@@ -88,7 +89,7 @@
               {#if post.tags && post.tags.length > 0}
                 <div class="post-tags">
                   {#each post.tags as tag}
-                    <a href="/tags/{tag}" class="tag">{tag}</a>
+                    <a href="/tags/{tag}" class="tag">{getLocalizedTagName(tag)}</a>
                   {/each}
                 </div>
               {/if}
@@ -96,7 +97,7 @@
               <p class="post-summary">{post.summary}</p>
               
               <div class="read-more">
-                <a href="/blog/{post.slug}" class="read-more-link touch-target">Read more →</a>
+                <a href="/blog/{post.slug}" class="read-more-link touch-target">{$t('pages.tags.read_more')}</a>
               </div>
             </article>
           {/each}

@@ -43,6 +43,25 @@
       "bio_part1": "Sarada is a graduate of English Major at Sichuan International Studies University. He was working in oversea projects in Africa and mid-east countries.",
       "bio_part2": "His current interests focus on IT development, blockchain technology, and project creation:）"
     },
+    "blog": {
+      "all_posts": "All Posts",
+      "loading": "Loading posts...",
+      "no_posts": "No posts found.",
+      "show_tags": "Show Tags",
+      "hide_tags": "Hide Tags"
+    },
+    "home": {
+      "latest": "Latest",
+      "subtitle": "A blog created with Svelte 4 and vanilla CSS",
+      "all_posts": "All Posts →"
+    },
+    "tags": {
+      "title": "Tags",
+      "published_on": "Published on",
+      "read_more": "Read more →",
+      "no_posts": "No posts found with the tag \"{{tag}}\"",
+      "back_to_all_tags": "← Back to all tags"
+    },
     "projects": {
       "title": "Projects",
       "subtitle": "A showcase of my professional experience and achievements",
