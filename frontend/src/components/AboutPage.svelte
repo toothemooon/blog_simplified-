@@ -17,7 +17,7 @@
     </div>
     
     <div class="author-info">
-      <h2 class="author-name">サラダ</h2>
+      <h2 class="author-name">Sarada</h2>
       <p class="author-title">Programming Enthusiast</p>
       <p class="author-institution">Sichuan International Studies University</p>
       
@@ -35,7 +35,7 @@
   </div>
   
   <div class="bio-content">
-    <p>サラダ is a graduate of English Major at Sichuan International Studies University. He was working in oversea projects in Africa and mid-east countries.
+    <p>Sarada is a graduate of English Major at Sichuan International Studies University. He was working in oversea projects in Africa and mid-east countries.
       
     <p>His current interests focus on IT development, blockchain technology, and project creation:）</p>
   </div>

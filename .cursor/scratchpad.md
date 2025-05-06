@@ -592,3 +592,97 @@ To ensure the i18n implementation works correctly, we'll follow this testing app
 6. **Avoid Circular Dependencies**: Be careful with module imports that might create loops
 
 By following this revised plan, we should be able to implement internationalization without encountering the previous issues. The approach is simpler, more direct, and focuses on incremental implementation with thorough testing at each step.
+
+## Internationalization Implementation
+
+We've successfully implemented internationalization in the blog with support for English, Japanese, and Chinese. The implementation follows a simplified approach that prioritizes reliability and performance:
+
+### Implementation Approach
+
+1. **Direct JSON Import Strategy**
+   - Used direct imports of JSON translation files instead of dynamic imports
+   - Pre-loaded all languages at initialization to avoid async loading issues
+   - Configured Rollup with `@rollup/plugin-json` to properly process JSON files
+
+2. **Translation Store Architecture**
+   - Created a central Svelte store to manage the current language state
+   - Implemented a synchronous translation function that supports:
+     - Nested translation keys (e.g., "nav.blog")
+     - Parameter substitution (e.g., "{{year}}")
+     - Automatic fallbacks to English for missing translations
+     - Graceful handling of missing keys
+
+3. **Components Implementation**
+   - Updated key components with translation support:
+     - Navigation links (header and mobile menu)
+     - Footer copyright and attribution text
+     - Theme toggle options (Light/Dark/System)
+     - Search dialog and button labels
+     - Date formatting based on current language
+
+4. **User Preferences**
+   - Stored language preference in localStorage
+   - Added auto-detection of browser language on first visit
+   - Implemented language selector UI with proper accessibility support
+
+### JSON Translation Structure
+
+Each language file follows the same structure with nested keys:
+
+```json
+{
+  "nav": {
+    "blog": "Blog",
+    "tags": "Tags", 
+    "projects": "Projects",
+    "about": "About"
+  },
+  "ui": {
+    "language": "Language",
+    "search": "Search",
+    "search_placeholder": "Type a command or search...",
+    "no_results": "No results found for \"{{query}}\"",
+    "content_heading": "CONTENT",
+    "start_searching": "Type to start searching...",
+    "theme": "Theme",
+    "dark": "Dark",
+    "light": "Light",
+    "system": "System"
+  },
+  "footer": {
+    "copyright": "© {{year}} Sarada's Blog",
+    "built_with": "Built with Svelte 4"
+  }
+}
+```
+
+### Lessons Learned
+
+1. **JSON Processing in Rollup**
+   - Rollup requires the `@rollup/plugin-json` to properly handle JSON imports
+   - JSON files should be placed in the correct import order in the config file
+
+2. **Circular Dependencies**
+   - Avoid circular dependencies in i18n modules to prevent build issues
+   - The export of `getSupportedLanguages()` was duplicated in both store.js and index.js
+
+3. **Synchronous vs. Asynchronous Loading**
+   - For smaller applications, preloading all translations synchronously offers better reliability
+   - Async loading may be more appropriate for applications with many languages or large translation files
+
+4. **Testing Strategy**
+   - Test one component at a time when adding translation support
+   - Verify all supported languages show correct translations
+   - Watch for UI layout shifts when text length changes between languages
+
+### Next Steps
+
+1. **Expand Translation Coverage**
+   - Continue translating more UI elements and content sections
+   - Implement translations for blog post metadata
+   - Add translations for project details pages
+
+2. **Improve User Experience**
+   - Add visual indicators for the current language selection
+   - Ensure graceful handling of right-to-left languages if added in future
+   - Consider adding language-specific URLs (e.g., /zh/blog) for better SEO
