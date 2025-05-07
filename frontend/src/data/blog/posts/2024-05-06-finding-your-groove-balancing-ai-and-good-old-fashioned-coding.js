@@ -4,18 +4,18 @@ export default {
   
   // English content
   title_en: 'Finding Your Groove: Balancing AI and Good Old-Fashioned Coding',
-  summary_en: 'Discovering the sweet spot between leveraging AI tools and maintaining your core coding skills in today\'s rapidly evolving development landscape.',
+  summary_en: 'Exploring the harmony between using AI tools like ChatGPT and maintaining traditional programming practices to become a more effective developer.',
   
   // Japanese content
-  title_ja: 'あなたのリズムを見つける：AIと従来のコーディングのバランス',
-  summary_ja: '今日の急速に進化する開発環境で、AIツールを活用しながらコアコーディングスキルを維持するための最適なバランスを探る。',
+  title_ja: 'グルーブを見つける：AIと従来のコーディングのバランス',
+  summary_ja: 'ChatGPTのようなAIツールの使用と伝統的なプログラミング手法の維持の間の調和を探り、より効果的な開発者になる方法について。',
   
   // Chinese content
-  title_zh: '找到你的节奏：平衡AI与传统编程',
-  summary_zh: '在当今快速发展的开发环境中，探索如何在利用AI工具的同时保持核心编程技能的最佳平衡。',
+  title_zh: '找到你的节奏：平衡AI和传统编程',
+  summary_zh: '探索ChatGPT等AI工具的使用与保持传统编程实践之间的和谐，以成为更高效的开发者。',
   
   // Common properties
-  tags: ['programming', 'ai', 'productivity', 'developer-tips'],
+  tags: ['ai', 'programming', 'productivity', 'developer-tips', 'learning'],
   authors: [
     {
       name: 'Sarada',
@@ -24,6 +24,21 @@ export default {
     }
   ],
   
-  // Content will be loaded dynamically - would need multilingual markdown files
-  getContent: () => import('../content/finding-your-groove-balancing-ai-and-good-old-fashioned-coding.md')
+  // Default content (English)
+  getContent: () => import('../content/finding-your-groove-balancing-ai-and-good-old-fashioned-coding.md'),
+  
+  // Localized content
+  getLocalizedContent: (lang) => {
+    // Load language-specific content if available
+    switch(lang) {
+      case 'ja':
+        return import('../content/ja/finding-your-groove-balancing-ai-and-good-old-fashioned-coding.md')
+          .catch(() => import('../content/finding-your-groove-balancing-ai-and-good-old-fashioned-coding.md')); // Fallback to English
+      case 'zh':
+        return import('../content/zh/finding-your-groove-balancing-ai-and-good-old-fashioned-coding.md')
+          .catch(() => import('../content/finding-your-groove-balancing-ai-and-good-old-fashioned-coding.md')); // Fallback to English
+      default:
+        return import('../content/finding-your-groove-balancing-ai-and-good-old-fashioned-coding.md');
+    }
+  }
 } 

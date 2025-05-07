@@ -29,7 +29,7 @@
     currentLanguage = value;
     // Reload post data when language changes (if we have a post)
     if (post && slug) {
-      loadPost(slug);
+      loadPost(slug, currentLanguage);
     }
   });
   
@@ -42,18 +42,18 @@
   
   // Load post data on mount and when slug changes
   $: if (slug) {
-    loadPost(slug);
+    loadPost(slug, currentLanguage);
   }
   
-  async function loadPost(postSlug) {
+  async function loadPost(postSlug, lang) {
     if (!postSlug) return;
     
     loading = true;
     error = null;
     
     try {
-      // Get post with content
-      const postData = await getPost(postSlug);
+      // Get post with content, passing the current language
+      const postData = await getPost(postSlug, lang);
       
       if (!postData) {
         error = 'Post not found';

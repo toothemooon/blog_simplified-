@@ -37,12 +37,17 @@ export function getAllPosts() {
 
 /**
  * Get a post by slug from either the new or legacy system
+ * Includes support for localized content
+ * @param {String} slug - The post slug
+ * @param {String} [lang] - Optional language code 
+ * @returns {Object} - The post object with content
  */
-export async function getPost(slug) {
+export async function getPost(slug, lang) {
   // Try to get from new system first
   const newPost = getPostBySlug(slug);
   if (newPost) {
-    const content = await getPostContent(slug);
+    // Get localized or default content
+    const content = await getLocalizedContent(slug, lang);
     return {
       ...newPost,
       content
@@ -56,6 +61,46 @@ export async function getPost(slug) {
   }
   
   return null;
+}
+
+/**
+ * Get localized content for a post
+ * @param {String} slug - The post slug
+ * @param {String} [lang] - Optional language code
+ * @returns {Promise<String>} - The post content
+ */
+export async function getLocalizedContent(slug, lang) {
+  const post = getPostBySlug(slug);
+  if (!post) return null;
+  
+  // If language is not specified, get it from store
+  let currentLang = lang;
+  if (!currentLang) {
+    // Use the language from store
+    language.subscribe(value => {
+      currentLang = value;
+    })();
+  }
+  
+  try {
+    // First try to load language-specific content from post's getLocalizedContent method
+    if (currentLang && currentLang !== 'en' && post.getLocalizedContent) {
+      try {
+        const localizedContent = await post.getLocalizedContent(currentLang);
+        return localizedContent?.default || localizedContent;
+      } catch (error) {
+        console.warn(`Could not load localized content for [${slug}] in [${currentLang}]`, error);
+        // Fall through to default content
+      }
+    }
+    
+    // If no localized content or language is English, use default content
+    const content = await getPostContent(slug);
+    return content;
+  } catch (error) {
+    console.error(`Error loading content for post: ${slug}`, error);
+    return null;
+  }
 }
 
 /**
@@ -180,5 +225,11 @@ export function getLocalizedField(item, fieldName, currentLang) {
   }
   
   // Fall back to default field name with no suffix as last resort
-  return item[fieldName] || '';
+  // This supports older posts that don't use language suffixes
+  if (item[fieldName]) {
+    return item[fieldName];
+  }
+  
+  // If nothing found, return empty string instead of undefined
+  return '';
 } 
