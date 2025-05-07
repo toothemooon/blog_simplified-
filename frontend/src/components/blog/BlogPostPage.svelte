@@ -74,6 +74,7 @@
     let inList = false;
     let inCodeBlock = false;
     let codeContent = '';
+    let skipFirstH1 = true; // Skip first H1 to avoid duplication with the title
     
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
@@ -105,6 +106,11 @@
       const trimmedLine = line.trim();
       
       if (trimmedLine.startsWith('# ')) {
+        // Check if this is the first H1 and should be skipped
+        if (skipFirstH1 && trimmedLine.substring(2).trim() === post.title.trim()) {
+          skipFirstH1 = false; // Only skip the first one
+          continue; // Skip this line
+        }
         // h1 heading
         html += `<h1>${trimmedLine.substring(2)}</h1>`;
       } else if (trimmedLine.startsWith('## ')) {
@@ -375,7 +381,7 @@
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
   }
   
   .author-info {
