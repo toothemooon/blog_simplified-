@@ -4,6 +4,15 @@
   
   // Get all projects
   const projects = getAllProjects();
+  
+  // Create reactive language variable
+  $: currentLanguage = $language;
+  
+  // Force component to update when language changes
+  $: {
+    currentLanguage; // this references the variable to establish the dependency
+    // This block will run whenever currentLanguage changes
+  }
 </script>
 
 <div class="projects-page">
@@ -20,23 +29,23 @@
         </div>
         
         <h2 class="project-title">
-          <a href="/projects/{project.slug}">{getLocalizedField(project, 'title', $language)}</a>
+          <a href="/projects/{project.slug}">{getLocalizedField(project, 'title', currentLanguage)}</a>
         </h2>
         
         <div class="project-role-location">
-          <span class="project-role">{getLocalizedField(project, 'role', $language)}</span>
+          <span class="project-role">{getLocalizedField(project, 'role', currentLanguage)}</span>
           {#if project.location}
             <span class="location-separator"> | </span>
-            <span class="project-location">{getLocalizedField(project, 'location', $language)}</span>
+            <span class="project-location">{getLocalizedField(project, 'location', currentLanguage)}</span>
           {/if}
         </div>
         
-        <p class="project-summary">{getLocalizedField(project, 'summary', $language)}</p>
+        <p class="project-summary">{getLocalizedField(project, 'summary', currentLanguage)}</p>
         
         {#if project.tags && project.tags.length > 0}
           <div class="project-tags">
             {#each project.tags as tag}
-              <span class="tag">{$t(`tags.${tag}`)}</span>
+              <span class="tag">{getLocalizedTagName(tag, currentLanguage)}</span>
             {/each}
           </div>
         {/if}

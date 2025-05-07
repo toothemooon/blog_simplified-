@@ -1,5 +1,5 @@
 <script>
-  import { getProject, formatProjectPeriod, getRelatedProjectsBySlug, getLocalizedField } from '../../utils/project-utils.js';
+  import { getProject, formatProjectPeriod, getRelatedProjectsBySlug, getLocalizedField, getLocalizedTagName } from '../../utils/project-utils.js';
   import { t, language } from '../../i18n';
   
   export let slug = '';
@@ -9,8 +9,15 @@
   let error = null;
   let relatedProjects = [];
   
-  $: if (slug) {
-    loadProject(slug);
+  // Create reactive language variable
+  $: currentLanguage = $language;
+  
+  // Reload project when language changes
+  $: {
+    currentLanguage; // Reference to create dependency
+    if (slug) {
+      loadProject(slug);
+    }
   }
   
   async function loadProject(projectSlug) {
@@ -41,7 +48,7 @@
   function getLocalizedMetadataField(metadata, key) {
     if (!metadata || !key) return '';
     
-    const localizedKey = `${key}_${$language}`;
+    const localizedKey = `${key}_${currentLanguage}`;
     if (metadata[localizedKey]) {
       return metadata[localizedKey];
     }
@@ -69,14 +76,14 @@
       </div>
       
       <!-- Title -->
-      <h1 class="project-title">{getLocalizedField(project, 'title', $language)}</h1>
+      <h1 class="project-title">{getLocalizedField(project, 'title', currentLanguage)}</h1>
       
       <!-- Role and Location -->
       <div class="project-role-location">
-        <span class="project-role">{getLocalizedField(project, 'role', $language)}</span>
+        <span class="project-role">{getLocalizedField(project, 'role', currentLanguage)}</span>
         {#if project.location}
           <span class="location-separator"> | </span>
-          <span class="project-location">{getLocalizedField(project, 'location', $language)}</span>
+          <span class="project-location">{getLocalizedField(project, 'location', currentLanguage)}</span>
         {/if}
       </div>
       
@@ -114,7 +121,7 @@
       <!-- Summary -->
       <div class="project-summary">
         <h2>Overview</h2>
-        <p>{getLocalizedField(project, 'summary', $language)}</p>
+        <p>{getLocalizedField(project, 'summary', currentLanguage)}</p>
       </div>
       
       <!-- Achievements -->
@@ -122,7 +129,7 @@
         <div class="project-achievements">
           <h2>{$t('pages.projects.key_achievements')}</h2>
           <ul class="achievements-list">
-            {#each (project[`achievements_${$language}`] || project.achievements) as achievement}
+            {#each (project[`achievements_${currentLanguage}`] || project.achievements) as achievement}
               <li>{achievement}</li>
             {/each}
           </ul>
@@ -133,7 +140,7 @@
       {#if project.tags && project.tags.length > 0}
         <div class="project-tags">
           {#each project.tags as tag}
-            <span class="tag">{$t(`tags.${tag}`)}</span>
+            <span class="tag">{getLocalizedTagName(tag, currentLanguage)}</span>
           {/each}
         </div>
       {/if}
@@ -146,7 +153,7 @@
             {#each relatedProjects as relatedProject}
               <div class="related-project-item">
                 <a href="/projects/{relatedProject.slug}" class="related-project-link">
-                  <span class="related-project-title">{getLocalizedField(relatedProject, 'title', $language)}</span>
+                  <span class="related-project-title">{getLocalizedField(relatedProject, 'title', currentLanguage)}</span>
                   <span class="related-project-period">{formatProjectPeriod(relatedProject.period)}</span>
                 </a>
               </div>

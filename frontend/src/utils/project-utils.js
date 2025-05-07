@@ -1,6 +1,14 @@
 import { projects, getProjectBySlug, getProjectContent, getRelatedProjects } from '../data/projects';
 import { language, t } from '../i18n';
 
+// Import translations
+import en from '../i18n/locales/en.json';
+import ja from '../i18n/locales/ja.json';
+import zh from '../i18n/locales/zh.json';
+
+// Create a translations object
+const translations = { en, ja, zh };
+
 /**
  * Get all projects
  */
@@ -111,21 +119,16 @@ export function getLocalizedTagName(tag, lang) {
   // Create tag translation key
   const tagKey = `tags.${tag}`;
   
-  // Try to get translation using t function
-  try {
-    // Use the t function with the constructed key
-    // The $ prefix won't work here because we're outside a component
-    // So we use the translation function directly
-    const translated = t(tagKey);
-    
-    // If the translation key is returned unchanged, it means no translation was found
-    if (translated === tagKey) {
-      return tag; // Fallback to original tag
-    }
-    
-    return translated;
-  } catch (e) {
-    // If any error occurs, return the original tag
-    return tag;
+  // If language is specified, try to get translation from that language
+  if (lang && translations[lang] && translations[lang].tags && translations[lang].tags[tag]) {
+    return translations[lang].tags[tag];
   }
+  
+  // Fall back to English
+  if (lang !== 'en' && translations.en.tags && translations.en.tags[tag]) {
+    return translations.en.tags[tag];
+  }
+  
+  // Last resort: return original tag
+  return tag;
 } 

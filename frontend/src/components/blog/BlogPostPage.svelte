@@ -24,6 +24,17 @@
   let previousPost = null;
   let currentLanguage;
   
+  // Store current language for reactivity
+  $: currentLanguage = $language;
+  
+  // Reload content when language changes
+  $: {
+    currentLanguage; // Reference to create dependency
+    if (slug && post) {
+      loadPost(slug);
+    }
+  }
+  
   // Subscribe to language changes
   const unsubscribe = language.subscribe(value => {
     currentLanguage = value;
@@ -230,7 +241,7 @@
       {#if post.tags && post.tags.length > 0}
         <div class="post-tags">
           {#each post.tags as tag}
-            <a href="/tags/{tag}" class="post-tag">{getLocalizedTagName(tag)}</a>
+            <a href="/tags/{tag}" class="post-tag">{getLocalizedTagName(tag, currentLanguage)}</a>
           {/each}
         </div>
       {/if}

@@ -6,6 +6,9 @@
   // Get all posts
   const allPosts = getAllPosts();
   
+  // Store current language for reactivity
+  $: currentLanguage = $language;
+  
   // Generate unique tags list with counts
   const tags = allPosts.reduce((acc, post) => {
     if (post.tags && post.tags.length) {
@@ -19,8 +22,18 @@
     return acc;
   }, {});
   
-  // Sort tags alphabetically
-  const sortedTags = Object.entries(tags).sort(([a], [b]) => a.localeCompare(b));
+  // Force component to update when language changes
+  $: {
+    currentLanguage; // this references the variable to establish the dependency
+    // This block will run whenever currentLanguage changes
+  }
+  
+  // Sort tags in a reactive way that will update when language changes
+  $: sortedTags = Object.entries(tags).sort(([a], [b]) => {
+    const localizedA = getLocalizedTagName(a, currentLanguage);
+    const localizedB = getLocalizedTagName(b, currentLanguage);
+    return localizedA.localeCompare(localizedB);
+  });
   
   // Get the highest post count to scale font sizes
   const maxCount = Math.max(...Object.values(tags));

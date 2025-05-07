@@ -3,6 +3,12 @@
 import { posts, getPostContent, getPostBySlug, getRelatedPosts, getNextPost, getPreviousPost } from '../data/blog';
 import { posts as legacyPosts } from '../data/blog-data';
 import { language, t } from '../i18n';
+import en from '../i18n/locales/en.json';
+import ja from '../i18n/locales/ja.json';
+import zh from '../i18n/locales/zh.json';
+
+// Create a reference to translations
+const translations = { en, ja, zh };
 
 /**
  * Get posts from both new and legacy sources
@@ -164,9 +170,6 @@ export function getReadingTime(content) {
 export function getLocalizedTagName(tag, currentLang) {
   if (!tag) return '';
   
-  // Create tag translation key
-  const tagKey = `tags.${tag}`;
-  
   // Set a default language if not provided
   let lang = currentLang;
   if (!lang) {
@@ -176,20 +179,18 @@ export function getLocalizedTagName(tag, currentLang) {
     })();
   }
   
-  // Try to get translation using t function
-  try {
-    const translated = t(tagKey);
-    
-    // If the translation key is returned unchanged, it means no translation was found
-    if (translated === tagKey) {
-      return tag; // Fallback to original tag
-    }
-    
-    return translated;
-  } catch (e) {
-    // If any error occurs, return the original tag
-    return tag;
+  // First try direct access to translations for maximum reliability
+  if (lang && translations[lang] && translations[lang].tags && translations[lang].tags[tag]) {
+    return translations[lang].tags[tag];
   }
+  
+  // Fall back to English
+  if (lang !== 'en' && translations.en.tags && translations.en.tags[tag]) {
+    return translations.en.tags[tag];
+  }
+  
+  // If still no translation, return the original tag
+  return tag;
 }
 
 /**

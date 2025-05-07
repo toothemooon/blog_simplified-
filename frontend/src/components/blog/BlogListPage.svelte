@@ -8,12 +8,9 @@
   let tags = {};
   let showMobileTags = false;
   let loading = true;
-  let currentLanguage;
   
-  // Subscribe to language changes
-  const unsubscribe = language.subscribe(value => {
-    currentLanguage = value;
-  });
+  // Make currentLanguage reactive
+  $: currentLanguage = $language;
   
   // Load posts on component mount
   onMount(() => {
@@ -34,10 +31,13 @@
     }, {});
     
     loading = false;
-    
-    return () => {
-      unsubscribe();
-    };
+  });
+  
+  // Make tag sorting reactive to language changes
+  $: sortedTags = Object.entries(tags).sort(([a], [b]) => {
+    const localizedA = getLocalizedTagName(a, currentLanguage);
+    const localizedB = getLocalizedTagName(b, currentLanguage);
+    return localizedA.localeCompare(localizedB);
   });
   
   // Toggle mobile tags visibility
@@ -68,10 +68,10 @@
         <div class="tags-header">{$t('pages.blog.all_posts')}</div>
         
         <ul class="tags-list">
-          {#each Object.entries(tags) as [tag, count]}
+          {#each sortedTags as [tag, count]}
             <li class="tag-item">
               <a href="/tags/{tag}" class="tag-link touch-target">
-                <span class="tag-name">{getLocalizedTagName(tag)}</span>
+                <span class="tag-name">{getLocalizedTagName(tag, currentLanguage)}</span>
                 <span class="tag-count">({count})</span>
               </a>
             </li>
@@ -99,7 +99,7 @@
               {#if post.tags && post.tags.length > 0}
                 <div class="post-tags">
                   {#each post.tags as tag}
-                    <a href="/tags/{tag}" class="tag">{getLocalizedTagName(tag)}</a>
+                    <a href="/tags/{tag}" class="tag">{getLocalizedTagName(tag, currentLanguage)}</a>
                   {/each}
                 </div>
               {/if}

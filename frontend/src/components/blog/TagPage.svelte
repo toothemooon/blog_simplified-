@@ -14,7 +14,7 @@
   // Filter posts by tag - will be recalculated when needed
   $: filteredPosts = allPosts.filter(post => post.tags && post.tags.includes(tag));
   
-  // Get localized tag name for display
+  // Get localized tag name for display - reactive to language changes
   $: localizedTag = getLocalizedTagName(tag, currentLanguage);
 </script>
 

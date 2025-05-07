@@ -1,15 +1,21 @@
 <script>
-  import { getAllPosts, formatPostDate, getLocalizedTagName, getLocalizedField } from '../../utils/blog-utils.js';
+  import { getAllPosts, formatPostDate, getLocalizedField, getLocalizedTagName } from '../../utils/blog-utils.js';
   import { language, t } from '../../i18n';
   
-  // Get posts
+  // Get all posts sorted by date (newest first)
   const allPosts = getAllPosts();
-  
-  // Get 5 most recent posts - will be recalculated when language changes
-  $: recentPosts = allPosts.slice(0, 5);
   
   // Store current language for reactivity
   $: currentLanguage = $language;
+  
+  // Recent posts will be recalculated when needed
+  $: recentPosts = allPosts.slice(0, 5);
+  
+  // Force component to update when language changes
+  $: {
+    currentLanguage; // this references the variable to establish the dependency
+    // This block will run whenever currentLanguage changes
+  }
 </script>
 
 <div class="home-page">
