@@ -57,6 +57,189 @@
 ## Background and Motivation
 The goal is to build a modern blog similar to https://tailwind-nextjs-starter-blog.vercel.app/blog but using Svelte 4 for the framework and vanilla CSS for styling instead of Next.js and Tailwind CSS. This approach will leverage the existing Svelte codebase while still creating a clean, responsive blog with good performance.
 
+## Current Navigation and i18n Issues Analysis
+
+### Problem Description
+The site is experiencing multiple critical issues:
+
+1. **Navigation Problems**: The navigation links in the header (Blog, Tags, Projects, About) are not working correctly. Users can't navigate between different sections of the site.
+
+2. **Build Error with i18n**: The build process is failing with the error: `"t" is not exported by "src/i18n/store.js", imported by "src/i18n/index.js"`.
+
+3. **Runtime Errors with Tag Translation**: Components using reactive tag translation are throwing errors: `'tagNameStores' is not a store with a 'subscribe' method` and `TypeError: ctx[2] is not a function`.
+
+### Technical Analysis
+
+#### Navigation Issues
+
+1. **Route Configuration**:
+   - The app uses page.js for client-side routing
+   - Routes are configured correctly in main.js
+   - The NavLinks component references the correct routes
+
+2. **Conflicting Route Names**:
+   - There's a mismatch between the route names in NavLinks.svelte and the page.js route handler
+   - NavLinks.svelte uses `/projects` but the handler in main.js uses `/projects-list`
+
+#### i18n Build Error
+
+1. **Store Export Issue**:
+   - `store.js` correctly exports the `t` derived store
+   - `index.js` is trying to re-export it but encountering an issue
+   - The root cause is likely a circular dependency or an issue with how derived stores are re-exported
+
+2. **Component Import Chain**:
+   - Components like Header.svelte import from the index.js barrel file
+   - The error indicates the build can't resolve the `t` export
+
+#### Tag Translation Errors
+
+1. **Reactivity Issues**:
+   - The implementation of `getLocalizedTagNameReactive` has issues with how it handles the store
+   - Components like TagsPage.svelte are trying to access reactive values incorrectly
+
+2. **Event Handling**:
+   - While the i18n system dispatches a custom event on language change, components are managing their own forceUpdate variables inconsistently
+
+### Root Causes Identified
+
+1. **Navigation**: The mapping between NavLinks links and the route handler is inconsistent
+2. **i18n Build**: There appears to be an issue with how Rollup processes the derived store export/re-export
+3. **Tag Translation**: The complex reactive pattern being used causes errors in multiple components
+
+## High-level Task Breakdown for Navigation and i18n Fixes
+
+### 1. Fix i18n Export/Import System
+
+**Tasks:**
+- Update the store.js file to simplify how `t` is exported
+- Modify index.js to correctly re-export the translation function
+- Ensure no circular dependencies exist in the i18n system
+- Add clear documentation on how the translation function should be used
+
+**Success Criteria:**
+- Build completes without "t is not exported" error
+- Components can successfully import and use the translation function
+
+### 2. Align Navigation Routes
+
+**Tasks:**
+- Review all routes defined in main.js and ensure they match NavLinks.svelte
+- Standardize route naming across the application
+- Test navigation flow between all major sections
+
+**Success Criteria:**
+- All navigation links (Blog, Tags, Projects, About) work correctly
+- URLs in the browser match the expected routes
+- No 404 errors when navigating between sections
+
+### 3. Fix Tag Translation Implementation
+
+**Tasks:**
+- Simplify the reactive tag translation implementation to avoid store access errors
+- Use a consistent pattern for handling language changes across components
+- Replace complex Map-based store implementations with simpler patterns
+- Add proper error handling for all i18n-related operations
+
+**Success Criteria:**
+- Tag translations update correctly when language changes
+- No console errors related to tagNameStores or reactive stores
+- Consistent behavior across all components using translations
+
+### 4. Implement Comprehensive Testing
+
+**Tasks:**
+- Test navigation flow across all routes
+- Verify language switching works in all components
+- Test tag translation functionality
+- Ensure no regressions in existing features
+
+**Success Criteria:**
+- All navigation links function correctly
+- Language switching works without errors
+- Tag translations update properly on language change
+- No console errors during normal operation
+
+## Implementation Approach for Navigation and i18n Fixes
+
+### 1. Fix i18n Build Issue First
+
+To resolve the build error with `t` not being exported:
+
+1. **Simplify store.js:**
+   ```javascript
+   // In store.js
+   export const t = derived(
+     language,
+     $language => createTranslationFunction($language)
+   );
+   ```
+
+2. **Update index.js with direct import/export:**
+   ```javascript
+   // In index.js - use direct import and export
+   import { language, t as translationStore, translate } from './store.js';
+   export const t = translationStore;
+   export { language, translate };
+   ```
+
+3. **Verify components:**
+   ```javascript
+   // In components
+   import { t } from '../../i18n';
+   // Then use as $t(key) in templates
+   ```
+
+### 2. Use Consistent Route Names
+
+Update main.js and NavLinks.svelte to use consistent route names:
+
+```javascript
+// In main.js - standardize route names
+page('/projects', () => {
+  setRoute('/projects'); // Use the same route name
+});
+
+// In NavLinks.svelte - update the links array
+const navLinks = [
+  { key: 'nav.blog', href: '/blog', route: '/blog-list' },
+  { key: 'nav.tags', href: '/tags', route: '/tags-list' },
+  { key: 'nav.projects', href: '/projects', route: '/projects' }, // Match main.js
+  { key: 'nav.about', href: '/about', route: '/about' }
+];
+```
+
+### 3. Simplify Tag Translation
+
+Reimplement tag translation with a simpler reactive approach:
+
+```javascript
+// In blog-utils.js
+export function getLocalizedTagName(tag, lang) {
+  if (!tag) return '';
+  const tagKey = `tags.${tag}`;
+  return translate(tagKey) || tag;
+}
+
+// In components
+import { language } from '../../i18n';
+$: localizedTag = getLocalizedTagName(tag, $language);
+```
+
+This removes the need for complex Map-based stores and simplifies the reactivity model.
+
+## Project Status Board (Updated)
+
+| Task | Status | Priority | Est. Effort | Notes |
+|------|--------|----------|-------------|-------|
+| Fix i18n Build Error | 🔄 In Progress | Critical | 4 hours | Need a simpler export/import approach |
+| Fix Navigation Routes | ⏱️ Planned | Critical | 2 hours | Align route names across files |
+| Simplify Tag Translation | ⏱️ Planned | High | 6 hours | Replace complex reactive patterns |
+| Test Navigation Flow | ⏱️ Planned | High | 2 hours | Verify all site sections are accessible |
+| Update Components | ⏱️ Planned | High | 8 hours | Update all components using tag translation |
+| End-to-End Testing | ⏱️ Planned | Medium | 4 hours | Test full user flows with language switching |
+| **Create New Blog Post: Finding Your Groove** | ✅ Completed | High | 1 hour | Post created in posts/ and content/ |
+
 ## Current State Analysis and Implementation Plan
 
 ### Current State Analysis
@@ -235,222 +418,6 @@ This phased approach will allow incremental progress while maintaining a functio
 
 ## Executor's Feedback or Assistance Requests
 
-**Progress Update (Projects Implementation - Part 2):**
-
-1. **Added translations for all project files:**
-   - Added Japanese and Chinese translations for CGC Overseas Construction Group data
-   - Added Japanese and Chinese translations for China Chengda Engineering data
-   - Followed the same structure as the previously translated Ravencoin project
-
-2. **Enhanced tag translation system:**
-   - Added a dedicated tag translation section in all language files
-   - Implemented translations for all project tags (blockchain, safety, engineering, etc.)
-   - Updated components to use translated tags instead of raw tag IDs
-
-3. **Implementation approach:**
-   - Added multilingual fields with language suffixes (_ja, _zh)
-   - Provided careful translations of technical terms in each field
-   - Ensured consistent formatting across all languages
-   - Made special consideration for appropriate currency formatting in each language
-
-4. **Improvements beyond basic requirements:**
-   - Added translations for subproject names and values
-   - Implemented special handling for metadata fields
-   - Ensured consistent translation quality across all projects
-
-**Next Steps:**
-1. Test the implementation by switching languages and verifying that all project data, including tags, displays correctly
-2. Begin Tags page implementation as the next component
-
-**Issues or Questions:**
-- No immediate issues - the implementation follows the established patterns and maintains consistency across components
-
-## Lessons
-
-1. **Direct Import Strategy**: Use direct imports for translations rather than dynamic imports
-2. **JSON Configuration**: Ensure Rollup is properly configured to handle JSON files
-3. **Simple First**: Start with simple, synchronous approaches before adding complexity
-4. **Test Incrementally**: Implement and test one component at a time
-5. **Debug Output**: Include temporary debug output during development
-6. **Translation Structure**: Maintain consistent structure across all language files
-7. **Content-First Approach**: Focus on translating content before enhancing search
-8. **Field Naming Convention**: Use consistent suffix approach (_en, _ja, _zh) for multilingual fields
-9. **Fallback Strategy**: Always implement language fallbacks to English for missing translations
-
-## Key Challenges and Analysis
-
-### Persistent "t is not exported" Error
-
-Despite making changes to the About page, we're still encountering a build error: `"t" is not exported by "src/i18n/store.js", imported by "src/i18n/index.js"`. This suggests there's a deeper issue with how the translation function is being exported and imported.
-
-Two possible solutions to investigate:
-1. **Modified Export Approach**: Change how the `t` function is exported from store.js, possibly using a named export rather than exporting it as part of a derived store.
-2. **Direct Import Strategy**: Update components to import directly from store.js rather than through the index.js barrel file.
-
-This needs to be resolved before proceeding with further implementation.
-
-### Projects Section i18n Strategy
-
-The Projects section presents unique challenges compared to the About page:
-
-1. **Dynamic Content Structure**: Projects have multiple data fields (title, description, technologies, etc.) that need translation.
-2. **Content-Rich Display**: Project details often contain longer-form content with formatting requirements.
-3. **Multiple View Components**: We need to update both the Projects list view and individual Project detail pages.
-
-### Project Data Structure Analysis
-
-Looking at the current project data structure, we need to enhance it to support multiple languages while maintaining compatibility with existing components. The recommended approach is:
-
-#### Current Structure (simplified):
-```javascript
-{
-  id: "project-1",
-  title: "Project Title",
-  description: "Project description in English",
-  // Other fields...
-}
-```
-
-#### Proposed Multilingual Structure:
-```javascript
-{
-  id: "project-1",
-  title: "Project Title", // Keep original for backward compatibility
-  title_ja: "プロジェクトタイトル",
-  title_zh: "项目标题",
-  description: "Project description in English",
-  description_ja: "日本語のプロジェクト説明",
-  description_zh: "项目描述中文版",
-  // Other fields with language variants...
-}
-```
-
-This approach:
-- Maintains backward compatibility with existing components
-- Avoids nested structures that could complicate component logic
-- Provides a straightforward path for adding additional languages later
-
-## High-level Task Breakdown for Projects i18n
-
-### 1. Fix the "t is not exported" Build Error (Priority)
-
-**Tasks:**
-- Investigate the export mechanism in store.js
-- Update the export statement to properly expose the `t` function
-- Test with a simple component to validate the fix
-- Ensure the build process completes without errors
-
-**Success Criteria:**
-- Build process completes without "t is not exported" error
-- About page translations work correctly after the fix
-
-### 2. Enhance Project Data Structure
-
-**Tasks:**
-- Locate the project data source files
-- Create a standardized pattern for multilingual field naming (_en, _ja, _zh suffixes)
-- Update one sample project with translations for all user-facing text
-- Document the new multilingual structure for future reference
-
-**Success Criteria:**
-- Project data structure supports multiple languages
-- Sample project includes complete translations in all supported languages
-
-### 3. Update Projects List Component
-
-**Tasks:**
-- Update the ProjectsPage component to use language-appropriate content
-- Implement a language-aware display logic that selects the right field based on current language
-- Create a helper function to manage field selection (e.g., `getLocalizedField(item, fieldName, language)`)
-- Add translations for static UI elements (headings, labels, buttons)
-
-**Success Criteria:**
-- Projects list displays correct language content based on selected language
-- UI elements use translated text from language files
-- Language switching works properly on the Projects page
-
-### 4. Update Project Detail Component
-
-**Tasks:**
-- Update the ProjectDetailPage component with language-aware rendering
-- Implement language-appropriate display of all project metadata
-- Add language fallback logic for any missing translations
-- Enhance the related projects feature to respect current language
-
-**Success Criteria:**
-- Project details display in the selected language
-- Missing translations fallback to English gracefully
-- Related projects show correct language-specific titles
-
-### 5. Create and Integrate Translation Keys
-
-**Tasks:**
-- Add translation keys for all static UI elements in the Projects section
-- Update language JSON files with these keys
-- Replace hardcoded text in components with translation function calls
-- Add support for dynamic content like dates and numbers
-
-**Success Criteria:**
-- All static UI text is internationalized
-- Date formats follow language conventions
-- Components use translation function rather than hardcoded text
-
-### 6. Implement Language-Aware Filtering and Sorting
-
-**Tasks:**
-- Update any project filtering logic to be language-aware
-- Ensure sorting of projects works correctly with different languages
-- Add language-appropriate search capabilities
-
-**Success Criteria:**
-- Filtering and sorting respect the selected language
-- Search functionality includes language-appropriate content
-
-### 7. Testing and Validation
-
-**Tasks:**
-- Test language switching throughout the Projects section
-- Verify all content displays correctly in each language
-- Validate layout handling for different text lengths
-- Test edge cases (missing translations, very long text)
-
-**Success Criteria:**
-- Projects section functions correctly in all supported languages
-- Layout remains consistent despite language differences
-- No untranslated text appears in the UI
-
-## Implementation Approach
-
-The most effective approach for this implementation is to:
-
-1. **Fix Core i18n Infrastructure First**: We must fix the "t is not exported" issue before proceeding
-2. **Start with Data Structure**: Update the project data structure to support multiple languages
-3. **One Component at a Time**: Update components incrementally, testing each one thoroughly
-4. **Use Helper Functions**: Create reusable helpers for language-specific field selection
-5. **Focus on User Experience**: Ensure a consistent experience across languages
-
-This approach will allow us to make steady progress while maintaining a working application throughout the process.
-
-## Project Status Board (Updated)
-
-| Task | Status | Priority | Est. Effort | Notes |
-|------|--------|----------|-------------|-------|
-| Fix i18n Build Error | 🔄 In Progress | Critical | 4 hours | Need to resolve "t is not exported" error |
-| About Page i18n | ✅ Completed | High | 8 hours | Implementation complete but awaiting final testing |
-| Enhance Project Data Structure | ⏱️ Planned | High | 8 hours | Define multilingual field pattern for projects |
-| Update Projects List Component | ⏱️ Planned | High | 12 hours | Make component language-aware |
-| Update Project Detail Component | ⏱️ Planned | High | 12 hours | Update with language-specific rendering |
-| Project UI Elements Translation | ⏱️ Planned | Medium | 8 hours | Add keys for all static UI text |
-| Language-Aware Project Filtering | ⏱️ Planned | Medium | 6 hours | Update filtering logic for language support |
-| Fix Search for Non-Latin Characters | ⏱️ Planned | Medium | 8 hours | Update normalization to support all languages |
-| Tags Page i18n | ⏱️ Planned | Medium | 8 hours | Third priority in implementation order |
-| Blog Pages i18n | ⏱️ Planned | Medium | 24 hours | Fourth priority in implementation order |
-| Homepage i18n | ⏱️ Planned | Medium | 16 hours | Fifth priority in implementation order |
-| 404 Page i18n | ⏱️ Planned | Low | 4 hours | Final page in implementation order |
-| Performance Optimization | ⏱️ Planned | Low | 16 hours | Final phase of implementation |
-
-## Executor's Feedback or Assistance Requests
-
 **Progress Update (About Page Implementation):**
 1. Fixed the "t is not exported" build error - the code now builds successfully
 2. Added translation keys for the About page in all three language files (en, ja, zh)
@@ -476,3 +443,19 @@ This approach will allow us to make steady progress while maintaining a working 
 7. **Content-First Approach**: Focus on translating content before enhancing search
 8. **Field Naming Convention**: Use consistent suffix approach (_en, _ja, _zh) for multilingual fields
 9. **Fallback Strategy**: Always implement language fallbacks to English for missing translations
+
+**Progress Update (Blog Post Creation):**
+
+- Created new markdown file: `frontend/src/data/blog/content/finding-your-groove-balancing-ai-and-good-old-fashioned-coding.md` with the exact user-provided text.
+- Created new metadata JS file: `frontend/src/data/blog/posts/2024-05-06-finding-your-groove-balancing-ai-and-good-old-fashioned-coding.js` with correct title, date, tags, author, and getContent pointer.
+- Used today's date and tags: ai, programming, learning, productivity.
+- No translation fields added (English only for now).
+- The post should now appear in the blog list and detail views if the blog system is working correctly.
+
+**Next Steps:**
+- Manually verify the post appears and renders as expected in the UI.
+- If any issues with rendering or listing, check the blog index or import system.
+
+**Lessons:**
+- Always check the folder structure and naming conventions before adding new content.
+- Use the same metadata structure and content import pattern as existing posts for consistency.

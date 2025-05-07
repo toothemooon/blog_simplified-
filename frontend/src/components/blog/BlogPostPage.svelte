@@ -197,6 +197,11 @@
       <!-- Title -->
       <h1 class="post-title">{post.title}</h1>
       
+      <!-- Subtitle (if present) -->
+      {#if post.subtitle}
+        <h2 class="post-subtitle">{post.subtitle}</h2>
+      {/if}
+      
       <!-- Tags -->
       {#if post.tags && post.tags.length > 0}
         <div class="post-tags">
@@ -306,6 +311,15 @@
     line-height: 1.2;
     margin: 0.5rem 0 1rem;
     color: var(--color-heading);
+  }
+  
+  .post-subtitle {
+    font-size: 1.4rem;
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--color-text-light);
+    margin: -0.5rem 0 1.5rem;
+    font-style: italic;
   }
   
   .post-date-container {
