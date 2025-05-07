@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { getAllPosts, formatPostDate, getReadingTime, getLocalizedTagName } from '../../utils/blog-utils.js';
+  import { getAllPosts, formatPostDate, getReadingTime, getLocalizedTagName, getLocalizedField } from '../../utils/blog-utils.js';
   import { language, t } from '../../i18n';
   
   // State
@@ -8,6 +8,12 @@
   let tags = {};
   let showMobileTags = false;
   let loading = true;
+  let currentLanguage;
+  
+  // Subscribe to language changes
+  const unsubscribe = language.subscribe(value => {
+    currentLanguage = value;
+  });
   
   // Load posts on component mount
   onMount(() => {
@@ -28,6 +34,10 @@
     }, {});
     
     loading = false;
+    
+    return () => {
+      unsubscribe();
+    };
   });
   
   // Toggle mobile tags visibility
@@ -83,7 +93,7 @@
               </div>
               
               <h2 class="post-title">
-                <a href="/blog/{post.slug}">{post.title}</a>
+                <a href="/blog/{post.slug}">{getLocalizedField(post, 'title', currentLanguage)}</a>
               </h2>
               
               {#if post.tags && post.tags.length > 0}
@@ -94,7 +104,7 @@
                 </div>
               {/if}
               
-              <p class="post-summary">{post.summary}</p>
+              <p class="post-summary">{getLocalizedField(post, 'summary', currentLanguage)}</p>
               
               <div class="read-more">
                 <a href="/blog/{post.slug}" class="read-more-link touch-target">{$t('pages.tags.read_more')}</a>

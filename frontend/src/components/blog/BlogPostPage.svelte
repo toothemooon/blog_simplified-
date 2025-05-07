@@ -5,8 +5,11 @@
     getNextPostForSlug, 
     getPreviousPostForSlug,
     formatPostDate,
-    getReadingTime 
+    getReadingTime,
+    getLocalizedField 
   } from '../../utils/blog-utils.js';
+  import { language, t } from '../../i18n';
+  import { getLocalizedTagName } from '../../utils/blog-utils.js';
   
   // Props: slug of the post to display
   export let slug = '';
@@ -19,6 +22,23 @@
   let readingTime = '';
   let nextPost = null;
   let previousPost = null;
+  let currentLanguage;
+  
+  // Subscribe to language changes
+  const unsubscribe = language.subscribe(value => {
+    currentLanguage = value;
+    // Reload post data when language changes (if we have a post)
+    if (post && slug) {
+      loadPost(slug);
+    }
+  });
+  
+  // Unsubscribe when component is destroyed
+  onMount(() => {
+    return () => {
+      unsubscribe();
+    };
+  });
   
   // Load post data on mount and when slug changes
   $: if (slug) {
@@ -57,10 +77,6 @@
       loading = false;
     }
   }
-  
-  onMount(() => {
-    loadPost(slug);
-  });
   
   // Simple markdown to HTML converter
   function markdownToHtml(markdown) {
@@ -107,7 +123,9 @@
       
       if (trimmedLine.startsWith('# ')) {
         // Check if this is the first H1 and should be skipped
-        if (skipFirstH1 && trimmedLine.substring(2).trim() === post.title.trim()) {
+        // Get post title based on current language
+        const localizedTitle = getLocalizedField(post, 'title', currentLanguage);
+        if (skipFirstH1 && trimmedLine.substring(2).trim() === localizedTitle.trim()) {
           skipFirstH1 = false; // Only skip the first one
           continue; // Skip this line
         }
@@ -182,13 +200,13 @@
 <div class="blog-post-page container-narrow">
   {#if loading}
     <div class="loading-indicator">
-      <p>Loading post...</p>
+      <p>{$t('pages.blog.loading', 'Loading post...')}</p>
     </div>
   {:else if error}
     <div class="error-message">
       <h2>Error</h2>
       <p>{error}</p>
-      <a href="/blog">Return to blog list</a>
+      <a href="/blog">{$t('pages.blog.return_to_list', 'Return to blog list')}</a>
     </div>
   {:else if post}
     <article class="blog-post">
@@ -200,26 +218,26 @@
         <span class="reading-time">{readingTime}</span>
       </div>
       
-      <!-- Title -->
-      <h1 class="post-title">{post.title}</h1>
+      <!-- Title (localized) -->
+      <h1 class="post-title">{getLocalizedField(post, 'title', currentLanguage)}</h1>
       
-      <!-- Subtitle (if present) -->
-      {#if post.subtitle}
-        <h2 class="post-subtitle">{post.subtitle}</h2>
+      <!-- Subtitle (if present and localized) -->
+      {#if post.subtitle || post.subtitle_en || post.subtitle_ja || post.subtitle_zh}
+        <h2 class="post-subtitle">{getLocalizedField(post, 'subtitle', currentLanguage)}</h2>
       {/if}
       
       <!-- Tags -->
       {#if post.tags && post.tags.length > 0}
         <div class="post-tags">
           {#each post.tags as tag}
-            <a href="/tags/{tag}" class="post-tag">{tag}</a>
+            <a href="/tags/{tag}" class="post-tag">{getLocalizedTagName(tag)}</a>
           {/each}
         </div>
       {/if}
       
-      <!-- Summary -->
+      <!-- Summary (localized) -->
       <div class="post-summary">
-        {post.summary}
+        {getLocalizedField(post, 'summary', currentLanguage)}
       </div>
       
       <!-- Divider line -->
@@ -251,9 +269,9 @@
       <div class="post-navigation">
         {#if previousPost}
           <a href="/blog/{previousPost.slug}" class="nav-link prev-link">
-            <span class="nav-label">PREVIOUS ARTICLE</span>
+            <span class="nav-label">{$t('pages.blog.previous_article', 'PREVIOUS ARTICLE')}</span>
             <span class="nav-title">
-              <span class="nav-arrow">←</span> {previousPost.title}
+              <span class="nav-arrow">←</span> {getLocalizedField(previousPost, 'title', currentLanguage)}
             </span>
           </a>
         {:else}
@@ -262,9 +280,9 @@
         
         {#if nextPost}
           <a href="/blog/{nextPost.slug}" class="nav-link next-link">
-            <span class="nav-label">NEXT ARTICLE</span>
+            <span class="nav-label">{$t('pages.blog.next_article', 'NEXT ARTICLE')}</span>
             <span class="nav-title">
-              {nextPost.title} <span class="nav-arrow">→</span>
+              {getLocalizedField(nextPost, 'title', currentLanguage)} <span class="nav-arrow">→</span>
             </span>
           </a>
         {:else}
@@ -274,9 +292,9 @@
     </article>
   {:else}
     <div class="not-found">
-      <h2>Post Not Found</h2>
-      <p>The blog post you're looking for doesn't exist or has been removed.</p>
-      <a href="/blog">Return to blog list</a>
+      <h2>{$t('pages.blog.not_found', 'Post Not Found')}</h2>
+      <p>{$t('pages.blog.not_found_message', 'The blog post you\'re looking for doesn\'t exist or has been removed.')}</p>
+      <a href="/blog">{$t('pages.blog.return_to_list', 'Return to blog list')}</a>
     </div>
   {/if}
 </div>
@@ -284,13 +302,8 @@
 <style>
   /* 
    * IMPORTANT: The following CSS selectors for .post-content elements
-   * will be flagged as "unused" by the Svelte compiler. This is expected and can be safely ignored.
-   * 
-   * These selectors target HTML elements that are dynamically generated when rendering
-   * Markdown content in the blog post. Since this content is loaded at runtime and not
-   * statically defined in the template, Svelte can't detect the relationship.
-   * 
-   * Do not remove these selectors even if they appear unused!
+   * use :global() to target HTML elements that are dynamically generated 
+   * when rendering Markdown content in the blog post.
    */
   
   .post-container {
@@ -422,39 +435,39 @@
     font-size: 1.05rem;
   }
   
-  .post-content h1 {
+  .post-content :global(h1) {
     font-size: 2rem;
     margin: 2rem 0 1rem;
     border-bottom: 1px solid var(--color-border);
     padding-bottom: 0.5rem;
   }
   
-  .post-content h2 {
+  .post-content :global(h2) {
     font-size: 1.5rem;
     margin: 1.75rem 0 1rem;
     color: var(--color-heading);
   }
   
-  .post-content h3 {
+  .post-content :global(h3) {
     font-size: 1.25rem;
     margin: 1.5rem 0 0.75rem;
     color: var(--color-heading);
   }
   
-  .post-content p {
+  .post-content :global(p) {
     margin-bottom: 1.25rem;
   }
   
-  .post-content ul, .post-content ol {
+  .post-content :global(ul), .post-content :global(ol) {
     margin-bottom: 1.25rem;
     padding-left: 1.5rem;
   }
   
-  .post-content li {
+  .post-content :global(li) {
     margin-bottom: 0.5rem;
   }
   
-  .post-content code {
+  .post-content :global(code) {
     background-color: var(--color-bg-secondary);
     padding: 0.2rem 0.4rem;
     border-radius: 0.25rem;
@@ -462,7 +475,7 @@
     font-size: 0.9em;
   }
   
-  .post-content pre {
+  .post-content :global(pre) {
     background-color: var(--color-bg-secondary);
     padding: 1rem;
     border-radius: 0.5rem;
@@ -470,7 +483,7 @@
     margin-bottom: 1.5rem;
   }
   
-  .post-content pre code {
+  .post-content :global(pre code) {
     background: none;
     padding: 0;
     border-radius: 0;

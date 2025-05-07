@@ -1,7 +1,8 @@
 {
   "nav": {
+    "home": "Home",
     "blog": "Blog",
-    "tags": "Tags", 
+    "tags": "Tags",
     "projects": "Projects",
     "about": "About"
   },
@@ -18,11 +19,20 @@
     "system": "System"
   },
   "footer": {
-    "copyright": "© {{year}} Sarada's Blog",
+    "copyright": "© {{year}} Sarada's Blog. All rights reserved.",
     "built_with": "Built with Svelte 4"
   },
   "tags": {
+    "programming": "Programming",
+    "ai": "Artificial Intelligence",
+    "productivity": "Productivity", 
+    "developer-tips": "Developer Tips",
     "blockchain": "Blockchain",
+    "ravencoin": "Ravencoin",
+    "cryptocurrency": "Cryptocurrency",
+    "bitcoin-fork": "Bitcoin Fork",
+    "crypto-mining": "Crypto Mining",
+    "learning": "Learning",
     "community": "Community",
     "volunteer": "Volunteer",
     "translation": "Translation",
@@ -45,8 +55,16 @@
     },
     "blog": {
       "all_posts": "All Posts",
+      "recent_posts": "Recent Posts",
       "loading": "Loading posts...",
-      "no_posts": "No posts found.",
+      "no_posts": "No posts found",
+      "read_more": "Read More",
+      "published_on": "Published on",
+      "previous_article": "PREVIOUS ARTICLE",
+      "next_article": "NEXT ARTICLE",
+      "return_to_list": "Return to blog list",
+      "not_found": "Post Not Found",
+      "not_found_message": "The blog post you're looking for doesn't exist or has been removed.",
       "show_tags": "Show Tags",
       "hide_tags": "Hide Tags"
     },
@@ -56,11 +74,11 @@
       "all_posts": "All Posts →"
     },
     "tags": {
-      "title": "Tags",
+      "title": "All Tags",
       "published_on": "Published on",
-      "read_more": "Read more →",
-      "no_posts": "No posts found with the tag \"{{tag}}\"",
-      "back_to_all_tags": "← Back to all tags"
+      "read_more": "Read More",
+      "no_posts": "No posts found with tag '{{tag}}'",
+      "back_to_all_tags": "Back to all tags"
     },
     "projects": {
       "title": "Projects",

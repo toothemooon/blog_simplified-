@@ -113,13 +113,23 @@ export function getReadingTime(content) {
 /**
  * Get localized tag name using the i18n system
  * @param {String} tag - The original tag name
+ * @param {String} [currentLang] - Optional language code to override current language
  * @returns {String} - The localized tag name
  */
-export function getLocalizedTagName(tag) {
+export function getLocalizedTagName(tag, currentLang) {
   if (!tag) return '';
   
   // Create tag translation key
   const tagKey = `tags.${tag}`;
+  
+  // Set a default language if not provided
+  let lang = currentLang;
+  if (!lang) {
+    // Try to get it from the language store subscription
+    language.subscribe(value => {
+      lang = value;
+    })();
+  }
   
   // Try to get translation using t function
   try {
@@ -135,4 +145,40 @@ export function getLocalizedTagName(tag) {
     // If any error occurs, return the original tag
     return tag;
   }
+}
+
+/**
+ * Get localized field value based on current language
+ * @param {Object} item - The object containing the field
+ * @param {String} fieldName - The base field name
+ * @param {String} [currentLang] - Optional language code, defaults to current language
+ * @returns {String} - The localized field value or the default value
+ */
+export function getLocalizedField(item, fieldName, currentLang) {
+  if (!item || !fieldName) return '';
+  
+  // Set a default language if not provided
+  let lang = currentLang;
+  if (!lang) {
+    // Try to get it from the language store subscription
+    language.subscribe(value => {
+      lang = value;
+    })();
+  }
+  
+  // Try to get language-specific field (e.g., title_ja, summary_zh)
+  const localizedKey = `${fieldName}_${lang}`;
+  
+  if (item[localizedKey]) {
+    return item[localizedKey];
+  }
+  
+  // Fall back to English version if specific language not found
+  const englishKey = `${fieldName}_en`;
+  if (item[englishKey]) {
+    return item[englishKey];
+  }
+  
+  // Fall back to default field name with no suffix as last resort
+  return item[fieldName] || '';
 } 
