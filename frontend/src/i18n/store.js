@@ -102,10 +102,13 @@ function createTranslationFunction(lang) {
  * Translation function - exported as a derived store for reactivity
  * This allows components to use $t syntax for automatic reactivity
  */
-export const t = derived(
+const t = derived(
   language,
   $language => createTranslationFunction($language)
 );
+
+// Export the translation store explicitly
+export { t };
 
 // Export a non-store version of the translation function for use in non-reactive contexts
 export function translate(key, params = {}) {
