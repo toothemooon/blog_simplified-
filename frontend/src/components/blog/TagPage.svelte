@@ -1,5 +1,5 @@
 <script>
-  import { getAllPosts, formatPostDate, getLocalizedTagName } from '../../utils/blog-utils.js';
+  import { getAllPosts, formatPostDate, getLocalizedTagName, getLocalizedField } from '../../utils/blog-utils.js';
   import { language, t } from '../../i18n';
   
   // Tag parameter from URL
@@ -27,7 +27,7 @@
           </div>
           
           <h2 class="post-title">
-            <a href="/blog/{post.slug}">{post.title}</a>
+            <a href="/blog/{post.slug}">{getLocalizedField(post, 'title')}</a>
           </h2>
           
           {#if post.tags && post.tags.length > 0}
@@ -38,7 +38,7 @@
             </div>
           {/if}
           
-          <p class="post-summary">{post.summary}</p>
+          <p class="post-summary">{getLocalizedField(post, 'summary')}</p>
           
           <div class="read-more">
             <a href="/blog/{post.slug}" class="read-more-link">{$t('pages.tags.read_more')}</a>

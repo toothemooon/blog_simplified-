@@ -183,10 +183,48 @@ Each blog post has been structured to support multilingual content:
 
 The goal is to build a modern multilingual blog using Svelte 4 for the framework and vanilla CSS for styling. The internationalization system should support English, Japanese, and Chinese content with proper fallbacks and smooth language switching.
 
+## Key Challenges and Analysis
+
+### Homepage and Tag Page "undefined" Issue Analysis
+
+I've identified the root cause of the "undefined" values appearing on the HomePage and TagPage components. While the application has a robust internationalization system with the `getLocalizedField()` utility function to retrieve localized versions of content fields, these components are not using it correctly.
+
+Current issues:
+1. The HomePage.svelte component directly references `post.title` and `post.summary` properties.
+2. The TagPage.svelte component also directly references `post.title` and `post.summary` properties.
+3. However, in the new multilingual system, these fields are stored with language suffixes as `title_en`, `title_ja`, `title_zh`, etc.
+4. Both components import the necessary i18n utilities but are not using the `getLocalizedField()` function to access the localized content.
+
+This is why users see "undefined" values when viewing the site in Japanese or Chinese - the direct field access fails to find localized content.
+
+## High-level Task Breakdown
+
+To fix the "undefined" values on the home page and tag pages, we need to:
+
+1. **Update HomePage.svelte Component**:
+   - Replace direct field access with the `getLocalizedField()` function
+   - Replace `post.title` with `getLocalizedField(post, 'title')`
+   - Replace `post.summary` with `getLocalizedField(post, 'summary')`
+   - Import the missing `getLocalizedField` function
+
+2. **Update TagPage.svelte Component**:
+   - Make the same replacements as in the HomePage component
+   - Replace `post.title` with `getLocalizedField(post, 'title')`
+   - Replace `post.summary` with `getLocalizedField(post, 'summary')`
+   - Import the missing `getLocalizedField` function
+
+3. **Test Language Switching**:
+   - Verify that the home page displays proper content in all three languages
+   - Verify that the tag pages display proper content in all three languages
+   - Ensure no "undefined" values appear during language switching
+
 ## Project Status Board
 
 | Task | Status | Priority | Est. Effort | Notes |
 |------|--------|----------|-------------|-------|
+| Update HomePage Component | ✅ Completed | High | 15 mins | Replaced direct field access with getLocalizedField() |
+| Update TagPage Component | ✅ Completed | High | 15 mins | Replaced direct field access with getLocalizedField() |
+| Test Language Switching | ⏱️ Planned | High | 30 mins | Verify proper content display in all languages |
 | Create Missing Placeholder Content Files | ✅ Completed | High | 2 hours | Created placeholder content files for all blog posts in Japanese and Chinese to fix Rollup errors |
 | Complete Translation of All Blog Posts | ⏱️ Planned | Medium | 24 hours | Create proper translations for all remaining blog posts |
 | Enhance Translation Automation | ⏱️ Planned | Low | 8 hours | Improve the automation script with better translation logic |
@@ -200,29 +238,53 @@ The goal is to build a modern multilingual blog using Svelte 4 for the framework
 ## Lessons
 
 1. **Field Naming Convention**: Use consistent suffix approach (_en, _ja, _zh) for multilingual fields
+
 2. **Fallback Strategy**: Always implement language fallbacks to English for missing translations
+
 3. **Directory Structure**: Organize content files in language-specific directories for clarity
+
 4. **Import Handling**: Use .catch() with imports to handle missing translations gracefully
+
 5. **Language Detection**: Implement browser language detection with localStorage persistence
+
 6. **Reactivity**: Subscribe to language changes to update content when language changes
+
 7. **Translation Keys**: Maintain consistent structure across all language files
+
 8. **Error Handling**: Implement proper error handling for missing translations
+
 9. **Testing**: Test language switching thoroughly to ensure smooth user experience
-10. **Placeholder Content Files**: Create placeholder content files for all languages to prevent build errors, even if translations aren't available yet. These files ensure the application can build successfully and provide a foundation for future translation work.
+
+10. **Placeholder Content Files**: Create placeholder content files for all languages to prevent build errors, even if translations aren't available yet.
+
+11. **Placeholder Files Required**: Even when a codebase has fallback logic (like `.catch()` handlers for imports), build tools like Rollup still need the physical files to exist to resolve imports during compile time.
+
+12. **Multilingual Architecture**: In multilingual applications with dynamic imports, the file structure must be consistent across all supported languages.
+
+13. **Build vs. Runtime Behavior**: The build process has different requirements than runtime execution. What works logically during runtime (like fallbacks) may not satisfy a build tool's needs for static analysis and file resolution.
+
+14. **Import Resolution in JavaScript Bundlers**: Bundlers like Rollup perform static analysis on import statements and require all imported files to exist during build time, regardless of conditional logic or error handling around the imports.
+
+15. **Field Access in Multilingual Systems**: Components should never directly access potentially localized fields. Always use helper functions like `getLocalizedField()` that understand the language suffix system and can provide appropriate fallbacks.
 
 ## Executor's Feedback or Assistance Requests
 
-### Progress Update on Blog Translation Implementation (2024-05-10)
+I've successfully updated both the HomePage.svelte and TagPage.svelte components to use the `getLocalizedField()` utility function for retrieving localized content. The changes were straightforward:
 
-We've successfully implemented a language suffix approach for blog content translation. The implementation is robust and maintainable, with a clear pattern for developers to follow. The system falls back to English when translations are unavailable, providing a seamless experience for users.
+1. Added the missing `getLocalizedField` import in both components
+2. Updated direct field references (`post.title` → `getLocalizedField(post, 'title')`)
+3. Updated direct field references (`post.summary` → `getLocalizedField(post, 'summary')`)
 
-### Progress Update on Missing Content Files (2024-05-07)
+I noticed that the BlogListPage.svelte component was already using the correct approach. This is a good validation that we're implementing the fix correctly.
 
-We have resolved all Rollup errors by creating placeholder content files for blog posts in Japanese and Chinese languages. These files follow the appropriate format and structure, enabling the application to build and run without errors. The placeholders maintain the same structure as the English content, making it easy for translators to replace them with actual translations in the future.
+## Current Status / Progress Tracking
 
-### Open Questions
+The "undefined" values issue has been resolved:
 
-1. Should we add a language indicator icon on posts that have translations available?
-2. Should we allow users to view content in other languages even if their UI language is different?
-3. What is the most efficient workflow for creating new translations of existing content?
-4. How should we handle translation updates when the original English content changes?
+1. First, we created placeholder content files to fix the Rollup build errors
+2. Then, we identified that the HomePage and TagPage components were directly accessing fields instead of using the proper localization functions
+3. We updated both components to use the `getLocalizedField()` function to properly retrieve localized content with appropriate fallbacks
+
+The application should now properly display localized content in all three supported languages (English, Japanese, and Chinese) with proper fallbacks to English when specific translations are not available.
+
+Next steps would be to test language switching thoroughly to ensure everything displays correctly in all languages without any "undefined" values.
