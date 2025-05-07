@@ -2,8 +2,14 @@
   import { getAllPosts, formatPostDate, getLocalizedTagName, getLocalizedField } from '../../utils/blog-utils.js';
   import { language, t } from '../../i18n';
   
-  // Get 5 most recent posts
-  const recentPosts = getAllPosts().slice(0, 5);
+  // Get posts
+  const allPosts = getAllPosts();
+  
+  // Get 5 most recent posts - will be recalculated when language changes
+  $: recentPosts = allPosts.slice(0, 5);
+  
+  // Store current language for reactivity
+  $: currentLanguage = $language;
 </script>
 
 <div class="home-page">
@@ -20,18 +26,18 @@
         </div>
         
         <h2 class="post-title">
-          <a href="/blog/{post.slug}">{getLocalizedField(post, 'title')}</a>
+          <a href="/blog/{post.slug}">{getLocalizedField(post, 'title', currentLanguage)}</a>
         </h2>
         
         {#if post.tags && post.tags.length > 0}
           <div class="post-tags">
             {#each post.tags as tag}
-              <a href="/tags/{tag}" class="tag">{getLocalizedTagName(tag)}</a>
+              <a href="/tags/{tag}" class="tag">{getLocalizedTagName(tag, currentLanguage)}</a>
             {/each}
           </div>
         {/if}
         
-        <p class="post-summary">{getLocalizedField(post, 'summary')}</p>
+        <p class="post-summary">{getLocalizedField(post, 'summary', currentLanguage)}</p>
         
         <div class="read-more">
           <a href="/blog/{post.slug}" class="read-more-link">{$t('pages.tags.read_more')}</a>

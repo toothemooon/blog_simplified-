@@ -8,11 +8,14 @@
   // Get all posts and sort by date (newest first)
   const allPosts = getAllPosts();
   
-  // Filter posts by tag
+  // Store current language for reactivity
+  $: currentLanguage = $language;
+  
+  // Filter posts by tag - will be recalculated when needed
   $: filteredPosts = allPosts.filter(post => post.tags && post.tags.includes(tag));
   
   // Get localized tag name for display
-  $: localizedTag = getLocalizedTagName(tag);
+  $: localizedTag = getLocalizedTagName(tag, currentLanguage);
 </script>
 
 <div class="tag-page">
@@ -27,18 +30,18 @@
           </div>
           
           <h2 class="post-title">
-            <a href="/blog/{post.slug}">{getLocalizedField(post, 'title')}</a>
+            <a href="/blog/{post.slug}">{getLocalizedField(post, 'title', currentLanguage)}</a>
           </h2>
           
           {#if post.tags && post.tags.length > 0}
             <div class="post-tags">
               {#each post.tags as postTag}
-                <a href="/tags/{postTag}" class="tag" class:active={postTag === tag}>{getLocalizedTagName(postTag)}</a>
+                <a href="/tags/{postTag}" class="tag" class:active={postTag === tag}>{getLocalizedTagName(postTag, currentLanguage)}</a>
               {/each}
             </div>
           {/if}
           
-          <p class="post-summary">{getLocalizedField(post, 'summary')}</p>
+          <p class="post-summary">{getLocalizedField(post, 'summary', currentLanguage)}</p>
           
           <div class="read-more">
             <a href="/blog/{post.slug}" class="read-more-link">{$t('pages.tags.read_more')}</a>
