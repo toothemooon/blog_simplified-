@@ -1,4 +1,5 @@
 <script>
+  // console.log('[BlogListPage.svelte] Script block started execution'); // Commented out
   import { onMount } from 'svelte';
   import { getAllPosts, formatPostDate, getReadingTime, getLocalizedTagName, getLocalizedField } from '../../utils/blog-utils.js';
   import { language, t } from '../../i18n';
@@ -8,29 +9,44 @@
   let tags = {};
   let showMobileTags = false;
   let loading = true;
+  let error = null;
   
   // Make currentLanguage reactive
   $: currentLanguage = $language;
   
   // Load posts on component mount
-  onMount(() => {
-    // Get posts from both new and legacy sources
-    posts = getAllPosts();
-    
-    // Generate unique tags list with counts
-    tags = posts.reduce((acc, post) => {
-      if (post.tags && post.tags.length) {
-        post.tags.forEach(tag => {
-          if (!acc[tag]) {
-            acc[tag] = 0;
-          }
-          acc[tag]++;
-        });
-      }
-      return acc;
-    }, {});
-    
-    loading = false;
+  onMount(async () => {
+    // console.log('[BlogListPage.svelte] onMount started'); // Commented out
+    try {
+      loading = true;
+      error = null;
+      // console.log('[BlogListPage.svelte] About to call getAllPosts'); // Commented out
+      // Get posts from both new and legacy sources
+      const loadedPosts = await getAllPosts();
+      // console.log('[BlogListPage.svelte] Loaded posts:', loadedPosts); // Commented out
+      posts = loadedPosts;
+      
+      // Generate unique tags list with counts
+      // console.log('[BlogListPage.svelte] Generating tags'); // Commented out
+      tags = loadedPosts.reduce((acc, post) => {
+        if (post.tags && post.tags.length) {
+          post.tags.forEach(tag => {
+            if (!acc[tag]) {
+              acc[tag] = 0;
+            }
+            acc[tag]++;
+          });
+        }
+        return acc;
+      }, {});
+      
+      loading = false;
+      // console.log('[BlogListPage.svelte] Loading complete, posts and tags set'); // Commented out
+    } catch (err) {
+      // console.error('[BlogListPage.svelte] Error in onMount:', err); // Commented out, ensure error state is still set
+      error = err; // Keep this
+      loading = false; // Keep this
+    }
   });
   
   // Make tag sorting reactive to language changes
@@ -54,6 +70,10 @@
   {#if loading}
     <div class="loading-indicator">
       <p>{$t('pages.blog.loading')}</p>
+    </div>
+  {:else if error}
+    <div class="error-message">
+      <p>{$t('pages.blog.error_loading')}: {error.message}</p>
     </div>
   {:else}
     <!-- Mobile Tags Toggle Button -->
