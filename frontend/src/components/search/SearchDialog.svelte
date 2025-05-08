@@ -107,6 +107,19 @@
     dispatch('close');
   }
   
+  function handleResultSelect(event) {
+    console.log('[SearchDialog.svelte] selectresult event received:', event.detail);
+    const slug = event.detail.slug;
+    if (slug) {
+      console.log('[SearchDialog.svelte] Navigating to slug:', slug);
+      window.location.href = `/blog/${slug}`;
+      console.log('[SearchDialog.svelte] Calling close()');
+      close(); // Close the dialog after navigation
+    } else {
+      console.warn('[SearchDialog.svelte] selectresult event received without slug:', event.detail);
+    }
+  }
+  
   // Handle key navigation
   function handleKeydown(event) {
     if (!isOpen) return;
@@ -248,6 +261,7 @@
                 results={yearResults} 
                 {query}
                 {activeResultId}
+                on:selectresult={handleResultSelect}
               />
             {/each}
           {/if}

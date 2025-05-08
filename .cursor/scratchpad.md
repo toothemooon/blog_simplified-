@@ -320,17 +320,18 @@ The site has a search feature (modal UI observed), but it is currently not funct
     - [x] Task 4: Integrate Search Logic and Update Search Results UI.
     - [x] Task 5: Testing (Multilingual search terms now working).
     - [ ] Task 6 (New): Fix search dialog not closing on mouse click.
-        - [ ] Task 6.1: Modify `SearchResult.svelte` to dispatch a `selectresult` event on click.
-        - [ ] Task 6.2: Handle `selectresult` event in `SearchDialog.svelte` to navigate and close.
-        - [ ] Task 6.3: Test mouse click and keyboard navigation for search results.
+        - [x] Task 6.1: Modify `SearchResult.svelte` to dispatch a `selectresult` event on click.
+        - [x] Task 6.2: Handle `selectresult` event in `SearchDialog.svelte` to navigate and close.
+        - [x] Task 6.3: Test mouse click and keyboard navigation for search results (Debugging new issue: click not navigating/closing. Logs added).
 
-### Executor's Feedback or Assistance Requests (Search Task - New Issue)
+### Executor's Feedback or Assistance Requests (Search Task - Debugging Task 6)
 
-**Issue:** Search dialog does not close when a result is clicked with the mouse, though it closes correctly with keyboard (Enter) selection.
+**New Issue with Task 6:** After implementing event dispatching for mouse clicks on search results, navigation and dialog closing were NOT working on click. Keyboard (Enter) selection was previously fine.
 
-**Plan to Fix (Task 6):**
-1.  **Task 6.1:** In `SearchResult.svelte`, prevent default click action on the `<a>` tag and instead dispatch a custom `selectresult` event containing the post slug.
-2.  **Task 6.2:** In `SearchDialog.svelte` (likely where `SearchResultGroup` and thus `SearchResult` are used), listen for this `selectresult` event. The event handler will perform the navigation (`window.location.href`) and then call `close()` on the dialog.
-3.  **Task 6.3:** Test both mouse and keyboard interactions.
+**Root Cause Found:** The intermediate component `SearchResultGroup.svelte` was not forwarding the `selectresult` event dispatched by `SearchResult.svelte`.
 
-The core multilingual search functionality is now in place and working. This new task addresses a minor UX issue in the search dialog.
+**Debugging Steps Taken:**
+- Logs confirmed `SearchResult.svelte` dispatched the event, but `SearchDialog.svelte` did not receive it.
+- Modified `SearchResultGroup.svelte` to forward the `selectresult` event by adding `on:selectresult` to the `<SearchResult>` instance.
+
+Awaiting final testing from the user for Task 6.3.

@@ -2,17 +2,27 @@
   import { highlightTerms, formatDate } from '../../utils/search.js';
   import { getLocalizedField } from '../../utils/blog-utils.js';
   import { language } from '../../i18n';
+  import { createEventDispatcher } from 'svelte';
+
+  const dispatch = createEventDispatcher();
   
   // Props
   export let result;
   export let query = '';
   export let active = false;
+
+  function handleClick(event) {
+    event.preventDefault();
+    console.log('[SearchResult.svelte] Clicked, dispatching selectresult with slug:', result.post.slug);
+    dispatch('selectresult', { slug: result.post.slug });
+  }
 </script>
 
 <a 
   href={`/blog/${result.post.slug}`} 
   class="search-result"
   class:active={active}
+  on:click={handleClick}
 >
   <div class="result-date">
     {formatDate(result.post.date)}

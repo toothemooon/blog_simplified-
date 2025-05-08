@@ -17,6 +17,7 @@
         {result} 
         {query}
         active={index + results[0].groupStartIndex === activeResultId}
+        on:selectresult
       />
     {/each}
   </div>
