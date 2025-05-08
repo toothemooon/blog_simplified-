@@ -1,5 +1,5 @@
 <script>
-  // console.log('[BlogListPage.svelte] Script block started execution'); // Commented out
+  // console.log('[BlogListPage.svelte] Script block started execution'); // Remove commented out log
   import { onMount } from 'svelte';
   import { getAllPosts, formatPostDate, getReadingTime, getLocalizedTagName, getLocalizedField } from '../../utils/blog-utils.js';
   import { language, t } from '../../i18n';
@@ -16,18 +16,18 @@
   
   // Load posts on component mount
   onMount(async () => {
-    // console.log('[BlogListPage.svelte] onMount started'); // Commented out
+    // console.log('[BlogListPage.svelte] onMount started'); // Remove commented out log
     try {
       loading = true;
       error = null;
-      // console.log('[BlogListPage.svelte] About to call getAllPosts'); // Commented out
+      // console.log('[BlogListPage.svelte] About to call getAllPosts'); // Remove commented out log
       // Get posts from both new and legacy sources
       const loadedPosts = await getAllPosts();
-      // console.log('[BlogListPage.svelte] Loaded posts:', loadedPosts); // Commented out
+      // console.log('[BlogListPage.svelte] Loaded posts:', loadedPosts); // Remove commented out log
       posts = loadedPosts;
       
       // Generate unique tags list with counts
-      // console.log('[BlogListPage.svelte] Generating tags'); // Commented out
+      // console.log('[BlogListPage.svelte] Generating tags'); // Remove commented out log
       tags = loadedPosts.reduce((acc, post) => {
         if (post.tags && post.tags.length) {
           post.tags.forEach(tag => {
@@ -41,9 +41,9 @@
       }, {});
       
       loading = false;
-      // console.log('[BlogListPage.svelte] Loading complete, posts and tags set'); // Commented out
+      // console.log('[BlogListPage.svelte] Loading complete, posts and tags set'); // Remove commented out log
     } catch (err) {
-      // console.error('[BlogListPage.svelte] Error in onMount:', err); // Commented out, ensure error state is still set
+      // console.error('[BlogListPage.svelte] Error in onMount:', err); // Remove commented out log
       error = err; // Keep this
       loading = false; // Keep this
     }

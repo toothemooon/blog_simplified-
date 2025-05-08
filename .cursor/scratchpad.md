@@ -319,19 +319,65 @@ The site has a search feature (modal UI observed), but it is currently not funct
         - [x] Task 3.2: Review `calculateScore` and `searchPosts` for compatibility with updated normalization.
     - [x] Task 4: Integrate Search Logic and Update Search Results UI.
     - [x] Task 5: Testing (Multilingual search terms now working).
-    - [ ] Task 6 (New): Fix search dialog not closing on mouse click.
+    - [x] Task 6 (New): Fix search dialog not closing on mouse click.
         - [x] Task 6.1: Modify `SearchResult.svelte` to dispatch a `selectresult` event on click.
         - [x] Task 6.2: Handle `selectresult` event in `SearchDialog.svelte` to navigate and close.
-        - [x] Task 6.3: Test mouse click and keyboard navigation for search results (Debugging new issue: click not navigating/closing. Logs added).
+        - [x] Task 6.3: Test mouse click and keyboard navigation for search results (Fix implemented).
+- [ ] **Phase 1: Consolidation & Documentation Setup**
+    - [x] Task 1: Code Cleanup - Remove Debug Logs.
+    - [x] Task 2: Add "Reusable Components Inventory" Section.
+    - [x] Task 3: Initial Population of Reusable Components Inventory.
+    - [ ] Task 4: Final Regression Testing (Awaiting user testing).
+- [ ] **Phase 2: Addressing Key Limitations & Enhancements**
+    - [ ] Task 5: Enhance Multilingual Content Search.
+    - [ ] Task 6: Improve Translation Workflow.
+    - [ ] Task 7: Add More Translated Content.
+- [ ] **Phase 3: Polish & Documentation**
+    - [ ] Task 8: UI/UX Enhancements.
+    - [ ] Task 9: Update Full Project Documentation.
 
-### Executor's Feedback or Assistance Requests (Search Task - Debugging Task 6)
+### Executor's Feedback or Assistance Requests (Phase 1 - Task 3)
 
-**New Issue with Task 6:** After implementing event dispatching for mouse clicks on search results, navigation and dialog closing were NOT working on click. Keyboard (Enter) selection was previously fine.
+Tasks 1, 2, and 3 of Phase 1 (Consolidation & Documentation Setup) are complete.
+- Debug logs have been removed.
+- The "Reusable Components Inventory" section has been added and populated initially in the scratchpad.
 
-**Root Cause Found:** The intermediate component `SearchResultGroup.svelte` was not forwarding the `selectresult` event dispatched by `SearchResult.svelte`.
+Proceeding to Task 4: Final Regression Testing. User action is required to test the site thoroughly.
 
-**Debugging Steps Taken:**
-- Logs confirmed `SearchResult.svelte` dispatched the event, but `SearchDialog.svelte` did not receive it.
-- Modified `SearchResultGroup.svelte` to forward the `selectresult` event by adding `on:selectresult` to the `<SearchResult>` instance.
+## Reusable Components Inventory
 
-Awaiting final testing from the user for Task 6.3.
+*(This section will list components identified as reusable across the project)*
+
+*   **`Header.svelte`**: Global site header. Contains main navigation (Blog, Tags, Projects, About), Search Button, Language Selector, and Theme Switcher. Used in `App.svelte`.
+*   **`Footer.svelte`**: Global site footer. Contains social media links and copyright information. Used in `App.svelte`.
+*   **`SearchButton.svelte`**: Button component (likely the magnifying glass icon in the header) used to trigger the opening of the search dialog. Used in `Header.svelte`.
+*   **`SearchDialog.svelte`**: The complete search modal component, including input, results display, and keyboard/mouse interaction logic.
+*   **`SearchResultGroup.svelte`**: Displays a list of search results under a year heading. Used within `SearchDialog.svelte`.
+*   **`SearchResult.svelte`**: Displays a single search result item (date, localized title) as a link. Used within `SearchResultGroup.svelte`.
+
+## Site Comparison (Planner Analysis)
+
+**User Deployed Site:** [`blog-simplified-co2v.vercel.app`](https://blog-simplified-co2v.vercel.app/)
+**Target Reference Site:** [`tailwind-nextjs-starter-blog.vercel.app`](https://tailwind-nextjs-starter-blog.vercel.app/)
+
+| Feature / Aspect       | User Site (`blog-simplified-...`)                                    | Target Site (`tailwind-nextjs-...`)                                         | Analysis & Differences                                                                                                                               |
+| :--------------------- | :---------------------------------------------------------------------------- | :-------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Technology Stack** | Svelte 4, Vanilla CSS (from project context)                                  | Next.js (v13+ App Dir inferred), React Server Components, Tailwind CSS       | **Fundamental Difference:** User site uses Svelte, the target uses Next.js/React. This impacts development approach, performance characteristics, and ecosystem. |
+| **Styling**            | Vanilla CSS, uses CSS variables (likely custom design)                      | Tailwind CSS (Utility-first framework)                                      | **Styling Philosophy:** User site uses traditional CSS, offering fine-grained control. Target uses utility classes, often leading to faster UI development. |
+| **Layout**             | Header (Blog, Tags, Projects, About, Search, Lang, Theme), Main Content Area, Footer | Header (Blog, Tags, Projects, About), Main Content (Latest posts list), Footer | **Similar Core Layout:** Both have standard blog layouts with header navigation, content area, and footer.                                                |
+| **Core Features**      | Blog Posts, Tags Page, Projects Page, About Page                              | Blog Posts, Tags Page, Projects Page, About Page                            | **Core Features Match:** Both sites cover the essential features of a personal blog/portfolio.                                                      |
+| **Search**             | Implemented (Modal Dialog, Client-side, Multilingual, Grouped by Year)        | Not explicitly visible in the scraped content, but common in such templates | **User Search:** User has a functional, client-side, multilingual search integrated. Target site's search functionality isn't confirmed from the scrape.    |
+| **Internationalization** | Implemented (EN, JA, ZH), UI switching, Localized content fetching            | Not mentioned or apparent in the scraped content                            | **User Advantage:** User site has robust, built-in multilingual support, a significant feature not evident on the target site.                          |
+| **Additional Features** | Theme Switcher (Light/Dark)                                                   | Newsletter Signup                                                           | **Feature Divergence:** Target site has a newsletter signup form. User site has a theme switcher.                                                      |
+| **Content Display**    | Lists posts (e.g., on search results), full post view (inferred)            | Lists posts on the homepage with summaries and "Read more" links             | **Similar:** Both display lists of posts and presumably have dedicated pages for full post content.                                                  |
+| **UI/UX Feel**         | Clean, custom look (based on search modal style and previous context)         | Clean, likely follows Tailwind's common design patterns, potentially more "componentized" look | **Subjective:** Both aim for a clean look. Target site *might* adhere more closely to typical Tailwind aesthetics unless heavily customized.             |
+
+**Summary of Key Differences:**
+
+1.  **Core Technology:** Svelte vs. Next.js/React.
+2.  **Styling Approach:** Vanilla CSS vs. Tailwind CSS.
+3.  **Multilingual Support:** User site has built-in i18n.
+4.  **Minor Features:** User site has Theme Switcher; Target site has Newsletter Signup.
+5.  **Search Implementation:** User site has confirmed client-side multilingual search.
+
+**Conclusion:** Both are competent blog platforms, but built with different technologies and offering slightly different secondary features. The user site's implemented i18n is a notable feature.

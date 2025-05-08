@@ -13,7 +13,6 @@
 
   function handleClick(event) {
     event.preventDefault();
-    console.log('[SearchResult.svelte] Clicked, dispatching selectresult with slug:', result.post.slug);
     dispatch('selectresult', { slug: result.post.slug });
   }
 </script>

@@ -38,7 +38,6 @@ export function getAllPosts() {
   });
   
   // Sort by date (newest first)
-  console.log('[blog-utils.js] getAllPosts returning:', combinedPosts);
   return combinedPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
 }
 

@@ -16,8 +16,6 @@
 	// Props from router
 	export let currentRoute = '/';
 	export let params = {};
-
-	// $: console.log('[App.svelte] currentRoute:', currentRoute, 'params:', params); // Commented out
 </script>
 
 <div class="app">
