@@ -382,126 +382,1232 @@ Proceeding to Task 4: Final Regression Testing. User action is required to test 
 
 **Conclusion:** Both are competent blog platforms, but built with different technologies and offering slightly different secondary features. The user site's implemented i18n is a notable feature.
 
-## Codebase Simplification Opportunities
+## Codebase Simplification Plan
 
-After analyzing the structure and architecture of the blog application, I've identified several opportunities for simplification without breaking existing functionality:
+Based on the analysis of the codebase, here is a comprehensive plan to simplify the codebase while maintaining all existing functionality. The plan is organized into phases with clear dependencies and success criteria.
 
-### 1. Component Structure
+### Phase 1: Analysis and Quick Wins
 
-1. **Component Refactoring**
-   - The `BlogPostPage.svelte` (595 lines) and `BlogListPage.svelte` (355 lines) are quite large and could be broken down into smaller, reusable components
-   - Potential extractions:
-     - BlogPostHeader component (title, date, author, tags)
-     - BlogPostContent component (markdown rendering)
-     - BlogPostNavigation component (previous/next post navigation)
-     - BlogListItem component (extract repeated post card/item in the list)
+**Goal**: Understand the codebase in depth and implement low-risk, high-impact changes.
 
-2. **Header Simplification**
-   - The `Header.svelte` file (392 lines) could be simplified by:
-     - Breaking down into smaller navigation components
-     - Separating language selector into its own component
-     - Moving styles to CSS classes for better maintainability
+#### Tasks:
 
-### 2. Internationalization System
+1. **Component Structure Analysis**
+   - Create a complete component dependency graph
+   - Identify large components (>300 lines) for refactoring
+   - Document component responsibilities and interaction patterns
+   - Success criteria: Clear documentation of component relationships and refactoring targets
 
-1. **Simplify Translation Loading**
-   - Current implementation requires multiple imports and conditional logic for each blog post
-   - Consider implementing a more declarative approach with a centralized translation registry
+2. **Extract BlogPostHeader Component**
+   - Create new `components/blog/BlogPostHeader.svelte` component
+   - Move title, date, author, and tags display from BlogPostPage.svelte
+   - Update BlogPostPage.svelte to use the new component
+   - Success criteria: BlogPostHeader works identically to the original implementation
 
-2. **Translation File Structure**
-   - Move to a more standardized i18n folder structure that better separates UI translations from content translations
-   - Consider using a standard format like JSON with nested keys instead of flat structures
+3. **Extract BlogPostContent Component**
+   - Create new `components/blog/BlogPostContent.svelte` component
+   - Move markdown rendering logic from BlogPostPage.svelte
+   - Handle content loading states within the component
+   - Success criteria: Content displays correctly with the same styling
 
-### 3. Data Management
+4. **Extract BlogListItem Component**
+   - Create new `components/blog/BlogListItem.svelte` component
+   - Move post card/item rendering from BlogListPage.svelte
+   - Update BlogListPage.svelte to use the new component
+   - Success criteria: Blog list page renders identically but with cleaner code
 
-1. **Centralize Blog Post Loading**
-   - The current approach with individual imports for each post and language variant could be replaced with a more dynamic loader
-   - Consider using a standard format with frontmatter in markdown files instead of separate JS modules
+5. **Extract LanguageSelector Component**
+   - Create new `components/header/LanguageSelector.svelte` component
+   - Move language selection UI and logic from Header.svelte
+   - Success criteria: Language switching works as before but in a dedicated component
 
-2. **Data Fetching Pattern**
-   - Implement a consistent data loading pattern across components
-   - Consider using Svelte stores for caching loaded blog posts to prevent redundant loads
+### Phase 2: Data Management Improvements
 
-### 4. Build System
+**Goal**: Simplify data loading and state management patterns.
 
-1. **Simplify Build Configuration**
-   - The current Rollup configuration has many plugins and complex settings
-   - Consider using modern bundler defaults and simplifying custom configurations
+#### Tasks:
 
-2. **Asset Management**
-   - Implement a more streamlined approach to handling static assets, particularly images
+1. **Create BlogPostStore**
+   - Implement a Svelte store for caching blog posts
+   - Create `stores/blog-posts.js` with functions for loading and retrieving posts
+   - Support automatic language-based content loading
+   - Success criteria: Components can load posts through the store with fewer lines of code
 
-### 5. Code Duplication
+2. **Update Components to Use BlogPostStore**
+   - Modify BlogPostPage.svelte to use the new store
+   - Modify BlogListPage.svelte to use the new store
+   - Success criteria: Components work with the store without functionality changes
 
-1. **Reduce Duplicate Logic**
-   - There's repetition in how blog posts are loaded and processed across components
-   - Extract common functionality into shared utilities
+3. **Implement Consistent Error Handling**
+   - Create a common error handling pattern for content loading
+   - Implement error boundaries in key components
+   - Success criteria: User-friendly error messages for all possible failure states
 
-2. **Standardize Error Handling**
-   - Implement consistent error boundaries and fallbacks
+4. **Extract Common Data Loading Patterns**
+   - Identify duplicate data loading code across components
+   - Create shared utilities for these patterns
+   - Success criteria: Reduced code duplication across the codebase
 
-### 6. Style Management
+### Phase 3: Internationalization Simplification
 
-1. **CSS Organization**
-   - Current mix of global.css and inline styles could be better organized
-   - Consider component-scoped styles or CSS modules for better encapsulation
+**Goal**: Make the i18n system more maintainable and easier to use.
 
-2. **Responsive Design Simplification**
-   - Standardize breakpoints and responsive patterns
+#### Tasks:
 
-### Implementation Priorities
+1. **Centralize Translation Registry**
+   - Create a single point of entry for registering translations
+   - Implement automatic fallback mechanism
+   - Success criteria: Simplified translation loading for new content
 
-1. **High Value, Low Risk**
-   - Extract reusable components from larger files
-   - Centralize blog post loading logic
-   - Standardize error handling
+2. **Restructure Translation Files**
+   - Organize translation files with nested structure for better organization
+   - Implement a consistent naming convention
+   - Success criteria: More intuitive organization of translation keys
 
-2. **Medium Complexity**
-   - Refactor i18n implementation for more maintainability
-   - Improve CSS organization
+3. **Create Higher-Level i18n Utilities**
+   - Implement additional helper functions for common i18n tasks
+   - Create a unified API for content localization
+   - Success criteria: Reduced code required to handle multilingual content
 
-3. **Requires More Planning**
-   - Build system optimizations
-   - Major data structure changes
+### Phase 4: Style Management Improvements
 
-## Key Challenges and Analysis
+**Goal**: Create a more maintainable CSS architecture.
 
-The primary challenge in simplifying this codebase is maintaining the robust internationalization features while reducing complexity. The current system works well but has high cognitive load due to:
+#### Tasks:
 
-1. **Distributed Translation Logic**: Each blog post needs its own translation handling
-2. **Complex Component Structure**: Large components handling many responsibilities
-3. **Inconsistent Data Loading**: Different approaches to loading and displaying content
+1. **Audit Current Styles**
+   - Catalog all inline styles in components
+   - Identify common patterns and duplicated styles
+   - Success criteria: Complete documentation of style usage
 
-Our simplification strategy should focus on maintaining functionality while:
-- Increasing consistency
-- Reducing duplication
-- Improving maintainability
-- Preserving performance
+2. **Create Component-Scoped Styles**
+   - Move inline styles to component-scoped style blocks
+   - Create consistent naming patterns
+   - Success criteria: Same visual appearance but with better style organization
 
-## High-level Task Breakdown
+3. **Standardize Global CSS**
+   - Refactor global.css to follow a consistent methodology
+   - Create utility classes for common patterns
+   - Success criteria: More maintainable global CSS architecture
 
-1. **Extract Smaller Components**
-   - Extract BlogPostHeader component from BlogPostPage.svelte
-   - Extract BlogPostContent component from BlogPostPage.svelte
-   - Extract BlogListItem component from BlogListPage.svelte
-   - Success criteria: Original pages work exactly as before, but with cleaner component structure
+4. **Document Style Guidelines**
+   - Create documentation for the CSS architecture
+   - Define standards for new component styling
+   - Success criteria: Clear guidelines for future development
 
-2. **Centralize Blog Post Loading**
-   - Create a unified blog post loader utility that handles i18n automatically
-   - Implement caching using Svelte stores
-   - Success criteria: Reduced code in individual components, consistent loading experience
+### Phase 5: Build System Optimization
 
-3. **Reorganize CSS**
-   - Move inline styles to component-scoped styles or global classes
-   - Standardize naming conventions
-   - Success criteria: Same visual appearance, more maintainable style code
+**Goal**: Improve build performance and output quality.
 
-4. **Simplify i18n Implementation**
-   - Restructure translation files for better organization
-   - Create higher-level utilities for common i18n tasks
-   - Success criteria: Same multilingual functionality with less boilerplate code
+#### Tasks:
 
-5. **Optimize Build Configuration**
-   - Review and streamline Rollup configuration
-   - Implement better code splitting
-   - Success criteria: Faster builds, smaller output size, same functionality
+1. **Analyze Current Build Process**
+   - Document current Rollup configuration
+   - Identify optimization opportunities
+   - Success criteria: Clear understanding of the build pipeline
+
+2. **Simplify Rollup Configuration**
+   - Remove unnecessary plugins
+   - Update to modern defaults
+   - Success criteria: Cleaner configuration with same functionality
+
+3. **Implement Code Splitting**
+   - Configure dynamic imports for better chunking
+   - Optimize common module sharing
+   - Success criteria: Improved initial load performance
+
+4. **Optimize Asset Handling**
+   - Implement better strategies for image loading
+   - Add appropriate resource hints
+   - Success criteria: Improved asset loading performance
+
+### Implementation Strategy
+
+1. **Incremental Approach**
+   - Complete each phase before moving to the next
+   - Test thoroughly after each task
+   - Document all changes for future reference
+
+2. **Prioritization**
+   - Focus on high-impact, low-risk changes first (Phase 1)
+   - Address core data and i18n improvements next (Phases 2-3)
+   - Complete style and build optimizations last (Phases 4-5)
+
+3. **Risk Management**
+   - Create a rollback plan for each change
+   - Maintain comprehensive test coverage
+   - Validate changes against the success criteria before proceeding
+
+### Project Status Board (Simplification Plan)
+
+- [ ] **Phase 1: Analysis and Quick Wins**
+  - [ ] Task 1: Component Structure Analysis
+  - [ ] Task 2: Extract BlogPostHeader Component
+  - [ ] Task 3: Extract BlogPostContent Component
+  - [ ] Task 4: Extract BlogListItem Component
+  - [ ] Task 5: Extract LanguageSelector Component
+
+- [ ] **Phase 2: Data Management Improvements**
+  - [ ] Task 1: Create BlogPostStore
+  - [ ] Task 2: Update Components to Use BlogPostStore
+  - [ ] Task 3: Implement Consistent Error Handling
+  - [ ] Task 4: Extract Common Data Loading Patterns
+
+- [ ] **Phase 3: Internationalization Simplification**
+  - [ ] Task 1: Centralize Translation Registry
+  - [ ] Task 2: Restructure Translation Files
+  - [ ] Task 3: Create Higher-Level i18n Utilities
+
+- [ ] **Phase 4: Style Management Improvements**
+  - [ ] Task 1: Audit Current Styles
+  - [ ] Task 2: Create Component-Scoped Styles
+  - [ ] Task 3: Standardize Global CSS
+  - [ ] Task 4: Document Style Guidelines
+
+- [ ] **Phase 5: Build System Optimization**
+  - [ ] Task 1: Analyze Current Build Process
+  - [ ] Task 2: Simplify Rollup Configuration
+  - [ ] Task 3: Implement Code Splitting
+  - [ ] Task 4: Optimize Asset Handling
+
+## Reusable Component Documentation Plan
+
+Creating a comprehensive reusable component documentation will help developers understand the available components, how to use them, and how they interact with each other. This documentation will serve as a reference for both current and future developers working on the project.
+
+### Documentation Structure
+
+I propose creating a component documentation with the following structure:
+
+#### 1. Component Inventory
+
+A complete catalog of all reusable components in the project, organized by category:
+
+1. **Layout Components**
+   - Header
+   - Footer
+   - Main layout wrappers
+
+2. **Blog Components**
+   - BlogListPage
+   - BlogPostPage
+   - Related subcomponents
+
+3. **Navigation Components**
+   - Language selector
+   - Theme switcher
+   - Navigation menu
+
+4. **UI Elements**
+   - Buttons
+   - Form elements
+   - Modal dialogs
+
+5. **Utility Components**
+   - Search components
+   - Error handlers
+   - Loading indicators
+
+#### 2. Component Documentation Template
+
+For each component, the documentation should include:
+
+1. **Basic Information**
+   - Component name
+   - File location
+   - Purpose/responsibility
+
+2. **Props API**
+   - List of props with types and descriptions
+   - Required vs optional props
+   - Default values
+
+3. **Slots**
+   - Available slots
+   - Purpose of each slot
+   - Default content (if any)
+
+4. **Events**
+   - Events dispatched by the component
+   - Event payload structure
+   - When events are triggered
+
+5. **Dependencies**
+   - Components used internally
+   - External dependencies (stores, utils, etc.)
+
+6. **Styling**
+   - CSS classes used
+   - Customization options
+   - Responsive behavior
+
+7. **Usage Examples**
+   - Basic usage
+   - Common variations
+   - Edge cases
+
+#### 3. Interactive Component Library
+
+A living documentation that showcases the components in action:
+
+1. **Storybook Integration**
+   - Set up Storybook for Svelte
+   - Create stories for each component
+   - Show different component states and variations
+
+2. **Code Snippets**
+   - Copy-pasteable examples
+   - Best practices for implementation
+
+3. **Visual Style Guide**
+   - Component appearance in different contexts
+   - Theme variations
+
+### Implementation Plan
+
+1. **Phase 1: Component Inventory Creation**
+   - Scan the codebase to identify all components
+   - Categorize components by function
+   - Create initial documentation structure
+
+2. **Phase 2: Base Documentation**
+   - Document core components first
+   - Create standardized documentation for each
+   - Focus on accuracy and completeness
+
+3. **Phase 3: Enhanced Documentation**
+   - Add usage examples
+   - Include visual references
+   - Document component interactions
+
+4. **Phase 4: Interactive Documentation**
+   - Implement Storybook integration
+   - Create interactive examples
+   - Set up automated updates
+
+### Example Component Documentation
+
+Here's an example of what the documentation for a component might look like:
+
+```markdown
+# Header Component
+
+## Overview
+**File:** `/src/components/Header.svelte`
+**Purpose:** Main navigation header for the application with language switching and theme control.
+
+## Props
+
+| Name | Type | Default | Required | Description |
+|------|------|---------|----------|-------------|
+| activePage | string | "" | No | Currently active page for highlighting in navigation |
+| showSearch | boolean | true | No | Whether to display the search button |
+
+## Slots
+- **Default slot**: Not used
+- **logo**: Optional custom logo content
+
+## Events
+- **languageChanged**: Dispatched when user changes language
+  - Payload: `{ lang: string }` - The new language code
+
+## Dependencies
+- Uses `LanguageSelector.svelte` for language switching
+- Uses `ThemeToggle.svelte` for theme switching
+- Uses `SearchButton.svelte` for opening search dialog
+- Consumes `currentTheme` store from `/src/stores/theme.js`
+
+## Styling
+- Uses global `.header` class for main container
+- Responsive design with breakpoints at 768px and 1024px
+- Supports both light and dark themes
+
+## Usage Example
+
+```svelte
+<Header 
+  activePage="blog"
+  showSearch={true}
+/>
+```
+```
+
+### Maintenance Plan
+
+1. **Documentation Ownership**
+   - Assign responsibility for documentation maintenance
+   - Establish review process for documentation updates
+
+2. **Update Workflow**
+   - Document updates required when components change
+   - Integration with development workflow
+
+3. **Validation**
+   - Regular review for accuracy
+   - Testing examples still work
+
+By implementing this comprehensive documentation approach, the project will have a clear reference for all reusable components, making it easier to maintain and extend the codebase.
+
+## Component Design Principles for Maximum Reusability
+
+To ensure components are logically separate and highly reusable across different projects, we need to implement several architectural principles and design patterns. This section outlines a comprehensive approach to transform the current components into a more portable, project-agnostic component library.
+
+### Core Principles for Reusable Components
+
+#### 1. Single Responsibility Principle
+
+Each component should do exactly one thing and do it well:
+
+- **Current Issue**: Components like `BlogPostPage.svelte` (595 lines) handle multiple responsibilities: fetching data, rendering content, handling translations, and managing UI state.
+- **Solution**: Split components based on distinct responsibilities:
+  - Content fetching logic extracted to stores/services
+  - Presentation logic in display components
+  - UI state management in container components
+
+#### 2. Prop-Driven Design
+
+Components should be primarily controlled through props rather than internal state:
+
+- **Current Issue**: Many components have tightly coupled internal state management that assumes specific app structure.
+- **Solution**:
+  - Convert internal state to props where possible
+  - Accept callbacks via props rather than implementing specific behaviors
+  - Use default props for common use cases while allowing full customization
+
+#### 3. Content Agnosticism
+
+Components should not make assumptions about the content they render:
+
+- **Current Issue**: Components often assume specific data shapes from the blog system.
+- **Solution**:
+  - Design components to accept generalized data structures
+  - Use adapters/transformers to convert application-specific data to component-expected formats
+  - Implement interfaces or TypeScript types to document expected data shapes
+
+#### 4. Styling Independence
+
+Components should have configurable styling that doesn't depend on global CSS:
+
+- **Current Issue**: Mix of inline styles and global CSS classes creates tight coupling.
+- **Solution**:
+  - Use Svelte's scoped CSS to isolate styles
+  - Implement CSS custom properties (variables) for theming
+  - Provide style override mechanisms via props or CSS custom properties
+  - Document style extension points
+
+#### 5. Minimal External Dependencies
+
+Components should minimize dependencies on external libraries:
+
+- **Current Issue**: Some components may depend on specific third-party libraries.
+- **Solution**:
+  - Accept required functionality via props rather than importing libraries directly
+  - Use dependency injection patterns for required services
+  - Document all external requirements
+
+### Implementation Strategies
+
+#### 1. Component Layering Architecture
+
+Implement a layered approach to component design:
+
+```
+┌─────────────────────────────────┐
+│ App-Specific Container Components│
+└─────────────────┬───────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────┐
+│    Generic Container Components  │
+└─────────────────┬───────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────┐
+│     Presentation Components      │
+└─────────────────┬───────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────┐
+│       Primitive Components       │
+└─────────────────────────────────┘
+```
+
+1. **Primitive Components**: Base UI elements (buttons, inputs, cards)
+   - Zero business logic
+   - Highly reusable across any project
+   - Example: `Button.svelte`, `Card.svelte`
+
+2. **Presentation Components**: Combine primitives for specific UI needs
+   - Display-focused, no data fetching
+   - Minimal business logic
+   - Example: `BlogPostCard.svelte`, `TagList.svelte`
+
+3. **Generic Container Components**: Add data management capabilities
+   - Handle loading states, errors, data transformation
+   - Business logic but not app-specific
+   - Example: `PaginatedList.svelte`, `SearchableContent.svelte`
+
+4. **App-Specific Container Components**: Tie into application architecture
+   - Implement specific app requirements
+   - Use stores and services from the application
+   - Generally not reusable without modification
+   - Example: `BlogListPage.svelte`, `TagPage.svelte`
+
+#### 2. Data Flow Architecture
+
+Implement a clean data flow pattern:
+
+```
+┌────────────────┐    ┌────────────────┐    ┌────────────────┐
+│                │    │                │    │                │
+│  Data Sources  │───▶│    Adapters    │───▶│   Components   │
+│                │    │                │    │                │
+└────────────────┘    └────────────────┘    └────────────────┘
+```
+
+- **Data Sources**: App-specific (API, stores, etc.)
+- **Adapters**: Transform app data to component-expected format
+- **Components**: Consume standardized data shapes
+
+#### 3. Component Interface Design
+
+Define clear, consistent interfaces for components:
+
+1. **Input Properties**:
+   - Required vs. optional props clearly documented
+   - Default values for optional props
+   - Validation for required props
+   - Type definitions (using TypeScript or JSDoc)
+
+2. **Output Events**:
+   - Standardized event naming conventions
+   - Well-defined event payloads
+   - Documentation of when events are dispatched
+
+3. **Slots**:
+   - Default slots for content injection
+   - Named slots for specific placement
+   - Fallback content for empty slots
+
+4. **Context/Stores**:
+   - Document any required Svelte context
+   - Abstract store dependencies through props
+
+### Refactoring Plan for High Reusability
+
+To transform existing components into a highly reusable library:
+
+#### Phase 1: Component Audit and Classification
+
+1. **Audit Existing Components**:
+   - Identify responsibilities of each component
+   - Document current dependencies and coupling points
+   - Classify into primitive, presentation, or container types
+
+2. **Identify Reuse Patterns**:
+   - Look for repeated UI patterns
+   - Identify common functionality
+   - Document cross-cutting concerns
+
+#### Phase 2: Create Primitive Component Layer
+
+1. **Extract Basic UI Elements**:
+   - Buttons, inputs, cards, typography
+   - Media components (images, icons)
+   - Layout primitives (stack, grid, containers)
+
+2. **Standardize Interfaces**:
+   - Consistent prop patterns
+   - Common event handling
+   - Accessibility features
+
+#### Phase 3: Build Presentation Layer
+
+1. **Create Specialized Display Components**:
+   - Blog-specific UI elements (post cards, author info)
+   - Navigation components (pagination, breadcrumbs)
+   - Interactive elements (search results, filters)
+
+2. **Implement Theme Support**:
+   - CSS custom properties for styling
+   - Dark/light mode support
+   - Customization options
+
+#### Phase 4: Develop Container Abstractions
+
+1. **Create Reusable Data Containers**:
+   - List containers with sorting/filtering
+   - Data loading containers with loading states
+   - Search containers with result handling
+
+2. **Implement Adapter Pattern**:
+   - Data transformation utilities
+   - Flexible data binding
+
+#### Phase 5: Bridge to Application
+
+1. **Create Application Adapters**:
+   - Blog-specific data transformation
+   - Service integration
+   - Store connections
+
+2. **Document Integration Patterns**:
+   - How to use components in different contexts
+   - Configuration options for different scenarios
+   - Extension points
+
+### Examples of Reusable Components
+
+#### From: Current BlogPostPage.svelte (595 lines)
+
+**To**: A set of focused, reusable components:
+
+1. **Primitive Components**:
+   - `Typography.svelte`: Handles text formatting with proper semantics
+   - `DateDisplay.svelte`: Formats dates with internationalization
+
+2. **Presentation Components**:
+   - `ArticleHeader.svelte`: Displays title, date, author, no data fetching
+   - `TagCollection.svelte`: Displays and handles tags
+   - `ContentRenderer.svelte`: Renders markdown/html content
+
+3. **Generic Container Components**:
+   - `LocalizedContent.svelte`: Handles loading content in different languages
+   - `PreviousNextNavigation.svelte`: Handles navigation between items
+
+4. **App-Specific Container**:
+   - `BlogPostPage.svelte`: Uses all the above components but is much simpler
+
+### Testing for Reusability
+
+To verify components are truly reusable:
+
+1. **Isolation Testing**:
+   - Can the component render properly with only its documented props?
+   - Does it make undocumented assumptions about its environment?
+
+2. **Storybook Scenarios**:
+   - Test components in various configurations
+   - Verify behavior with edge case inputs
+
+3. **Mock Application**:
+   - Create a minimal test app that uses components
+   - Verify components work without the full application context
+
+4. **Documentation Validation**:
+   - Ensure all dependencies are documented
+   - Verify prop interfaces are complete
+
+### Migration Strategy
+
+Rather than rewriting the entire application at once:
+
+1. **Incremental Refactoring**:
+   - Start with the most used components
+   - Create new reusable versions alongside existing ones
+   - Gradually replace old components with new ones
+
+2. **Parallel Component Library**:
+   - Develop a separate component library package
+   - Use in the current application as a consumer
+   - Validate reusability by using in multiple contexts
+
+3. **Documentation-Driven Development**:
+   - Document the intended component API before implementation
+   - Implement against the documentation
+   - Validate implementation matches documentation
+
+By following these principles and strategies, we can transform the current tightly coupled components into a highly reusable component library that can be used across different projects with minimal modification.
+
+## Executor's Implementation Plan
+
+To start implementing our reusable component architecture, I'll follow these concrete steps:
+
+### Step 1: Create Component Library Structure
+
+First, let's create a new directory structure for our component library:
+
+```
+frontend/src/lib/
+├── components/
+│   ├── primitive/      # Base UI elements
+│   ├── presentation/   # Display-focused components
+│   ├── containers/     # Generic container components
+│   └── app/            # App-specific containers
+├── utils/              # Shared utilities
+├── styles/             # Shared styles
+└── index.js            # Main export file
+```
+
+### Step 2: Select First Component to Refactor
+
+Let's start by refactoring the BlogPostPage.svelte component, as it's large (595 lines) and will demonstrate the layered approach effectively. I'll break it down into:
+
+1. Primitive components
+2. Presentation components
+3. Generic containers
+4. A simplified app-specific container
+
+### Step 3: Implementation Action Plan
+
+#### 3.1. Create Base Directory Structure
+
+```bash
+mkdir -p frontend/src/lib/components/{primitive,presentation,containers,app}
+mkdir -p frontend/src/lib/utils
+mkdir -p frontend/src/lib/styles
+touch frontend/src/lib/index.js
+```
+
+#### 3.2. Implement First Primitive Components
+
+Let's start with two primitive components:
+
+**Typography.svelte**:
+```svelte
+<script>
+  // Props with defaults
+  export let variant = 'body'; // heading1, heading2, heading3, body, caption
+  export let as = null; // Override HTML tag
+  export let color = 'inherit';
+  
+  // Compute the HTML tag to use
+  $: tag = as || {
+    'heading1': 'h1',
+    'heading2': 'h2',
+    'heading3': 'h3',
+    'body': 'p',
+    'caption': 'span'
+  }[variant] || 'p';
+</script>
+
+{#if tag === 'h1'}
+  <h1 class={variant}><slot /></h1>
+{:else if tag === 'h2'}
+  <h2 class={variant}><slot /></h2>
+{:else if tag === 'h3'}
+  <h3 class={variant}><slot /></h3>
+{:else if tag === 'p'}
+  <p class={variant}><slot /></p>
+{:else if tag === 'span'}
+  <span class={variant}><slot /></span>
+{/if}
+
+<style>
+  .heading1 {
+    font-size: var(--font-size-xl, 2rem);
+    font-weight: var(--font-weight-bold, 700);
+    margin: var(--spacing-lg, 1.5rem) 0 var(--spacing-md, 1rem) 0;
+    line-height: 1.2;
+  }
+  
+  .heading2 {
+    font-size: var(--font-size-lg, 1.5rem);
+    font-weight: var(--font-weight-bold, 700);
+    margin: var(--spacing-md, 1rem) 0 var(--spacing-sm, 0.75rem) 0;
+    line-height: 1.3;
+  }
+  
+  .heading3 {
+    font-size: var(--font-size-md, 1.25rem);
+    font-weight: var(--font-weight-semibold, 600);
+    margin: var(--spacing-md, 1rem) 0 var(--spacing-sm, 0.75rem) 0;
+    line-height: 1.4;
+  }
+  
+  .body {
+    font-size: var(--font-size-base, 1rem);
+    margin: var(--spacing-sm, 0.75rem) 0;
+    line-height: 1.6;
+  }
+  
+  .caption {
+    font-size: var(--font-size-sm, 0.875rem);
+    color: var(--color-text-secondary, #666);
+    line-height: 1.5;
+  }
+  
+  /* Allow overriding with color prop */
+  h1, h2, h3, p, span {
+    color: var(--color);
+  }
+</style>
+```
+
+**DateDisplay.svelte**:
+```svelte
+<script>
+  // Props with defaults
+  export let date;  // Required: Date string or Date object
+  export let format = 'medium'; // 'short', 'medium', 'long', 'full'
+  export let locale = 'en-US'; // Locale for date formatting
+  
+  // Format options based on selected format
+  $: options = {
+    short: { year: 'numeric', month: 'short', day: 'numeric' },
+    medium: { year: 'numeric', month: 'long', day: 'numeric' },
+    long: { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' },
+    full: { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }
+  }[format] || { year: 'numeric', month: 'long', day: 'numeric' };
+  
+  // Parse date string to Date object if needed
+  $: dateObj = typeof date === 'string' ? new Date(date) : date;
+  
+  // Format the date
+  $: formattedDate = dateObj instanceof Date && !isNaN(dateObj) 
+    ? new Intl.DateTimeFormat(locale, options).format(dateObj)
+    : 'Invalid date';
+</script>
+
+<time datetime={dateObj instanceof Date ? dateObj.toISOString() : ''}>
+  {formattedDate}
+</time>
+
+<style>
+  time {
+    font-size: var(--font-size-sm, 0.875rem);
+    color: var(--color-text-secondary, #666);
+  }
+</style>
+```
+
+#### 3.3. Implement First Presentation Component
+
+**ArticleHeader.svelte**:
+```svelte
+<script>
+  // Import primitive components
+  import Typography from '../primitive/Typography.svelte';
+  import DateDisplay from '../primitive/DateDisplay.svelte';
+  
+  // Props
+  export let title = '';
+  export let date = null;
+  export let author = null;
+  export let tags = [];
+  export let locale = 'en-US';
+  
+  // Event handlers
+  function handleTagClick(tag) {
+    // Dispatch event but allow parent to handle navigation
+    dispatch('tagclick', { tag });
+  }
+  
+  // Setup event dispatcher
+  import { createEventDispatcher } from 'svelte';
+  const dispatch = createEventDispatcher();
+</script>
+
+<header class="article-header">
+  <Typography variant="heading1">{title}</Typography>
+  
+  <div class="metadata">
+    {#if date}
+      <DateDisplay {date} {locale} />
+    {/if}
+    
+    {#if author}
+      <span class="author">
+        <Typography variant="caption">
+          by <span class="author-name">{author}</span>
+        </Typography>
+      </span>
+    {/if}
+  </div>
+  
+  {#if tags && tags.length > 0}
+    <div class="tags">
+      {#each tags as tag}
+        <button 
+          class="tag" 
+          on:click={() => handleTagClick(tag)}
+        >
+          {tag}
+        </button>
+      {/each}
+    </div>
+  {/if}
+</header>
+
+<style>
+  .article-header {
+    margin-bottom: var(--spacing-lg, 1.5rem);
+  }
+  
+  .metadata {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm, 0.75rem);
+    margin: var(--spacing-sm, 0.75rem) 0 var(--spacing-md, 1rem) 0;
+  }
+  
+  .author {
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  .author::before {
+    content: "•";
+    margin: 0 var(--spacing-xs, 0.3rem);
+    opacity: 0.6;
+  }
+  
+  .author-name {
+    font-weight: var(--font-weight-medium, 500);
+  }
+  
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs, 0.3rem);
+    margin-top: var(--spacing-sm, 0.75rem);
+  }
+  
+  .tag {
+    background: var(--color-bg-secondary, #f0f0f0);
+    border: none;
+    border-radius: var(--border-radius-sm, 0.25rem);
+    padding: 0.2rem 0.5rem;
+    font-size: var(--font-size-xs, 0.75rem);
+    cursor: pointer;
+    color: var(--color-text-secondary, #666);
+    transition: background 0.2s, color 0.2s;
+  }
+  
+  .tag:hover {
+    background: var(--color-primary-light, #e0e0ff);
+    color: var(--color-primary, #3333ff);
+  }
+</style>
+```
+
+#### 3.4. Implement First Generic Container Component
+
+**LocalizedContent.svelte**:
+```svelte
+<script>
+  // Props
+  export let content = null; // Current content
+  export let loading = false; // Loading state
+  export let error = null; // Error state
+  export let loadContent = () => {}; // Function to load content
+  export let language = 'en'; // Current language
+  
+  // Language change handling
+  import { onMount, afterUpdate } from 'svelte';
+  
+  let prevLanguage = language;
+  
+  onMount(() => {
+    if (!content && !loading && !error) {
+      loading = true;
+      loadContent(language);
+    }
+  });
+  
+  afterUpdate(() => {
+    if (prevLanguage !== language) {
+      prevLanguage = language;
+      loading = true;
+      loadContent(language);
+    }
+  });
+</script>
+
+<div class="localized-content">
+  {#if loading}
+    <div class="loading">
+      <slot name="loading">
+        <p>Loading content...</p>
+      </slot>
+    </div>
+  {:else if error}
+    <div class="error">
+      <slot name="error" {error}>
+        <p>Error loading content: {error.message || 'Unknown error'}</p>
+      </slot>
+    </div>
+  {:else if content}
+    <slot {content}>
+      <div>{content}</div>
+    </slot>
+  {:else}
+    <div class="no-content">
+      <slot name="no-content">
+        <p>No content available</p>
+      </slot>
+    </div>
+  {/if}
+</div>
+
+<style>
+  .localized-content {
+    width: 100%;
+  }
+  
+  .loading, .error, .no-content {
+    padding: var(--spacing-md, 1rem);
+    text-align: center;
+    color: var(--color-text-secondary, #666);
+  }
+  
+  .error {
+    color: var(--color-error, #e74c3c);
+  }
+</style>
+```
+
+#### 3.5. Implement the Refactored App Component
+
+Now let's refactor BlogPostPage.svelte to use our new components:
+
+```svelte
+<script>
+  // Import our new components
+  import ArticleHeader from '../../lib/components/presentation/ArticleHeader.svelte';
+  import LocalizedContent from '../../lib/components/containers/LocalizedContent.svelte';
+  import Typography from '../../lib/components/primitive/Typography.svelte';
+  
+  // Import from existing app
+  import { getLocalizedField } from '../../utils/blog-utils.js';
+  import { language } from '../../i18n/store.js';
+  
+  // Props from router
+  export let slug;
+  
+  // Component state
+  let post = null;
+  let content = null;
+  let loading = true;
+  let error = null;
+  let currentLanguage;
+  
+  // Subscribe to language changes
+  language.subscribe(value => {
+    currentLanguage = value;
+  });
+  
+  // Load post data based on slug
+  async function loadPost(slug, lang = currentLanguage) {
+    try {
+      loading = true;
+      error = null;
+      
+      // Get the post metadata
+      const posts = await import('../../data/blog/index.js').then(m => m.getAllPosts());
+      post = posts.find(p => p.slug === slug);
+      
+      if (!post) {
+        error = new Error('Post not found');
+        loading = false;
+        return;
+      }
+      
+      // Load post content
+      if (post.getLocalizedContent) {
+        const module = await post.getLocalizedContent(lang);
+        content = module.default;
+      } else {
+        const module = await post.getContent();
+        content = module.default;
+      }
+      
+      loading = false;
+    } catch (err) {
+      console.error('Error loading post:', err);
+      error = err;
+      loading = false;
+    }
+  }
+  
+  // Initial load and reload on slug change
+  $: if (slug) {
+    loadPost(slug);
+  }
+  
+  // Handle tag click
+  function handleTagClick(event) {
+    const tag = event.detail.tag;
+    // Use your app's router here
+    // For example: navigate(`/tags/${tag}`);
+  }
+</script>
+
+<article class="blog-post">
+  {#if post}
+    <ArticleHeader
+      title={getLocalizedField(post, 'title', $language)}
+      date={post.date}
+      author={post.authors ? post.authors[0] : null}
+      tags={post.tags}
+      locale={$language}
+      on:tagclick={handleTagClick}
+    />
+    
+    <LocalizedContent
+      {content}
+      {loading}
+      {error}
+      loadContent={(lang) => loadPost(slug, lang)}
+      language={$language}
+    >
+      <div slot="loading">
+        <Typography>Loading post...</Typography>
+      </div>
+      
+      <div slot="error" let:error>
+        <Typography color="var(--color-error)">
+          Error loading post: {error.message || 'Unknown error'}
+        </Typography>
+      </div>
+      
+      <!-- Use the content -->
+      <div slot="default" let:content>
+        <div class="post-content">
+          {@html content}
+        </div>
+      </div>
+    </LocalizedContent>
+  {:else if loading}
+    <Typography>Loading post...</Typography>
+  {:else if error}
+    <Typography color="var(--color-error)">
+      Error loading post: {error.message || 'Unknown error'}
+    </Typography>
+  {:else}
+    <Typography color="var(--color-error)">Post not found</Typography>
+  {/if}
+</article>
+
+<style>
+  .blog-post {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--spacing-lg, 1.5rem);
+  }
+  
+  .post-content {
+    line-height: 1.7;
+  }
+  
+  .post-content :global(h1),
+  .post-content :global(h2),
+  .post-content :global(h3) {
+    margin-top: var(--spacing-xl, 2rem);
+    margin-bottom: var(--spacing-md, 1rem);
+  }
+  
+  .post-content :global(p) {
+    margin-bottom: var(--spacing-md, 1rem);
+  }
+  
+  .post-content :global(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--border-radius-md, 0.5rem);
+  }
+  
+  .post-content :global(pre) {
+    background: var(--color-bg-secondary, #f0f0f0);
+    padding: var(--spacing-md, 1rem);
+    border-radius: var(--border-radius-sm, 0.25rem);
+    overflow-x: auto;
+    margin: var(--spacing-md, 1rem) 0;
+  }
+  
+  .post-content :global(code) {
+    font-family: var(--font-family-mono, monospace);
+    font-size: 0.9em;
+  }
+  
+  .post-content :global(blockquote) {
+    border-left: 4px solid var(--color-primary, #3333ff);
+    padding-left: var(--spacing-md, 1rem);
+    margin-left: 0;
+    font-style: italic;
+    color: var(--color-text-secondary, #666);
+  }
+</style>
+```
+
+### Step 4: Create Main Export File
+
+Let's set up the main export file for the library:
+
+**frontend/src/lib/index.js**:
+```js
+// Primitive components
+export { default as Typography } from './components/primitive/Typography.svelte';
+export { default as DateDisplay } from './components/primitive/DateDisplay.svelte';
+
+// Presentation components
+export { default as ArticleHeader } from './components/presentation/ArticleHeader.svelte';
+
+// Container components
+export { default as LocalizedContent } from './components/containers/LocalizedContent.svelte';
+
+// Export utilities here as well
+```
+
+### Step 5: Test the Refactored Components
+
+Let's create a basic test setup to verify the components work as expected:
+
+1. Create a simple test page that uses our new components
+2. Test language switching, different content formats, and edge cases
+3. Verify the components are properly isolated by checking in the browser devtools
+
+### Step 6: Update Application to Use New Components
+
+Once the components are tested and working, we can start using them in the main application:
+
+1. Replace the existing BlogPostPage.svelte with our new version
+2. Update any imported components to use our new library
+3. Test the application to ensure everything works as expected
+
+### Next Components to Refactor
+
+After completing the BlogPostPage refactoring, I recommend:
+
+1. Extract **BlogListItem** component from BlogListPage.svelte
+2. Create **TagList** component for tag display throughout the app
+3. Extract **LanguageSelector** from Header.svelte
+
+### Project Status Board (Executor Updates)
+
+- [x] **Implement Reusable Component Architecture**
+  - [x] Step 1: Create Component Library Structure
+    - [x] Set up directory hierarchy
+    - [x] Create main export file
+  - [x] Step 2: Implement Primitive Components
+    - [x] Typography.svelte
+    - [x] DateDisplay.svelte
+  - [x] Step 3: Implement Presentation Components
+    - [x] ArticleHeader.svelte
+    - [x] TagList.svelte
+    - [x] LanguageSelector.svelte
+  - [x] Step 4: Implement Generic Container Components
+    - [x] LocalizedContent.svelte
+    - [x] TagFilter.svelte
+  - [x] Step 5: Refactor BlogPostPage
+    - [x] Create new version using components
+    - [x] Implement ExampleUsage.svelte demo
+    - [x] Create TagAndTranslationDemo.svelte comprehensive demo
+  - [x] Step 6: Implement Translation Utilities
+    - [x] LocalizedStore.js
+    - [x] translation.js
+
+### Executor's Feedback or Assistance Requests
+
+The implementation of the reusable component architecture is complete. The architecture follows a four-layer structure with:
+
+1. **Primitive Components**: Base UI elements (Typography, DateDisplay)
+2. **Presentation Components**: Display-focused (ArticleHeader, TagList, LanguageSelector)
+3. **Container Components**: Data management (LocalizedContent, TagFilter)
+4. **App-Specific Components**: Application-specific (BlogPostPage, demo components)
+
+All components are properly implemented with appropriate documentation, prop interfaces, and styling. The library includes comprehensive demos (ExampleUsage.svelte and TagAndTranslationDemo.svelte) that showcase how the components work together.
+
+Next steps would be to:
+1. Test the components more thoroughly with various scenarios
+2. Consider implementing additional primitive components (Button, Input, etc.)
+3. If desired, gradually migrate these components into the production codebase
