@@ -1,6 +1,7 @@
 <script>
   import { onMount, onDestroy, createEventDispatcher } from 'svelte';
-  import { posts } from '../../data/blog-data.js';
+  // import { posts } from '../../data/blog-data.js'; // Removed old import
+  import { getAllPosts } from '../../utils/blog-utils.js'; // Added new import
   import { searchPosts, groupResultsByYear } from '../../utils/search.js';
   import SearchResultGroup from './SearchResultGroup.svelte';
   import { t, language } from '../../i18n';
@@ -14,13 +15,15 @@
   let query = '';
   let results = [];
   let groupedResults = {};
-  let allResults = [];
+  let allResultsFlat = []; // Renamed from allResults to avoid confusion with a local var in performSearch
   let activeResultId = -1;
   let debounceTimer;
   
+  let allPostsData = []; // To store posts from getAllPosts()
+
   // Debug information
   let debugInfo = { 
-    postsCount: Array.isArray(posts) ? posts.length : 'not an array',
+    postsCount: 'not initialized', // Updated initial value
     currentLanguage: '',
     hasSearchFunction: typeof searchPosts === 'function',
     lastError: null
@@ -51,24 +54,27 @@
     if (query.trim() === '') {
       results = [];
       groupedResults = {};
-      allResults = [];
+      allResultsFlat = [];
       activeResultId = -1;
       return;
     }
     
     try {
-      // Check if posts is valid
-      if (!Array.isArray(posts) || posts.length === 0) {
-        console.warn("Search data not available: posts array is empty or invalid");
-        debugInfo.lastError = "Posts data is invalid or empty";
+      // Check if allPostsData is valid
+      if (!Array.isArray(allPostsData) || allPostsData.length === 0) {
+        console.warn("Search data not available: allPostsData array is empty or invalid");
+        debugInfo.lastError = "Posts data is invalid or empty (from allPostsData)";
+        results = []; // Clear results if data source is bad
+        groupedResults = {};
+        allResultsFlat = [];
         return;
       }
       
-      results = searchPosts(posts, query);
+      results = searchPosts(allPostsData, query); // Use allPostsData
       groupedResults = groupResultsByYear(results);
       
       // Prepare flat list for keyboard navigation
-      allResults = [];
+      allResultsFlat = [];
       let resultIndex = 0;
       
       Object.entries(groupedResults)
@@ -77,13 +83,13 @@
           yearResults.forEach((result, i) => {
             // Add group start index for active state in groups
             result.groupStartIndex = resultIndex;
-            allResults.push(result);
+            allResultsFlat.push(result);
             resultIndex++;
           });
         });
       
       // Reset active result
-      activeResultId = allResults.length > 0 ? 0 : -1;
+      activeResultId = allResultsFlat.length > 0 ? 0 : -1;
       
       // Reset error state on successful search
       debugInfo.lastError = null;
@@ -92,7 +98,7 @@
       debugInfo.lastError = error.message;
       results = [];
       groupedResults = {};
-      allResults = [];
+      allResultsFlat = [];
     }
   }
   
@@ -113,23 +119,23 @@
         
       case 'ArrowDown':
         event.preventDefault();
-        if (allResults.length > 0) {
-          activeResultId = (activeResultId + 1) % allResults.length;
+        if (allResultsFlat.length > 0) {
+          activeResultId = (activeResultId + 1) % allResultsFlat.length;
         }
         break;
         
       case 'ArrowUp':
         event.preventDefault();
-        if (allResults.length > 0) {
-          activeResultId = (activeResultId - 1 + allResults.length) % allResults.length;
+        if (allResultsFlat.length > 0) {
+          activeResultId = (activeResultId - 1 + allResultsFlat.length) % allResultsFlat.length;
         }
         break;
         
       case 'Enter':
         event.preventDefault();
-        if (activeResultId >= 0 && activeResultId < allResults.length) {
+        if (activeResultId >= 0 && activeResultId < allResultsFlat.length) {
           // Navigate to the selected result
-          const result = allResults[activeResultId];
+          const result = allResultsFlat[activeResultId];
           window.location.href = `/blog/${result.post.slug}`;
           close();
         }
@@ -146,6 +152,8 @@
   
   // Set up keyboard shortcuts and cleanup
   onMount(() => {
+    allPostsData = getAllPosts(); // Load all posts when component mounts
+    debugInfo.postsCount = Array.isArray(allPostsData) ? allPostsData.length : 'not an array';
     // Add global keyboard shortcut for opening search
     const handleGlobalKeydown = (event) => {
       // '/' key to open search (unless in an input or textarea)

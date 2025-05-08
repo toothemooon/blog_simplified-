@@ -1,5 +1,7 @@
 <script>
   import { highlightTerms, formatDate } from '../../utils/search.js';
+  import { getLocalizedField } from '../../utils/blog-utils.js';
+  import { language } from '../../i18n';
   
   // Props
   export let result;
@@ -17,7 +19,7 @@
   </div>
   
   <div class="result-title">
-    {@html highlightTerms(result.post.title, query)}
+    {@html highlightTerms(getLocalizedField(result.post, 'title', $language), query)}
   </div>
 </a>
 

@@ -40,22 +40,49 @@ export function searchPosts(posts, query) {
  */
 function calculateScore(post, terms) {
   let score = 0;
-  
-  // Title has the highest weight
-  const normalizedTitle = normalizeText(post.title.toLowerCase());
-  terms.forEach(term => {
-    if (normalizedTitle.includes(term)) {
-      score += 10;
+  const languages = ['en', 'ja', 'zh']; // Supported languages
+
+  // Title scoring (highest weight)
+  languages.forEach(lang => {
+    const titleField = `title_${lang}`;
+    if (post[titleField]) {
+      const normalizedTitle = normalizeText(post[titleField].toLowerCase());
+      terms.forEach(term => {
+        if (normalizedTitle.includes(term)) {
+          score += 10;
+        }
+      });
     }
   });
-  
-  // Summary has medium weight
-  if (post.summary) {
+  // Fallback to default title if no localized titles matched or existed
+  if (score === 0 && post.title) { // Only if no language-specific title score yet
+    const normalizedTitle = normalizeText(post.title.toLowerCase());
+    terms.forEach(term => {
+      if (normalizedTitle.includes(term)) {
+        score += 9; // Slightly less score for default/unprefixed title
+      }
+    });
+  }
+
+  // Summary scoring (medium weight)
+  languages.forEach(lang => {
+    const summaryField = `summary_${lang}`;
+    if (post[summaryField]) {
+      const normalizedSummary = normalizeText(post[summaryField].toLowerCase());
+      terms.forEach(term => {
+        if (normalizedSummary.includes(term)) {
+          score += 5;
+        }
+      });
+    }
+  });
+  // Fallback for default summary
+  if (post.summary && !languages.some(lang => post[`summary_${lang}`] && normalizeText(post[`summary_${lang}`].toLowerCase()).includes(terms.join(' ')))) { // Check if specific lang summary already gave score for the query
     const normalizedSummary = normalizeText(post.summary.toLowerCase());
     terms.forEach(term => {
-      if (normalizedSummary.includes(term)) {
-        score += 5;
-      }
+        if (normalizedSummary.includes(term)) {
+            score += 4; // Slightly less score
+        }
     });
   }
   
@@ -71,6 +98,8 @@ function calculateScore(post, terms) {
   
   // Content has lower weight but still important
   if (post.content) {
+    // TODO: Future enhancement: Ensure post.content for search contains all markdown for all languages, or search pre-rendered HTML snippets for all languages.
+    // For now, this searches whatever content string is present on the post object.
     const normalizedContent = normalizeText(post.content.toLowerCase());
     terms.forEach(term => {
       if (normalizedContent.includes(term)) {
@@ -108,9 +137,12 @@ export function groupResultsByYear(results) {
  * @returns {string} - Normalized text
  */
 function normalizeText(text) {
+  if (typeof text !== 'string') { // Add a type check for robustness
+    return '';
+  }
   return text
-    .replace(/[^\w\s]/g, ' ') // Replace non-alphanumeric with spaces
-    .replace(/\s+/g, ' ')     // Replace multiple spaces with single space
+    .replace(/[\p{P}\p{S}]/gu, ' ') // Replace Unicode punctuation (P) and symbols (S) with a space
+    .replace(/\s+/g, ' ')      // Replace multiple spaces with a single space
     .trim();
 }
 

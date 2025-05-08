@@ -183,129 +183,31 @@ Each blog post has been structured to support multilingual content:
 
 The goal is to build a modern multilingual blog using Svelte 4 for the framework and vanilla CSS for styling. The internationalization system should support English, Japanese, and Chinese content with proper fallbacks and smooth language switching.
 
-## Key Challenges and Analysis
-
-### Homepage and Tag Page "undefined" Issue Analysis
-
-I've identified the root cause of the "undefined" values appearing on the HomePage and TagPage components. While the application has a robust internationalization system with the `getLocalizedField()` utility function to retrieve localized versions of content fields, these components are not using it correctly.
-
-Current issues:
-1. The HomePage.svelte component directly references `post.title` and `post.summary` properties.
-2. The TagPage.svelte component also directly references `post.title` and `post.summary` properties.
-3. However, in the new multilingual system, these fields are stored with language suffixes as `title_en`, `title_ja`, `title_zh`, etc.
-4. Both components import the necessary i18n utilities but are not using the `getLocalizedField()` function to access the localized content.
-
-This is why users see "undefined" values when viewing the site in Japanese or Chinese - the direct field access fails to find localized content.
-
-## High-level Task Breakdown
-
-To fix the "undefined" values on the home page and tag pages, we need to:
-
-1. **Update HomePage.svelte Component**:
-   - Replace direct field access with the `getLocalizedField()` function
-   - Replace `post.title` with `getLocalizedField(post, 'title')`
-   - Replace `post.summary` with `getLocalizedField(post, 'summary')`
-   - Import the missing `getLocalizedField` function
-
-2. **Update TagPage.svelte Component**:
-   - Make the same replacements as in the HomePage component
-   - Replace `post.title` with `getLocalizedField(post, 'title')`
-   - Replace `post.summary` with `getLocalizedField(post, 'summary')`
-   - Import the missing `getLocalizedField` function
-
-3. **Test Language Switching**:
-   - Verify that the home page displays proper content in all three languages
-   - Verify that the tag pages display proper content in all three languages
-   - Ensure no "undefined" values appear during language switching
-
-## Debugging: "Loading posts..." Issue
-
-### Problem Description
-The blog page (`/blog`) was getting stuck displaying "Loading posts..." and not rendering the actual list of blog posts. This was likely due to issues in how the `BlogListPage.svelte` component handled asynchronous data loading and Svelte's reactivity.
-
-### Fixes Applied to `frontend/src/components/blog/BlogListPage.svelte`
-To address the "Loading posts..." issue, the following changes were made to `frontend/src/components/blog/BlogListPage.svelte`:
-- The `onMount` lifecycle function was made `async`.
-- A `loading` state variable is now set to `true` before starting to fetch posts and set to `false` after posts are loaded or if an error occurs.
-- An `error` state variable was added to capture and display potential errors during post fetching.
-- The call to `getAllPosts()` is now `await`ed within a `try...catch` block to handle asynchronous operations and potential errors gracefully.
-- Tag generation logic was moved inside the `try` block to ensure it only runs after posts are successfully loaded.
-- The template was updated to display a loading message, an error message if `error` is set, or the posts list.
-
-### Analysis of `frontend/src/utils/blog-utils.js#getAllPosts`
-The user's initial diagnosis suggested a potential issue in `getAllPosts()` related to asynchronous operations.
-- Upon review, `getAllPosts()` in `frontend/src/utils/blog-utils.js` currently operates **synchronously**. It combines post metadata from different sources and sorts them but does **not** fetch the full content of each post (which would be an async operation).
-- For a blog list page that typically displays summaries (as `BlogListPage.svelte` does using `getLocalizedField(post, 'summary', ...)`), loading full content for all posts upfront in `getAllPosts()` would be detrimental to performance.
-- **Decision:** For now, `getAllPosts()` will not be modified to pre-fetch all post content. The changes in `BlogListPage.svelte` correctly handle its own loading sequence, and `getAllPosts()` as a synchronous metadata provider is appropriate for its current use.
-
-### Executor's Feedback or Assistance Requests
-The primary changes to `BlogListPage.svelte` are complete.
-
-### Next Steps (as per user's original suggestions):
-1.  Verify that `getAllPosts()` is not returning empty or undefined. (Based on current `blog-utils.js` implementation, it should return an array, possibly empty if no posts exist, but not undefined).
-2.  Check the browser's network tab to see if posts (or any critical data) are actually being loaded or if there are network errors.
-3.  Add console logs to track the loading sequence more closely if the issue persists.
-
 ## Project Status Board
-- [ ] **Fix "Loading posts..." issue on blog page**
-    - [x] `BlogListPage.svelte`: Initial async/loading fixes applied. Logs added and later cleaned up. (No longer primary focus for `/blog/:slug` URL).
-    - [x] `getAllPosts()` in `blog-utils.js`: Analyzed. Operates synchronously and returns data as expected. Log remains for now.
-    - [x] Routing (`main.js`, `App.svelte`): Investigated. `App.svelte` correctly routes to `BlogPostPage.svelte` for `/blog/:slug`. Log in `App.svelte` cleaned up.
-    - [-] `BlogPostPage.svelte`: Detailed logs added. Reactive triggers for `loadPost` simplified. (Pending user feedback on UI and console after changes).
-    - [ ] `BlogPostPage.svelte` template rendering: Investigate `markdownToHtml` and other template logic if UI still stuck on "Loading posts...". (Potential next step).
-    - [ ] Check browser network tab for loading issues. (Low priority, data appears to be fetched by `BlogPostPage.svelte`).
+- [x] **Fix "Loading posts..." issue on blog page** (Resolved after simplifying reactive triggers in BlogPostPage.svelte)
+    - [x] `BlogListPage.svelte`: Initial async/loading fixes applied. Logs added and later cleaned up.
+    - [x] `getAllPosts()` in `blog-utils.js`: Analyzed. Operates synchronously and returns data as expected.
+    - [x] Routing (`main.js`, `App.svelte`): Investigated. `App.svelte` correctly routes to `BlogPostPage.svelte` for `/blog/:slug`.
+    - [x] `BlogPostPage.svelte`: Detailed logs added. Reactive triggers for `loadPost` simplified. This likely resolved the issue.
+    - [x] `BlogPostPage.svelte` template rendering: No direct investigation needed as issue resolved.
+    - [x] Check browser network tab for loading issues. (Not an issue).
 
-## Executor's Feedback or Assistance Requests
+## Resolution Summary: "Loading posts..." Issue
 
-I've successfully fixed the language switching issue where post titles and summaries weren't updating without a page refresh. The solution involved making the components properly reactive to language changes:
+The user reports that the "Loading posts..." issue on the `/blog/:slug` pages (e.g., `/blog/ravencoin-privacy-future`) is now resolved.
 
-1. Created reactive variables for the current language: `$: currentLanguage = $language`
-2. Made the post lists reactive: `$: recentPosts = allPosts.slice(0, 5)`
-3. Explicitly passed the current language to the localization functions: `getLocalizedField(post, 'title', currentLanguage)`
-
-These changes ensure that when a user switches languages using the dropdown, all content on the page updates immediately without requiring a page refresh. The fix has been applied to both HomePage.svelte and TagPage.svelte.
-
-I've also successfully enhanced the tag translation system:
-
-1. Added complete tag translations for both Japanese and Chinese locales
-2. Updated the TagsPage component to be properly reactive to language changes
-3. Implemented localized tag sorting so tags appear in alphabetical order in each language
-4. Ensured consistent tag display throughout the application
-
-This completes the core multilingual functionality of the blog system. All content (posts, tags, UI elements) now properly responds to language changes without requiring page refreshes, providing a seamless multilingual user experience.
-
-## Current Status / Progress Tracking
-
-The project has been significantly improved:
-
-1. First, we resolved the build errors by creating placeholder content files for all language variants
-2. Then, we fixed the "undefined" values issue by updating HomePage and TagPage components to use the `getLocalizedField()` function
-3. Next, we fixed the language switching reactivity issue where post titles and summaries weren't updating without a page refresh
-4. Now, we've completed the tag translation system by:
-   - Adding missing tag translations to Japanese and Chinese locale files
-   - Making the TagsPage component properly reactive to language changes
-   - Ensuring tags are sorted based on their localized names
-   - Passing the current language explicitly to tag localization functions
-
-All multilingual functionality is now working correctly across the application, with proper reactivity when switching languages. The site will now display all content (post titles, summaries, tags, UI elements) in the selected language without requiring a page refresh.
-
-## Project Status Board
-
-| Task | Status | Priority | Est. Effort | Notes |
-|------|--------|----------|-------------|-------|
-| Update HomePage Component | ✅ Completed | High | 15 mins | Replaced direct field access with getLocalizedField() |
-| Update TagPage Component | ✅ Completed | High | 15 mins | Replaced direct field access with getLocalizedField() |
-| Fix Language Switching Reactivity | ✅ Completed | High | 30 mins | Made components properly react to language changes |
-| Complete Tag Translation System | ✅ Completed | High | 30 mins | Added missing translations and fixed tag reactivity |
-| Create Missing Placeholder Content Files | ✅ Completed | High | 2 hours | Created placeholder content files for all blog posts in Japanese and Chinese to fix Rollup errors |
-| Complete Translation of All Blog Posts | ⏱️ Planned | Medium | 24 hours | Create proper translations for all remaining blog posts |
-| Enhance Translation Automation | ⏱️ Planned | Low | 8 hours | Improve the automation script with better translation logic |
-| Add Language Availability Indicator | ⏱️ Planned | Low | 4 hours | Visual indicator to show which posts have translations |
-| Update Documentation | ⏱️ Planned | Medium | 4 hours | Document the multilingual system for developers |
-| Create Translation Guide | ⏱️ Planned | Medium | 6 hours | Guide for content creators on how to add translations |
-| Test Language Switching UX | ✅ Completed | High | 4 hours | Ensured smooth transitions when changing languages |
-| Fix Tag Translation Edge Cases | ✅ Completed | Medium | 6 hours | Ensured all tag translations work properly |
-| Add Explicit Language Links | ⏱️ Planned | Low | 4 hours | Allow viewing content in specific languages |
+The last set of changes made before the resolution were:
+1.  Commenting out extensive console logs in `App.svelte` and `BlogListPage.svelte` (for clarity, unlikely to be the fix itself).
+2.  In `frontend/src/components/blog/BlogPostPage.svelte`, one of the reactive blocks responsible for calling `loadPost` was commented out:
+    ```svelte
+    // $: { // Commenting out this reactive block
+    //   currentLanguage; // Reference to create dependency
+    //   if (slug && post) {
+    //     loadPost(slug); // This was calling loadPost with lang=undefined
+    //   }
+    // }
+    ```
+This change was intended to reduce potential rapid state churn of the `loading` variable in `BlogPostPage.svelte` by preventing an immediate, possibly redundant, follow-up call to `loadPost` after the initial load or language change. It appears this simplification of reactive dependencies was key to resolving the persistent "Loading post..." display.
 
 ## Lessons
 
@@ -349,31 +251,86 @@ All multilingual functionality is now working correctly across the application, 
 
 20. **Comprehensive Translation Coverage**: For a fully localized experience, ensure all user-facing strings, including metadata like tags, are properly translated. A single untranslated element can disrupt the cohesive multilingual experience.
 
-## Executor's Feedback or Assistance Requests
+21. **Simplify Reactive Dependencies**: Complex or overlapping reactive Svelte statements (`$:`) that trigger data loading can lead to rapid state churn (e.g., `loading` toggling quickly). This might cause the UI to appear stuck in one state if updates happen faster than the render cycle or if subsequent calls reset the desired state. Carefully review and simplify reactive triggers for data fetching functions. Ensure each distinct event (e.g., prop change, store change) has a clear and non-conflicting reactive handler.
 
-I've successfully enhanced the tag translation system:
+22. **Impact of `undefined` Parameters**: When a function is called through different reactive triggers, ensure all necessary parameters (like `lang`) are correctly passed. An accidental call with `undefined` for a parameter that influences data fetching can lead to unexpected re-fetches or incorrect states. (Relates to the commented-out block in `BlogPostPage.svelte` calling `loadPost(slug)` which implies `lang` would be undefined).
 
-1. Added complete tag translations for both Japanese and Chinese locales
-2. Updated the TagsPage component to be properly reactive to language changes
-3. Implemented localized tag sorting so tags appear in alphabetical order in each language
-4. Ensured consistent tag display throughout the application
+## New Task: Implement Multilingual Site Search
 
-This completes the core multilingual functionality of the blog system. All content (posts, tags, UI elements) now properly responds to language changes without requiring page refreshes, providing a seamless multilingual user experience.
+### Background and Motivation (Multilingual Search)
 
-## Current Bug-Fixing Task
+The site has a search feature (modal UI observed), but it is currently not functional or not finding any results. The goal is to implement a client-side search that works across all three supported languages (English, Japanese, Chinese), allowing users to find relevant blog posts by searching terms in any of these languages, regardless of the currently selected UI language.
 
-I've identified a bug in the getAllPosts() function in BlogListPage.svelte. The current implementation does not properly handle the language suffixes in post titles and summaries.
+### Key Challenges and Analysis (Multilingual Search)
 
-### Decision
+1.  **Data Aggregation:** The search needs to look through multiple localized fields for each post (e.g., `title_en`, `title_ja`, `title_zh`, `summary_en`, `summary_ja`, `summary_zh`, and potentially tags).
+2.  **Search Logic:** The matching logic needs to be case-insensitive and check the query against content in all supported languages for each post.
+3.  **Result Display:** Search results (title, summary snippets) should ideally be displayed in the user's current UI language, using the existing `getLocalizedField` utility. If a direct translation isn't available for the UI language, it should fall back appropriately (e.g., to English or the language of the matched content).
+4.  **Identifying Existing Code:** We need to find the current search component (likely in `frontend/src/components/search/`) and any associated JavaScript files (e.g., `frontend/src/utils/search.js`).
 
-For now, we'll leave the getAllPosts() function as it is. The current implementation is sufficient for the existing functionality.
+### High-level Task Breakdown (Multilingual Search)
 
-### Changes Made to BlogListPage.svelte
+1.  **Task 1: Locate and Analyze Existing Search Implementation.**
+    *   **Action:** Read files in `frontend/src/components/search/` and `frontend/src/utils/search.js` (if it exists).
+    *   **Success Criteria:** Understand the current search UI structure, how it's triggered, how it currently attempts to fetch data or perform searches, and which component displays the "No results found" message.
 
-1. **Title and Summary Handling**:
-   - The current implementation directly accesses `post.title` and `post.summary` properties.
-   - This is problematic in a multilingual system where these fields are stored with language suffixes.
+2.  **Task 2: Prepare Searchable Data Source.**
+    *   **Action:** The search function will need access to all posts. This will likely involve using the existing `getAllPosts()` utility from `frontend/src/utils/blog-utils.js` which provides posts with all their localized metadata fields.
+    *   **Success Criteria:** The search mechanism has a clear way to access an array of all post objects, with each object containing fields like `title_en`, `summary_en`, `title_ja`, `summary_ja`, etc.
 
-2. **Solution**:
-   - We'll keep the getAllPosts() function as it is for now.
-   - We'll address the language suffix issue in a separate task.
+3.  **Task 3 (Refined): Implement Core Multilingual Search Logic.**
+    *   **Action:** Create or modify a function (e.g., in `frontend/src/utils/search.js` or within the search component itself if logic is simple):
+        *   Input: search query (string), list of all post objects.
+        *   Convert the search query to lowercase.
+        *   For each post:
+            *   Iterate through relevant localized fields: `title_en`, `title_ja`, `title_zh`, `summary_en`, `summary_ja`, `summary_zh`. Consider including tags as well.
+            *   For each field, convert its content to lowercase.
+            *   Check if the lowercase field content `includes` the lowercase search query.
+            *   If a match is found in *any* field, add the post to the results.
+        *   Return the array of matching posts.
+    *   **Success Criteria:** A function, say `performSearch(query, allPosts)`, correctly returns posts that contain the query term in any of the specified multilingual fields. For instance, searching "Ravencoin" finds posts with "Ravencoin" in English fields, and searching "レイブンコイン" finds posts with that term in Japanese fields.
+
+4.  **Task 4: Integrate Search Logic and Update Search Results UI.**
+    *   **Action:** Modify the search Svelte component (e.g., `frontend/src/components/search/SearchModal.svelte` or similar):
+        *   When the user types in the search input, call the `performSearch` function with the current query and all posts.
+        *   Update the UI to display the list of returned matching posts.
+        *   For each result, display its title and a summary snippet. Use the existing `getLocalizedField(post, 'field_name', $language)` utility to display these in the current UI language (where `$language` is the reactive Svelte store for the current language).
+        *   Ensure each search result links to the correct post URL (e.g., `/blog/{post.slug}`).
+        *   Display the "No results found for '[query]'" message if the search yields no results.
+    *   **Success Criteria:** The search modal dynamically updates with relevant results as the user types. Results are displayed in the current UI language. Clicking a result navigates to the blog post.
+
+5.  **Task 5: Testing.**
+    *   **Action:** Thoroughly test the search functionality:
+        *   Search using English terms known to be in English content.
+        *   Search using Japanese terms known to be in Japanese content.
+        *   Search using Chinese terms known to be in Chinese content.
+        *   Search for terms that span across different language fields within the same post (if applicable).
+        *   Test with terms that should yield no results.
+        *   Test while the UI is set to English, Japanese, and Chinese.
+    *   **Success Criteria:** Search is confirmed to work correctly and reliably across all three languages, providing accurate results or a "no results" message.
+
+### Project Status Board (Updated for Search Task)
+- [x] **Fix "Loading posts..." issue on blog page** (Resolved)
+- [x] **Implement Multilingual Site Search** (Core functionality working)
+    - [x] Task 1: Locate and Analyze Existing Search Implementation.
+    - [x] Task 2: Prepare Searchable Data Source.
+    - [x] Task 3 (Refined): Implement Core Multilingual Search Logic.
+        - [x] Task 3.1: Modify `normalizeText` in `search.js` for multilingual character support.
+        - [x] Task 3.2: Review `calculateScore` and `searchPosts` for compatibility with updated normalization.
+    - [x] Task 4: Integrate Search Logic and Update Search Results UI.
+    - [x] Task 5: Testing (Multilingual search terms now working).
+    - [ ] Task 6 (New): Fix search dialog not closing on mouse click.
+        - [ ] Task 6.1: Modify `SearchResult.svelte` to dispatch a `selectresult` event on click.
+        - [ ] Task 6.2: Handle `selectresult` event in `SearchDialog.svelte` to navigate and close.
+        - [ ] Task 6.3: Test mouse click and keyboard navigation for search results.
+
+### Executor's Feedback or Assistance Requests (Search Task - New Issue)
+
+**Issue:** Search dialog does not close when a result is clicked with the mouse, though it closes correctly with keyboard (Enter) selection.
+
+**Plan to Fix (Task 6):**
+1.  **Task 6.1:** In `SearchResult.svelte`, prevent default click action on the `<a>` tag and instead dispatch a custom `selectresult` event containing the post slug.
+2.  **Task 6.2:** In `SearchDialog.svelte` (likely where `SearchResultGroup` and thus `SearchResult` are used), listen for this `selectresult` event. The event handler will perform the navigation (`window.location.href`) and then call `close()` on the dialog.
+3.  **Task 6.3:** Test both mouse and keyboard interactions.
+
+The core multilingual search functionality is now in place and working. This new task addresses a minor UX issue in the search dialog.
