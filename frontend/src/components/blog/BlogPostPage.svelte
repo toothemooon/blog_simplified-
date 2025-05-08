@@ -1,5 +1,4 @@
 <script>
-  // console.log('[BlogPostPage.svelte] Script block started execution');
   import { onMount } from 'svelte';
   import { 
     getPost, 
@@ -14,7 +13,6 @@
   
   // Props: slug of the post to display
   export let slug = '';
-  // $: console.log('[BlogPostPage.svelte] Slug prop changed:', slug);
   
   // State variables
   let post = null;
@@ -48,9 +46,7 @@
   
   // Unsubscribe when component is destroyed
   onMount(() => {
-    // console.log('[BlogPostPage.svelte] onMount started');
     return () => {
-      // console.log('[BlogPostPage.svelte] onMount cleanup (unsubscribe)');
       unsubscribe();
     };
   });
@@ -61,9 +57,7 @@
   }
   
   async function loadPost(postSlug, lang) {
-    // console.log(`[BlogPostPage.svelte] loadPost started. Slug: ${postSlug}, Lang: ${lang}`);
     if (!postSlug) {
-      // console.log('[BlogPostPage.svelte] loadPost aborted: no postSlug');
       return;
     }
     
@@ -71,36 +65,28 @@
     error = null;
     
     try {
-      // console.log(`[BlogPostPage.svelte] loadPost: About to call getPost for slug: ${postSlug}, lang: ${lang}`);
       const postData = await getPost(postSlug, lang);
-      // console.log('[BlogPostPage.svelte] loadPost: getPost returned:', postData);
       
       if (!postData) {
         error = 'Post not found';
         post = null;
         content = '';
-        // console.warn('[BlogPostPage.svelte] loadPost: Post not found for slug:', postSlug);
       } else {
         post = postData;
         content = typeof postData.content === 'string' 
           ? postData.content 
           : postData.content?.default || '';
-        // console.log('[BlogPostPage.svelte] loadPost: Post data set:', post);
-        // console.log('[BlogPostPage.svelte] loadPost: Content set:', content ? content.substring(0, 100) + '...' : '(empty)');
         readingTime = getReadingTime(content);
         
         // Get next and previous posts
         nextPost = getNextPostForSlug(postSlug);
         previousPost = getPreviousPostForSlug(postSlug);
-        // console.log('[BlogPostPage.svelte] loadPost: Next/Prev posts fetched.');
       }
     } catch (err) {
-      // console.error('[BlogPostPage.svelte] Error in loadPost:', err);
       console.error('[BlogPostPage.svelte] Error loading post data:', err);
       error = 'Failed to load post';
     } finally {
       loading = false;
-      // console.log('[BlogPostPage.svelte] loadPost finished. Loading state:', loading);
     }
   }
   
