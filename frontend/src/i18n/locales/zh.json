@@ -2,24 +2,24 @@
   "nav": {
     "blog": "博客",
     "tags": "标签",
-    "projects": "项目",
-    "about": "关于"
+    "projects": "项目集",
+    "about": "关于我"
   },
   "ui": {
     "language": "语言",
     "search": "搜索",
     "search_placeholder": "输入命令或搜索内容...",
-    "no_results": "没有找到\"{{query}}\"的相关结果",
+    "no_results": "未找到与\"{{query}}\"匹配的内容",
     "content_heading": "内容",
-    "start_searching": "输入以开始搜索...",
-    "theme": "主题",
+    "start_searching": "输入关键词搜索...",
+    "theme": "主题设置",
     "dark": "深色",
     "light": "浅色",
     "system": "系统"
   },
   "footer": {
     "copyright": "© {{year}} Sarada的博客",
-    "built_with": "使用Svelte 4构建"
+    "built_with": "基于Svelte 4开发"
   },
   "tags": {
     "blockchain": "区块链",
@@ -56,23 +56,22 @@
     "programming": "编程",
     "productivity": "生产力",
     "developer-tips": "开发者提示",
-    "learning": "学习"
+    "learning": "学习",
+    "read_more": "查看详情 →"
   },
   "pages": {
     "about": {
       "title": "关于",
       "author_name": "沙拉达",
-      "author_title": "编程爱好者",
+      "author_title": "热爱编程的开发者",
       "author_institution": "四川外国语大学",
       "bio_part1": "沙拉达是四川外国语大学英语专业毕业生。他曾在非洲和中东国家的海外项目工作。",
-      "bio_part2": "他目前的兴趣集中在IT开发、区块链技术和项目创建上 :）"
+      "bio_part2": "目前专注于IT开发、区块链技术和项目创建 :）"
     },
     "blog": {
       "all_posts": "所有文章",
-      "loading": "加载文章中...",
-      "no_posts": "未找到文章。",
-      "show_tags": "显示标签",
-      "hide_tags": "隐藏标签"
+      "loading": "加载中，请稍候...",
+      "no_posts": "暂无相关内容"
     },
     "home": {
       "latest": "最新文章",
