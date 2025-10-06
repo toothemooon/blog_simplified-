@@ -42,7 +42,12 @@
     "project-management": "Project Management",
     "safety": "Safety",
     "engineering": "Engineering", 
-    "energy": "Energy"
+    "energy": "Energy",
+    "japanese-culture": "Japanese Culture",
+    "traditional-games": "Traditional Games",
+    "card-games": "Card Games",
+    "hyakunin-isshu": "Hyakunin Isshu",
+    "cultural-heritage": "Cultural Heritage"
   },
   "pages": {
     "about": {

@@ -7,9 +7,11 @@ import ipfsIntegration from './posts/2019-04-26-ipfs-ravencoin-integration';
 import blockchainComparison from './posts/2019-05-04-public-vs-private-blockchains';
 import ravencoinPrivacy from './posts/2019-05-12-ravencoin-privacy-future';
 import findingYourGroove from './posts/2024-05-06-finding-your-groove-balancing-ai-and-good-old-fashioned-coding';
+import bozuMekuri from './posts/2025-10-06-bozu-mekuri-traditional-japanese-card-game';
 
 // Export array with metadata only (sorted by date, newest first)
 export const posts = [
+  bozuMekuri,
   findingYourGroove,
   ravencoinPrivacy,
   blockchainComparison,
