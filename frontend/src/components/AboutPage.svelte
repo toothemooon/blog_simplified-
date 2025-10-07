@@ -39,6 +39,7 @@
   <div class="bio-content">
     <p>{$t('pages.about.bio_part1')}</p>
     <p>{$t('pages.about.bio_part2')}</p>
+    <p>{$t('pages.about.bio_part3')}</p>
   </div>
 </div>
 
@@ -134,10 +135,15 @@
   
   .bio-content {
     line-height: 1.7;
+    margin-top: 2rem;
   }
   
   .bio-content p {
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .bio-content p:last-child {
+    margin-bottom: 0;
   }
   
   @media (min-width: 640px) {
