@@ -1,5 +1,6 @@
 <script>
   import { t } from '../i18n';
+  import Donation from './Donation.svelte';
   
   // Social media icons
   const socialLinks = [
@@ -41,6 +42,8 @@
     <p>{$t('pages.about.bio_part2')}</p>
     <p>{$t('pages.about.bio_part3')}</p>
   </div>
+  
+  <Donation />
 </div>
 
 <style>

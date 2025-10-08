@@ -21,6 +21,14 @@
     "copyright": "© {{year}} Sarada的博客",
     "built_with": "基于Svelte 4开发"
   },
+  "donation": {
+    "title": "支持我的工作",
+    "description": "如果您觉得我的内容有用，可以考虑用0.99 USDC支持我",
+    "address_label": "ETH地址（USDC）",
+    "copy": "复制地址",
+    "copied": "已复制！",
+    "amount": "建议金额：0.99 USDC"
+  },
   "tags": {
     "blockchain": "区块链",
     "community": "社区",

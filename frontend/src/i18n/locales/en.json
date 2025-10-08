@@ -22,6 +22,14 @@
     "copyright": "© {{year}} Sarada's Blog. All rights reserved.",
     "built_with": "Built with Svelte 4"
   },
+  "donation": {
+    "title": "Support My Work",
+    "description": "If you find my content helpful, consider supporting me with 0.99 USDC",
+    "address_label": "ETH Address (USDC)",
+    "copy": "Copy Address",
+    "copied": "Copied!",
+    "amount": "Suggested: 0.99 USDC"
+  },
   "tags": {
     "programming": "Programming",
     "ai": "Artificial Intelligence",

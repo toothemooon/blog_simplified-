@@ -21,6 +21,14 @@
     "copyright": "© {{year}} サラダのブログ",
     "built_with": "Svelte 4で構築"
   },
+  "donation": {
+    "title": "サポートする",
+    "description": "コンテンツが役立つ場合は、0.99 USDCでサポートをご検討ください",
+    "address_label": "ETHアドレス（USDC）",
+    "copy": "アドレスをコピー",
+    "copied": "コピーしました！",
+    "amount": "推奨金額：0.99 USDC"
+  },
   "tags": {
     "blockchain": "ブロックチェーン",
     "community": "コミュニティ",
