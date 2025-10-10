@@ -2,9 +2,11 @@
 import ravencoin from './projects/ravencoin';
 import cgcOverseas from './projects/cgc-overseas';
 import chengda from './projects/chengda';
+import twitterDataLake from './projects/twitter-data-lake';
 
-// Export array with fixed order: Ravencoin first, then Chengda, then CGC Overseas
+// Export array with fixed order: Twitter Data Lake first (newest), then Ravencoin, then Chengda, then CGC Overseas
 export const projects = [
+  twitterDataLake,
   ravencoin,
   cgcOverseas,
   chengda,    
