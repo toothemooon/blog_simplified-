@@ -21,7 +21,6 @@
     <div class="author-info">
       <h2 class="author-name">{$t('pages.about.author_name')}</h2>
       <p class="author-title">{$t('pages.about.author_title')}</p>
-      <p class="author-institution">{$t('pages.about.author_institution')}</p>
       
       <div class="social-links">
         {#each socialLinks as link}
@@ -94,12 +93,6 @@
   }
   
   .author-title {
-    font-size: 1.1rem;
-    margin-bottom: 0.25rem;
-    color: var(--color-text);
-  }
-  
-  .author-institution {
     font-size: 1.1rem;
     margin-bottom: 1rem;
     color: var(--color-text);
