@@ -2,6 +2,18 @@
 
 This document provides common code patterns and examples used throughout the SvelteBlog project to help maintain consistency when implementing new features.
 
+## Contents
+
+- [Svelte Component Structure](#svelte-component-structure)
+- [Routing Patterns](#routing-patterns)
+- [Data Handling](#data-handling)
+- [Styling Patterns](#styling-patterns)
+- [Theme Handling](#theme-handling)
+- [Navigation Active State](#navigation-active-state)
+- [Social Links Pattern](#social-links-pattern)
+- [CSS Utility Classes](#css-utility-classes)
+- [Future Refactoring Patterns](#future-refactoring-patterns)
+
 ## Svelte Component Structure
 
 ### Basic Component Template

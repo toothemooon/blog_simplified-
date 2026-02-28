@@ -16,17 +16,27 @@ The blog platform uses a modular data structure that separates post metadata fro
 ```
 frontend/src/data/
 ├── blog-data.js        # Legacy blog data structure (now empty array)
-├── blog/               # New modular blog system
-│   ├── index.js        # Post management and utility functions
-│   ├── posts/          # Post metadata files
+├── blog/               # Modular blog system
+│   ├── index.js        # Post registry and utility functions
+│   ├── posts/          # Per-post metadata files (YYYY-MM-DD-slug.js)
 │   │   ├── 2019-03-25-introduction-to-ravencoin.js
 │   │   ├── 2019-04-02-ravencoin-x16r-algorithm.js
 │   │   └── ...
-│   └── content/        # Post content files in Markdown
+│   └── content/        # Post body as Markdown (.md)
 │       ├── introduction-to-ravencoin.md
 │       ├── ravencoin-x16r-algorithm.md
+│       ├── ja/         # Japanese translations
+│       ├── zh/         # Chinese translations
 │       └── ...
-└── project-data.js     # Project data
+└── projects/           # Modular projects system (mirrors blog structure)
+    ├── index.js        # Project registry and utility functions
+    ├── projects/       # Per-project metadata files
+    │   ├── ravencoin.js
+    │   ├── chengda.js
+    │   └── cgc-overseas.js
+    └── content/        # Project body as Markdown (.md)
+        ├── ravencoin.md
+        └── ...
 ```
 
 ## Post Metadata Structure

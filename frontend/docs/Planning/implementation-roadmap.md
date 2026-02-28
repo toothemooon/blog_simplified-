@@ -135,9 +135,9 @@ Alongside the feature implementation, we need to address these technical debt it
 | Table of contents              | ✅          | ❌       | Not started | Medium   |
 | Math typesetting               | ✅          | ❌       | Not started | Low      |
 | Social sharing                 | ✅          | ❌       | Not started | Medium   |
-| Search functionality           | ✅          | ❌       | Not started | High     |
+| Search functionality           | ✅          | ✅       | Complete    | -        |
 | Pagination                     | ✅          | ❌       | Not started | Medium   |
-| Mobile menu                    | ✅          | ❌       | Not started | High     |
+| Mobile menu                    | ✅          | ✅       | Complete    | -        |
 
 ## Milestone Tracking
 

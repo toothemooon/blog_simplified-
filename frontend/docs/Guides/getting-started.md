@@ -23,35 +23,14 @@ Before you begin, make sure you have the following installed:
    npm install
    ```
 
-3. Start the development server:
+3. Start the development server (with SPA routing enabled):
    ```bash
-   npm run dev
+   npm run dev-single
    ```
 
-4. Visit `http://localhost:8080` in your browser to see the application running (the port might differ if 8080 is already in use).
+4. Visit `http://localhost:8080` in your browser to see the application running.
 
-## Project Structure Overview
-
-The project follows a modular architecture with separate components for different parts of the blog:
-
-```
-frontend/src/
-├── components/           # UI Components
-│   ├── blog/             # Blog-specific components
-│   ├── header/           # Header-related components
-│   ├── projects/         # Project components
-│   ├── search/           # Search functionality
-│   └── ...
-├── data/                 # Data management
-│   ├── blog-data.js      # Legacy blog data structure
-│   └── blog/             # New modular blog system
-├── utils/                # Utility functions
-├── App.svelte            # Application shell
-├── global.css            # Global styles
-└── main.js               # App initialization
-```
-
-For more detailed information about the project structure, see [project-structure.md](./project-structure.md).
+> **Note**: Always use `npm run dev-single` during development, not `npm run dev` alone. The `--single` flag makes the local server handle SPA routing correctly — without it, refreshing on any non-root URL (e.g. `/blog/my-post`) will return a blank page.
 
 ## Development Workflow
 
@@ -93,7 +72,8 @@ There's a known issue with the SearchDialog component where a non-interactive el
 ## Additional Resources
 
 - [Svelte Documentation](https://svelte.dev/docs)
-- [Project Implementation Roadmap](./implementation-roadmap.md)
-- [Code Patterns](./code-patterns.md)
-- [File Architecture](./file-architecture.md)
-- [Svelte 4 Reference](./svelte4-reference.md) 
+- [System Architecture](../Architecture/system-architecture.md) - How the project is structured
+- [Data Architecture](../Architecture/data-architecture.md) - How blog content is organized
+- [Code Patterns](../Reference/code-patterns.md) - Conventions for writing components
+- [Implementation Roadmap](../Planning/implementation-roadmap.md) - What's done and what's next
+- [Svelte 4 Reference](../Reference/svelte4-reference.md) - Project-specific Svelte 4 and SPA routing patterns

@@ -4,14 +4,12 @@
 **Status**: Production-ready multilingual blog with 9 articles  
 **Live Site**: https://www.sarada.lol/
 
-> **Note**: Historical details moved to `.cursor/scratchpad-archive.md`
-
 ---
 
 ## 🎯 Quick Reference
 
 ### Current Stats
-- **Total Posts**: 9 (8 Ravencoin + 1 Cultural)
+- **Total Posts**: 9 (7 Ravencoin + 1 AI/coding + 1 cultural)
 - **Languages**: EN, JA, ZH (full multilingual support)
 - **Features**: Search, Tags, Projects, Theme Toggle, Language Selector
 - **Status**: ✅ All core features working
