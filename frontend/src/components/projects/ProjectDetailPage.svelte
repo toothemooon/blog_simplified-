@@ -1,6 +1,7 @@
 <script>
   import { getProject, formatProjectPeriod, getRelatedProjectsBySlug, getLocalizedField, getLocalizedTagName } from '../../utils/project-utils.js';
   import { t, language } from '../../i18n';
+  import TwitterDataVisualization from './TwitterDataVisualization.svelte';
   
   export let slug = '';
   
@@ -133,6 +134,13 @@
               <li>{achievement}</li>
             {/each}
           </ul>
+        </div>
+      {/if}
+      
+      <!-- Twitter Data Visualization (for twitter-data-lake project only) -->
+      {#if project.slug === 'twitter-data-lake'}
+        <div class="twitter-data-section">
+          <TwitterDataVisualization />
         </div>
       {/if}
       
@@ -375,6 +383,10 @@
   .error-message a:hover, .not-found a:hover {
     background-color: var(--color-primary);
     color: white;
+  }
+  
+  .twitter-data-section {
+    margin: 2rem 0;
   }
   
   @media (max-width: 640px) {
