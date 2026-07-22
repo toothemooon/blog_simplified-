@@ -2,9 +2,11 @@
 import ravencoin from './projects/ravencoin';
 import cgcOverseas from './projects/cgc-overseas';
 import chengda from './projects/chengda';
+import echo from './projects/echo';
 
 // Export array with fixed order: Ravencoin first, then Chengda, then CGC Overseas
 export const projects = [
+  echo,
   ravencoin,
   cgcOverseas,
   chengda,    
@@ -47,4 +49,4 @@ export function getRelatedProjects(project, limit = 2) {
     .slice(0, limit);
   
   return related;
-} 
+}

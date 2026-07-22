@@ -7,6 +7,7 @@
 	import TagPage from './components/blog/TagPage.svelte';
 	import ProjectsPage from './components/projects/ProjectsPage.svelte';
 	import ProjectDetailPage from './components/projects/ProjectDetailPage.svelte';
+	import EchoLegalPage from './components/projects/EchoLegalPage.svelte';
 	import AboutPage from './components/AboutPage.svelte';
 	import NotFoundPage from './components/error/NotFoundPage.svelte';
 	import TestTranslation from './components/TestTranslation.svelte';
@@ -36,6 +37,8 @@
 			<ProjectsPage />
 		{:else if currentRoute === '/project-detail'}
 			<ProjectDetailPage slug={params.id} />
+		{:else if currentRoute === '/echo-legal'}
+			<EchoLegalPage document={params.document} />
 		{:else if currentRoute === '/about'}
 			<AboutPage />
 		{:else if currentRoute === '/test-translation'}

@@ -45,9 +45,18 @@ page('/projects', () => {
 	setRoute('/projects-list');
 });
 
+// ECHO legal pages
+page('/projects/echo/privacy', () => {
+  setRoute('/echo-legal', { document: 'privacy' });
+});
+
+page('/projects/echo/terms', () => {
+  setRoute('/echo-legal', { document: 'terms' });
+});
+
 // Individual project page
 page('/projects/:id', (ctx) => {
-	setRoute('/project-detail', { id: ctx.params.id });
+  setRoute('/project-detail', { id: ctx.params.id });
 });
 
 // About page

@@ -144,6 +144,23 @@
           {/each}
         </div>
       {/if}
+
+      {#if project.resources && project.resources.length > 0}
+        <section class="project-resources" aria-labelledby="project-resources-title">
+          <h2 id="project-resources-title">Legal &amp; Support</h2>
+          <div class="resource-list">
+            {#each project.resources as resource}
+              <a class="resource-link" href={resource.href}>
+                <span class="resource-copy">
+                  <strong>{getLocalizedField(resource, 'label', currentLanguage)}</strong>
+                  <small>{getLocalizedField(resource, 'description', currentLanguage)}</small>
+                </span>
+                <span class="resource-arrow" aria-hidden="true">→</span>
+              </a>
+            {/each}
+          </div>
+        </section>
+      {/if}
       
       <!-- Related Projects -->
       {#if relatedProjects.length > 0}
@@ -245,14 +262,58 @@
     font-size: 1rem;
   }
   
-  .project-summary, .project-achievements, .project-subprojects, .related-projects {
+  .project-summary, .project-achievements, .project-subprojects, .project-resources, .related-projects {
     margin: 2rem 0;
   }
   
-  .project-summary h2, .project-achievements h2, .project-subprojects h2, .related-projects h2 {
+  .project-summary h2, .project-achievements h2, .project-subprojects h2, .project-resources h2, .related-projects h2 {
     font-size: 1.5rem;
     margin-bottom: 1rem;
     color: var(--color-heading, var(--color-text));
+  }
+
+  .resource-list {
+    border-top: 1px solid var(--color-border);
+  }
+
+  .resource-link {
+    min-height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .resource-link:hover strong,
+  .resource-link:focus-visible strong {
+    color: var(--color-primary);
+  }
+
+  .resource-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .resource-copy strong {
+    font-size: 1.05rem;
+    transition: color 0.2s ease;
+  }
+
+  .resource-copy small {
+    color: var(--color-text);
+    opacity: 0.72;
+    line-height: 1.5;
+  }
+
+  .resource-arrow {
+    flex: 0 0 auto;
+    color: var(--color-primary);
+    font-size: 1.35rem;
   }
   
   .project-summary p {
@@ -406,4 +467,4 @@
       grid-template-columns: 1fr;
     }
   }
-</style> 
+</style>
