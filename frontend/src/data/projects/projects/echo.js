@@ -14,6 +14,11 @@ export default {
   period: 'Jul 2026 – Present',
   slug: 'echo',
 
+  heroImage: '/images/projects/echo-icon-dark.png',
+  heroImageAlt: 'ECHO app icon',
+  heroImageAlt_ja: 'ECHO アプリアイコン',
+  heroImageAlt_zh: 'ECHO 应用图标',
+
   summary: 'A calm, offline-first quote experience with mindful personalization, three visual themes, bookmarks, and shareable quote cards.',
   summary_ja: '穏やかなパーソナライズ、3つのテーマ、ブックマーク、共有カードを備えた、オフライン中心の名言アプリです。',
   summary_zh: '一款以离线体验为核心的静心名言应用，提供偏好推荐、三种主题、收藏与名言卡片分享。',

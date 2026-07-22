@@ -87,19 +87,29 @@
         {/if}
       </div>
       
-      <!-- Metadata -->
-      <div class="project-metadata">
-        {#if project.metadata}
-          {#each Object.entries(project.metadata) as [key, value]}
-            {#if !key.includes('_ja') && !key.includes('_zh')}
-              <div class="metadata-group">
-                <span class="metadata-label">{key.charAt(0).toUpperCase() + key.slice(1)}:</span>
-                <span class="metadata-value">{getLocalizedMetadataField(project.metadata, key)}</span>
-              </div>
-            {/if}
-          {/each}
-        {/if}
-      </div>
+      <!-- Project Hero / Metadata -->
+      {#if project.heroImage}
+        <figure class="project-hero">
+          <img
+            class="project-app-icon"
+            src={project.heroImage}
+            alt={getLocalizedField(project, 'heroImageAlt', currentLanguage)}
+          />
+        </figure>
+      {:else}
+        <div class="project-metadata">
+          {#if project.metadata}
+            {#each Object.entries(project.metadata) as [key, value]}
+              {#if !key.includes('_ja') && !key.includes('_zh')}
+                <div class="metadata-group">
+                  <span class="metadata-label">{key.charAt(0).toUpperCase() + key.slice(1)}:</span>
+                  <span class="metadata-value">{getLocalizedMetadataField(project.metadata, key)}</span>
+                </div>
+              {/if}
+            {/each}
+          {/if}
+        </div>
+      {/if}
       
       <!-- Project Details -->
       {#if project.projects && project.projects.length > 0}
@@ -244,6 +254,22 @@
     padding: 1.5rem;
     background-color: var(--color-bg-secondary, #f5f5f5);
     border-radius: 0.5rem;
+  }
+
+  .project-hero {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0 2.5rem;
+  }
+
+  .project-app-icon {
+    display: block;
+    width: min(100%, 360px);
+    height: auto;
+    border-radius: 22%;
+    box-shadow:
+      0 20px 50px rgba(0, 0, 0, 0.28),
+      0 4px 14px rgba(0, 0, 0, 0.18);
   }
   
   .metadata-group {
@@ -439,6 +465,10 @@
   }
   
   @media (max-width: 640px) {
+    .project-app-icon {
+      width: min(78vw, 300px);
+    }
+
     .project-title {
       font-size: 2rem;
     }
