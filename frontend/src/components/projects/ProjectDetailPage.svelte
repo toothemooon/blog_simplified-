@@ -89,9 +89,9 @@
       
       <!-- Project Hero / Metadata -->
       {#if project.heroImage}
-        <figure class="project-hero">
+        <figure class:wide={project.heroImageMode === 'wide'} class="project-hero">
           <img
-            class="project-app-icon"
+            class="project-hero-image"
             src={project.heroImage}
             alt={getLocalizedField(project, 'heroImageAlt', currentLanguage)}
           />
@@ -157,15 +157,22 @@
 
       {#if project.resources && project.resources.length > 0}
         <section class="project-resources" aria-labelledby="project-resources-title">
-          <h2 id="project-resources-title">Legal &amp; Support</h2>
+          <h2 id="project-resources-title">
+            {getLocalizedField(project, 'resourcesTitle', currentLanguage) || 'Links & Resources'}
+          </h2>
           <div class="resource-list">
             {#each project.resources as resource}
-              <a class="resource-link" href={resource.href}>
+              <a
+                class="resource-link"
+                href={resource.href}
+                target={resource.external ? '_blank' : undefined}
+                rel={resource.external ? 'noopener noreferrer' : undefined}
+              >
                 <span class="resource-copy">
                   <strong>{getLocalizedField(resource, 'label', currentLanguage)}</strong>
                   <small>{getLocalizedField(resource, 'description', currentLanguage)}</small>
                 </span>
-                <span class="resource-arrow" aria-hidden="true">→</span>
+                <span class="resource-arrow" aria-hidden="true">{resource.external ? '↗' : '→'}</span>
               </a>
             {/each}
           </div>
@@ -262,7 +269,7 @@
     margin: 2rem 0 2.5rem;
   }
 
-  .project-app-icon {
+  .project-hero-image {
     display: block;
     width: min(100%, 360px);
     height: auto;
@@ -270,6 +277,11 @@
     box-shadow:
       0 20px 50px rgba(0, 0, 0, 0.28),
       0 4px 14px rgba(0, 0, 0, 0.18);
+  }
+
+  .project-hero.wide .project-hero-image {
+    width: 100%;
+    border-radius: 0.75rem;
   }
   
   .metadata-group {
@@ -465,8 +477,12 @@
   }
   
   @media (max-width: 640px) {
-    .project-app-icon {
+    .project-hero-image {
       width: min(78vw, 300px);
+    }
+
+    .project-hero.wide .project-hero-image {
+      width: 100%;
     }
 
     .project-title {

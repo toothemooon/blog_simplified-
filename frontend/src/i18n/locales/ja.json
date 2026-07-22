@@ -62,7 +62,12 @@
     "productivity": "生産性",
     "developer-tips": "開発者向けヒント",
     "learning": "学習",
-    "read_more": "詳細を見る →"
+    "read_more": "詳細を見る →",
+    "macos": "macOS",
+    "product-design": "プロダクトデザイン",
+    "web3": "Web3",
+    "pixel-art": "ピクセルアート",
+    "landing-page": "ランディングページ"
   },
   "pages": {
     "about": {
@@ -106,4 +111,4 @@
       "no_related_projects": "関連プロジェクトが見つかりません"
     }
   }
-} 
+}

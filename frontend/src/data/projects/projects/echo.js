@@ -80,5 +80,9 @@ export default {
     }
   ],
 
+  resourcesTitle: 'Legal & Support',
+  resourcesTitle_ja: '法的情報・サポート',
+  resourcesTitle_zh: '法律信息与支持',
+
   getContent: () => import('../content/echo.md')
 };

@@ -3,10 +3,14 @@ import ravencoin from './projects/ravencoin';
 import cgcOverseas from './projects/cgc-overseas';
 import chengda from './projects/chengda';
 import echo from './projects/echo';
+import easyNote from './projects/easy-note';
+import pixelForge from './projects/pixel-forge';
 
 // Export array with fixed order: Ravencoin first, then Chengda, then CGC Overseas
 export const projects = [
   echo,
+  pixelForge,
+  easyNote,
   ravencoin,
   cgcOverseas,
   chengda,    

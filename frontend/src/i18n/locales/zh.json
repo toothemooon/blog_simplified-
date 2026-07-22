@@ -62,7 +62,12 @@
     "productivity": "生产力",
     "developer-tips": "开发者提示",
     "learning": "学习",
-    "read_more": "查看详情 →"
+    "read_more": "查看详情 →",
+    "macos": "macOS",
+    "product-design": "产品设计",
+    "web3": "Web3",
+    "pixel-art": "像素艺术",
+    "landing-page": "落地页"
   },
   "pages": {
     "about": {
@@ -104,4 +109,4 @@
       "no_related_projects": "未找到相关项目"
     }
   }
-} 
+}

@@ -47,7 +47,12 @@
     "traditional-games": "Traditional Games",
     "card-games": "Card Games",
     "hyakunin-isshu": "Hyakunin Isshu",
-    "cultural-heritage": "Cultural Heritage"
+    "cultural-heritage": "Cultural Heritage",
+    "macos": "macOS",
+    "product-design": "Product Design",
+    "web3": "Web3",
+    "pixel-art": "Pixel Art",
+    "landing-page": "Landing Page"
   },
   "pages": {
     "about": {
@@ -99,4 +104,4 @@
       "no_related_projects": "No related projects found"
     }
   }
-} 
+}
