@@ -251,7 +251,8 @@ export const echoLegalDocuments = {
         {
           title: '8. Intellectual property',
           paragraphs: [
-            'Except for third-party quotation content, ECHO software, branding, interface, icons, and original materials are owned by the developer or used under licence. These Terms give you a limited, revocable, non-exclusive, non-transferable right to use the app for personal purposes; they do not transfer ownership.'
+            'The ECHO software source code is licensed under the MIT License. You may use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the software, subject to the MIT License terms included in the source code.',
+            "Quotation content is sourced from Wikiquote and licensed under CC BY-SA 4.0. ECHO's branding, logos, and trademarks are not covered by the MIT License and remain the property of the developer."
           ]
         },
         {
@@ -332,7 +333,8 @@ export const echoLegalDocuments = {
         {
           title: '八、知识产权',
           paragraphs: [
-            '除第三方名言内容外，ECHO 的软件、品牌、界面、图标及原创材料由开发者所有或经许可使用。本条款仅授予您为个人目的使用应用的有限、可撤销、非独占、不可转让权利，不转移任何所有权。'
+            'ECHO 软件源代码采用 MIT 许可证。您可根据源代码中附带的 MIT 许可证条款，自由使用、复制、修改、合并、发布、分发、再许可及/或出售软件副本。',
+            '名言内容来源于 Wikiquote，采用 CC BY-SA 4.0 许可证。ECHO 的品牌、标识和商标不在 MIT 许可证范围内，仍归开发者所有。'
           ]
         },
         {
@@ -413,7 +415,8 @@ export const echoLegalDocuments = {
         {
           title: '8. 知的財産',
           paragraphs: [
-            '第三者の名言内容を除き、ECHOのソフトウェア、ブランド、画面、アイコン、独自素材は開発者が所有するか、許諾を受けて使用しています。本規約は個人利用のための限定的、取消可能、非独占的、譲渡不能な利用権のみを付与します。'
+            'ECHOのソフトウェアソースコードはMITライセンスの下で提供されています。ソースコードに添付のMITライセンス条項に従い、ソフトウェアの複製を使用、複製、変更、統合、公開、配布、再ライセンスおよび/または販売することができます。',
+            '名言コンテンツはWikiquoteから提供され、CC BY-SA 4.0ライセンスの下で利用可能です。ECHOのブランド、ロゴ、商標はMITライセンスの対象外であり、開発者の所有物です。'
           ]
         },
         {
