@@ -25,8 +25,8 @@ export const echoLegalDocuments = {
           title: '3. Information ECHO does not collect',
           bullets: [
             'No account, name, phone number, precise location, contacts, camera, microphone, or photo-library data',
-            'No advertising identifier or cross-app tracking',
-            'No behavioural analytics or advertising profile',
+            'The current version does not use advertising identifiers or cross-app tracking',
+            'The current version does not use behavioural analytics or create advertising profiles',
             'No cookies are used by the native ECHO app',
             'No payment information in the current version'
           ]
@@ -34,7 +34,7 @@ export const echoLegalDocuments = {
         {
           title: '4. Sharing and third-party services',
           paragraphs: [
-            'ECHO does not sell, rent, or share personal information with advertisers or data brokers. If you use the system share sheet, email app, App Store, TestFlight, or another third-party service, that service processes information under its own terms and privacy policy.',
+            'ECHO does not currently sell or rent personal information, and the current version does not share personal information with advertisers or data brokers. If you use the system share sheet, email app, App Store, TestFlight, or another third-party service, that service processes information under its own terms and privacy policy.',
             'Apple may process download, TestFlight, diagnostic, or store information independently as the platform provider. ECHO does not receive personal profiles from Apple.'
           ]
         },
@@ -88,8 +88,8 @@ export const echoLegalDocuments = {
           title: '三、ECHO 当前不会收集的信息',
           bullets: [
             '账号、姓名、电话号码、精确位置、通讯录、相机、麦克风或相册数据',
-            '广告标识符或跨应用追踪信息',
-            '行为分析数据或广告用户画像',
+            '当前版本不使用广告标识符或跨应用追踪',
+            '当前版本不使用行为分析或创建广告用户画像',
             'ECHO 原生应用不使用 Cookie',
             '任何付款信息'
           ]
@@ -97,7 +97,7 @@ export const echoLegalDocuments = {
         {
           title: '四、信息共享与第三方服务',
           paragraphs: [
-            'ECHO 不会向广告商或数据经纪商出售、出租或共享个人信息。当您使用系统分享面板、邮件应用、App Store、TestFlight 或其他第三方服务时，该服务将按照其自身条款和隐私政策处理信息。',
+            'ECHO 当前不会出售或出租个人信息，当前版本不会向广告商或数据经纪商共享个人信息。当您使用系统分享面板、邮件应用、App Store、TestFlight 或其他第三方服务时，该服务将按照其自身条款和隐私政策处理信息。',
             '作为平台提供方，Apple 可能独立处理下载、TestFlight、诊断或商店相关信息；ECHO 不会从 Apple 获取用户个人画像。'
           ]
         },
@@ -151,8 +151,8 @@ export const echoLegalDocuments = {
           title: '3. ECHOが現在収集しない情報',
           bullets: [
             'アカウント、氏名、電話番号、正確な位置情報、連絡先、カメラ、マイク、写真ライブラリのデータ',
-            '広告識別子またはアプリ横断トラッキング情報',
-            '行動分析データまたは広告プロファイル',
+            '現在のバージョンでは広告識別子またはアプリ横断トラッキングを使用しません',
+            '現在のバージョンでは行動分析や広告プロファイルを作成しません',
             'ECHOのネイティブアプリはCookieを使用しません',
             '支払情報'
           ]
@@ -160,7 +160,7 @@ export const echoLegalDocuments = {
         {
           title: '4. 共有と第三者サービス',
           paragraphs: [
-            'ECHOは個人情報を広告事業者やデータブローカーへ販売、貸与、共有しません。共有シート、メールアプリ、App Store、TestFlightなどを利用する場合、そのサービス独自の規約とプライバシーポリシーが適用されます。',
+            'ECHOは現在個人情報を販売・貸与しておらず、現在のバージョンでは広告事業者やデータブローカーへ個人情報を共有しません。共有シート、メールアプリ、App Store、TestFlightなどを利用する場合、そのサービス独自の規約とプライバシーポリシーが適用されます。',
             'Appleはプラットフォーム提供者として、ダウンロード、TestFlight、診断、ストア関連情報を独立して処理する場合があります。ECHOがAppleから個人プロファイルを受け取ることはありません。'
           ]
         },
@@ -198,7 +198,7 @@ export const echoLegalDocuments = {
       title: 'ECHO Terms of Service',
       eyebrow: 'ECHO · LEGAL',
       updated: 'Last updated: July 22, 2026',
-      summary: 'These Terms govern use of the current free ECHO test version. By using ECHO, you agree to these Terms. If you do not agree, please stop using the app.',
+      summary: 'These Terms govern use of the current version of ECHO. ECHO is currently free. By using ECHO, you agree to these Terms. If you do not agree, please stop using the app.',
       sections: [
         {
           title: '1. The service',
@@ -238,8 +238,8 @@ export const echoLegalDocuments = {
         {
           title: '6. Fees and subscriptions',
           paragraphs: [
-            'The current version is a free test version. It contains no purchase button, subscription, paid unlock, price label, or paywall.',
-            'The developer reserves the right to offer optional Advanced Features through a one-time purchase in a future version. Any future charge will be disclosed before purchase and announced in the relevant release notes. A future paid option will not remove access to basic features already available to you.'
+            'The current version of ECHO is free and contains no in-app purchases, subscriptions, paid unlocks, or paywalls.',
+            'Future versions may offer optional paid features or other purchases. Any applicable price and purchase terms will be clearly disclosed before purchase.'
           ]
         },
         {
@@ -251,8 +251,8 @@ export const echoLegalDocuments = {
         {
           title: '8. Intellectual property',
           paragraphs: [
-            'The ECHO software source code is licensed under the MIT License. You may use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the software, subject to the MIT License terms included in the source code.',
-            "Quotation content is sourced from Wikiquote and licensed under CC BY-SA 4.0. ECHO's branding, logos, and trademarks are not covered by the MIT License and remain the property of the developer."
+            'The ECHO software source code is licensed under the MIT License. The MIT License applies to the software code only and does not automatically apply to quotation content, editorial content, artwork, branding, logos, or third-party materials. You may use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the software, subject to the MIT License terms included in the source code.',
+            "Some quotation and attribution information is derived from Wikiquote. Wikiquote contributions are made available under applicable Wikimedia licensing terms. Individual quotations and underlying works may remain subject to the rights of their respective authors or other rights holders. ECHO's branding, logos, and trademarks are not covered by the MIT License and remain the property of the developer."
           ]
         },
         {
@@ -280,7 +280,7 @@ export const echoLegalDocuments = {
       title: 'ECHO 服务条款',
       eyebrow: 'ECHO · 法律信息',
       updated: '更新日期：2026年7月22日',
-      summary: '本条款适用于当前 ECHO 免费测试版。使用 ECHO 即表示您同意本条款；如果您不同意，请停止使用本应用。',
+      summary: '本条款适用于当前版本的 ECHO。ECHO 当前免费。使用 ECHO 即表示您同意本条款；如果您不同意，请停止使用本应用。',
       sections: [
         {
           title: '一、服务内容',
@@ -320,8 +320,8 @@ export const echoLegalDocuments = {
         {
           title: '六、费用与订阅',
           paragraphs: [
-            '当前版本为免费测试版，不包含购买按钮、订阅、付费解锁、价格标签或付费墙。',
-            '开发者保留在未来版本中对可选高级功能（Advanced Features）收取一次性购买费用的权利。任何未来收费都会在购买前明确展示，并通过相应版本的更新日志提前告知。未来的付费选项不会取消您已经可以使用的基础功能。'
+            '当前版本的 ECHO 免费，不包含应用内购买、订阅、付费解锁或付费墙。',
+            '未来版本可能会提供可选的付费功能或其他购买项目。任何适用的价格和购买条款将在购买前明确公示。'
           ]
         },
         {
@@ -333,8 +333,8 @@ export const echoLegalDocuments = {
         {
           title: '八、知识产权',
           paragraphs: [
-            'ECHO 软件源代码采用 MIT 许可证。您可根据源代码中附带的 MIT 许可证条款，自由使用、复制、修改、合并、发布、分发、再许可及/或出售软件副本。',
-            '名言内容来源于 Wikiquote，采用 CC BY-SA 4.0 许可证。ECHO 的品牌、标识和商标不在 MIT 许可证范围内，仍归开发者所有。'
+            'ECHO 软件源代码采用 MIT 许可证。MIT 许可证仅适用于软件代码本身，不自动适用于名言内容、编辑内容、美术作品、品牌、标识或第三方材料。您可根据源代码中附带的 MIT 许可证条款，自由使用、复制、修改、合并、发布、分发、再许可及/或出售软件副本。',
+            '部分名言和署名信息来源于 Wikiquote。Wikiquote 的贡献内容根据 Wikimedia 相关许可条款提供。个别名言及其原始作品可能仍受原作者或其他权利人保护。ECHO 的品牌、标识和商标不在 MIT 许可证范围内，仍归开发者所有。'
           ]
         },
         {
@@ -402,8 +402,8 @@ export const echoLegalDocuments = {
         {
           title: '6. 料金とサブスクリプション',
           paragraphs: [
-            '現在のバージョンは無料テスト版であり、購入ボタン、サブスクリプション、有料アンロック、価格表示、ペイウォールは含まれていません。',
-            '開発者は将来のバージョンで、任意の高度な機能（Advanced Features）を一回限りの購入として提供する権利を留保します。将来の料金は購入前に明示し、該当バージョンのリリースノートでも事前にお知らせします。将来の有料オプションによって、すでに利用可能な基本機能が失われることはありません。'
+            '現在のECHOは無料で、アプリ内購入、サブスクリプション、有料アンロック、ペイウォールは含まれていません。',
+            '将来のバージョンでは、オプションの有料機能やその他の購入を提供する場合があります。適用される価格と購入条件は購入前に明示されます。'
           ]
         },
         {
@@ -415,8 +415,8 @@ export const echoLegalDocuments = {
         {
           title: '8. 知的財産',
           paragraphs: [
-            'ECHOのソフトウェアソースコードはMITライセンスの下で提供されています。ソースコードに添付のMITライセンス条項に従い、ソフトウェアの複製を使用、複製、変更、統合、公開、配布、再ライセンスおよび/または販売することができます。',
-            '名言コンテンツはWikiquoteから提供され、CC BY-SA 4.0ライセンスの下で利用可能です。ECHOのブランド、ロゴ、商標はMITライセンスの対象外であり、開発者の所有物です。'
+            'ECHOのソフトウェアソースコードはMITライセンスの下で提供されています。MITライセンスはソフトウェアコードにのみ適用され、名言コンテンツ、エディトリアルコンテンツ、アートワーク、ブランド、ロゴ、または第三者材料には自動的には適用されません。ソースコードに添付のMITライセンス条項に従い、ソフトウェアの複製を使用、複製、変更、統合、公開、配布、再ライセンスおよび/または販売することができます。',
+            '一部の名言と署名情報はWikiquoteから派生しています。Wikiquoteの貢献コンテンツは適用されるWikimediaライセンスの下で提供されます。個々の名言とその underlying 作品は、それぞれの著者やその他の権利者の権利の対象となる場合があります。ECHOのブランド、ロゴ、商標はMITライセンスの対象外であり、開発者の所有物です。'
           ]
         },
         {
