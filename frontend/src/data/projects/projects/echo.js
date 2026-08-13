@@ -87,6 +87,16 @@ export default {
       description_zh: '当前 ECHO 免费测试版的使用条件。',
       href: '/projects/echo/terms'
     }
+,
+    {
+      label: 'Support',
+      label_ja: 'サポート',
+      label_zh: '支持',
+      description: 'Get help with ECHO, find answers to common questions, or contact the developer.',
+      description_ja: 'ECHOのサポート、よくある質問、開発者への連絡方法。',
+      description_zh: '获取 ECHO 帮助，查看常见问题，或联系开发者。',
+      href: '/projects/echo/support'
+    }
   ],
 
   resourcesTitle: 'Legal & Support',

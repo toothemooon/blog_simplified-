@@ -54,6 +54,9 @@ page('/projects/echo/terms', () => {
   setRoute('/echo-legal', { document: 'terms' });
 });
 
+page('/projects/echo/support', () => {
+  setRoute('/echo-legal', { document: 'support' });
+});
 // Individual project page
 page('/projects/:id', (ctx) => {
   setRoute('/project-detail', { id: ctx.params.id });

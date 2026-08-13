@@ -441,7 +441,30 @@ export const echoLegalDocuments = {
       ]
     }
   }
-};
+,
+  support: {
+    en: {
+      title: 'A Letter from the Developer',
+      eyebrow: 'ECHO \u00b7 SUPPORT',
+      updated: '',
+      summary: '',
+      sections: []
+    },
+    zh: {
+      title: '\u6765\u81ea\u5f00\u53d1\u8005\u7684\u4e00\u5c01\u4fe1',
+      eyebrow: 'ECHO \u00b7 \u652f\u6301',
+      updated: '',
+      summary: '',
+      sections: []
+    },
+    ja: {
+      title: '\u958b\u767a\u8005\u304b\u3089\u306e\u624b\u7d19',
+      eyebrow: 'ECHO \u00b7 \u30b5\u30dd\u30fc\u30c8',
+      updated: '',
+      summary: '',
+      sections: []
+    }
+  }};
 
 export function getEchoLegalDocument(type, language) {
   const document = echoLegalDocuments[type] || echoLegalDocuments.privacy;
