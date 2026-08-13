@@ -252,7 +252,7 @@ export const echoLegalDocuments = {
           title: '8. Intellectual property',
           paragraphs: [
             'The ECHO software source code is licensed under the MIT License. The MIT License applies to the software code only and does not automatically apply to quotation content, editorial content, artwork, branding, logos, or third-party materials. You may use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the software, subject to the MIT License terms included in the source code.',
-            "Some quotation and attribution information is derived from Wikiquote. Wikiquote contributions are made available under applicable Wikimedia licensing terms. Individual quotations and underlying works may remain subject to the rights of their respective authors or other rights holders. ECHO's branding, logos, and trademarks are not covered by the MIT License and remain the property of the developer."
+            "The majority of quotation and attribution information in ECHO is derived from Wikiquote and is licensed under CC BY-SA 4.0. A smaller portion of English quotations comes from classic literary works published before 1928, which are in the public domain in the United States and may be used freely. Individual quotations and underlying works may remain subject to the rights of their respective authors or other rights holders. ECHO's branding, logos, and trademarks are not covered by the MIT License and remain the property of the developer."
           ]
         },
         {
@@ -334,7 +334,7 @@ export const echoLegalDocuments = {
           title: '八、知识产权',
           paragraphs: [
             'ECHO 软件源代码采用 MIT 许可证。MIT 许可证仅适用于软件代码本身，不自动适用于名言内容、编辑内容、美术作品、品牌、标识或第三方材料。您可根据源代码中附带的 MIT 许可证条款，自由使用、复制、修改、合并、发布、分发、再许可及/或出售软件副本。',
-            '部分名言和署名信息来源于 Wikiquote。Wikiquote 的贡献内容根据 Wikimedia 相关许可条款提供。个别名言及其原始作品可能仍受原作者或其他权利人保护。ECHO 的品牌、标识和商标不在 MIT 许可证范围内，仍归开发者所有。'
+            'ECHO 中的大部分名言和署名信息来源于 Wikiquote，采用 CC BY-SA 4.0 许可证。少部分英文名言来自 1928 年以前出版的经典文学作品，这些作品在美国属于公有领域，可以自由使用。个别名言及其原始作品可能仍受原作者或其他权利人保护。ECHO 的品牌、标识和商标不在 MIT 许可证范围内，仍归开发者所有。'
           ]
         },
         {
@@ -416,7 +416,7 @@ export const echoLegalDocuments = {
           title: '8. 知的財産',
           paragraphs: [
             'ECHOのソフトウェアソースコードはMITライセンスの下で提供されています。MITライセンスはソフトウェアコードにのみ適用され、名言コンテンツ、エディトリアルコンテンツ、アートワーク、ブランド、ロゴ、または第三者材料には自動的には適用されません。ソースコードに添付のMITライセンス条項に従い、ソフトウェアの複製を使用、複製、変更、統合、公開、配布、再ライセンスおよび/または販売することができます。',
-            '一部の名言と署名情報はWikiquoteから派生しています。Wikiquoteの貢献コンテンツは適用されるWikimediaライセンスの下で提供されます。個々の名言とその underlying 作品は、それぞれの著者やその他の権利者の権利の対象となる場合があります。ECHOのブランド、ロゴ、商標はMITライセンスの対象外であり、開発者の所有物です。'
+            'ECHOの大部分の名言と署名情報はWikiquoteから派生しており、CC BY-SA 4.0ライセンスの下で提供されます。一部の英語名言は1928年以前に出版された古典文学作品から引用されており、これらは米国でパブリックドメインであり、自由に使用できます。個々の名言とその元の作品は、それぞれの著者やその他の権利者の権利の対象となる場合があります。ECHOのブランド、ロゴ、商標はMITライセンスの対象外であり、開発者の所有物です。'
           ]
         },
         {
